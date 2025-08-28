@@ -1227,6 +1227,8 @@ export default function Index() {
       </SafeAreaView>
     </View>
   );
+
+  const renderDashboard = () => (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Nakliyat Platformu</Text>
@@ -1236,34 +1238,69 @@ export default function Index() {
       </View>
       
       <View style={styles.dashboardContainer}>
-        <Text style={styles.welcomeText}>Hoş geldiniz!</Text>
-        <Text style={styles.userInfoText}>
-          Kullanıcı Tipi: {user?.user_type === 'customer' ? 'Müşteri' : 'Nakliyeci'}
-        </Text>
+        {renderSuccessMessage()}
+        
+        <View style={styles.userWelcomeCard}>
+          <View style={styles.userAvatar}>
+            <Ionicons name="person" size={30} color="#fff" />
+          </View>
+          <View style={styles.userInfo}>
+            <Text style={styles.welcomeText}>Hoş geldiniz!</Text>
+            <Text style={styles.userInfoText}>
+              {user?.user_type === 'customer' ? 'Müşteri' : 'Nakliyeci'} • {user?.name || 'Kullanıcı'}
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => {
+              setProfileForm({
+                name: user?.name || '',
+                phone: user?.phone || '',
+                company_name: user?.user_type === 'mover' ? '' : '',
+                company_description: user?.user_type === 'mover' ? '' : '',
+                profile_image: '',
+              });
+              setCurrentScreen('profile');
+            }}
+          >
+            <Ionicons name="settings" size={20} color="#3498db" />
+          </TouchableOpacity>
+        </View>
         
         <View style={styles.dashboardGrid}>
           <TouchableOpacity style={styles.dashboardCard}>
-            <Ionicons name="add-circle" size={40} color="#3498db" />
-            <Text style={styles.dashboardCardTitle}>
-              {user?.user_type === 'customer' ? 'Talep Oluştur' : 'Talepleri Gör'}
-            </Text>
+            <LinearGradient colors={['#3498db', '#2980b9']} style={styles.cardGradient}>
+              <Ionicons name="add-circle" size={40} color="#fff" />
+              <Text style={styles.dashboardCardTitle}>
+                {user?.user_type === 'customer' ? 'Talep Oluştur' : 'Talepleri Gör'}
+              </Text>
+            </LinearGradient>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.dashboardCard}>
-            <Ionicons name="list" size={40} color="#e74c3c" />
-            <Text style={styles.dashboardCardTitle}>
-              {user?.user_type === 'customer' ? 'Taleplerim' : 'Tekliflerim'}
-            </Text>
+            <LinearGradient colors={['#e74c3c', '#c0392b']} style={styles.cardGradient}>
+              <Ionicons name="list" size={40} color="#fff" />
+              <Text style={styles.dashboardCardTitle}>
+                {user?.user_type === 'customer' ? 'Taleplerim' : 'Tekliflerim'}
+              </Text>
+            </LinearGradient>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.dashboardCard}
+            onPress={() => setCurrentScreen('profile')}
+          >
+            <LinearGradient colors={['#27ae60', '#229954']} style={styles.cardGradient}>
+              <Ionicons name="person" size={40} color="#fff" />
+              <Text style={styles.dashboardCardTitle}>Profil</Text>
+            </LinearGradient>
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.dashboardCard}>
-            <Ionicons name="person" size={40} color="#27ae60" />
-            <Text style={styles.dashboardCardTitle}>Profil</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.dashboardCard}>
-            <Ionicons name="chatbubble" size={40} color="#f39c12" />
-            <Text style={styles.dashboardCardTitle}>Mesajlar</Text>
+            <LinearGradient colors={['#f39c12', '#e67e22']} style={styles.cardGradient}>
+              <Ionicons name="chatbubble" size={40} color="#fff" />
+              <Text style={styles.dashboardCardTitle}>Mesajlar</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
       </View>

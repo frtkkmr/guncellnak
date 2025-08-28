@@ -429,61 +429,79 @@ async def make_user_admin(user_email: str):
     
     return {"message": f"User {user_email} is now admin"}
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+    method: str = "email"  # "email" or "sms"
+
+class ResetPasswordRequest(BaseModel):
+    email: EmailStr
+    token: str
+    new_password: str
+
 @api_router.post("/forgot-password")
-async def forgot_password(email: EmailStr):
-    """Send password reset email"""
-    user = await db.users.find_one({"email": email})
+async def forgot_password(request: ForgotPasswordRequest):
+    """Send password reset code via email or SMS"""
+    user = await db.users.find_one({"email": request.email})
     if not user:
         # Don't reveal if email exists for security
-        return {"message": "If this email is registered, you will receive a password reset link."}
+        return {"message": "If this email/phone is registered, you will receive a password reset code."}
     
     # Generate reset token
     reset_token = generate_verification_code()
     
     # Store reset token with expiration (1 hour)
     await db.users.update_one(
-        {"email": email},
+        {"email": request.email},
         {"$set": {
             "password_reset_token": reset_token,
-            "password_reset_expires": datetime.utcnow() + timedelta(hours=1)
+            "password_reset_expires": datetime.utcnow() + timedelta(hours=1),
+            "password_reset_method": request.method
         }}
     )
     
-    # TODO: Send email with reset link
-    # For now, return the token (remove in production)
+    # Simulate sending code
+    if request.method == "sms":
+        # SMS simulation
+        message = f"Password reset code sent to phone: {user.get('phone', 'N/A')}"
+    else:
+        # Email simulation  
+        message = f"Password reset code sent to: {request.email}"
+    
     return {
-        "message": "Password reset instructions sent to your email.",
-        "reset_token": reset_token  # Remove in production
+        "message": message,
+        "reset_token": reset_token,  # For demo - remove in production
+        "method_used": request.method,
+        "contact": user.get('phone') if request.method == "sms" else request.email
     }
 
 @api_router.post("/reset-password")
-async def reset_password_with_token(
-    email: EmailStr,
-    token: str,
-    new_password: str
-):
+async def reset_password_with_token(request: ResetPasswordRequest):
     """Reset password with token"""
-    user = await db.users.find_one({"email": email})
+    user = await db.users.find_one({"email": request.email})
     
     if not user:
         raise HTTPException(status_code=404, detail="Invalid reset request")
     
     # Check token and expiration
-    if (user.get("password_reset_token") != token or 
+    if (user.get("password_reset_token") != request.token or 
         user.get("password_reset_expires", datetime.min) < datetime.utcnow()):
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
     
     # Validate new password
-    if len(new_password) < 6:
+    if len(request.new_password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
     
     # Update password and clear reset token
-    hashed_password = get_password_hash(new_password)
+    hashed_password = get_password_hash(request.new_password)
     await db.users.update_one(
-        {"email": email},
+        {"email": request.email},
         {
             "$set": {"hashed_password": hashed_password},
-            "$unset": {"password_reset_token": "", "password_reset_expires": ""}
+            "$unset": {
+                "password_reset_token": "", 
+                "password_reset_expires": "",
+                "password_reset_method": ""
+            }
         }
     )
     

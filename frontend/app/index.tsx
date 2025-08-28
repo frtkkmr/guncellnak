@@ -65,6 +65,10 @@ export default function Index() {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [allRequests, setAllRequests] = useState<any[]>([]);
   const [adminTab, setAdminTab] = useState<'users' | 'requests'>('users');
+  
+  // Sample data for homepage
+  const [sampleJobs, setSampleJobs] = useState<any[]>([]);
+  const [sampleCompanies, setSampleCompanies] = useState<any[]>([]);
 
   // Form states
   const [loginForm, setLoginForm] = useState({

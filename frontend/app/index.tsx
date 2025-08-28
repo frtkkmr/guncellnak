@@ -60,6 +60,11 @@ export default function Index() {
   // Verification state
   const [showVerification, setShowVerification] = useState(false);
 
+  // Admin panel states
+  const [allUsers, setAllUsers] = useState<User[]>([]);
+  const [allRequests, setAllRequests] = useState<any[]>([]);
+  const [adminTab, setAdminTab] = useState<'users' | 'requests'>('users');
+
   // Form states
   const [loginForm, setLoginForm] = useState({
     email: '',

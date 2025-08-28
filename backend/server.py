@@ -79,6 +79,8 @@ class UserBase(BaseModel):
 class UserRegister(UserBase):
     password: str
     company_name: Optional[str] = None  # For movers
+    company_description: Optional[str] = None  # For movers
+    company_images: Optional[List[str]] = []  # For movers - base64 images
     
 class User(UserBase):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))

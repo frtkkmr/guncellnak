@@ -956,11 +956,15 @@ export default function Index() {
                     <Ionicons name="business" size={16} color="#7f8c8d" /> Şirket Adı *
                   </Text>
                   <TextInput
-                    style={styles.input}
+                    style={[styles.input, errors.company_name && styles.inputError]}
                     placeholder="Şirket adınızı girin"
                     value={registerForm.company_name}
-                    onChangeText={(text) => setRegisterForm({...registerForm, company_name: text})}
+                    onChangeText={(text) => {
+                      setRegisterForm({...registerForm, company_name: text});
+                      if (errors.company_name) setErrors(prev => ({...prev, company_name: ''}));
+                    }}
                   />
+                  {renderErrorMessage('company_name')}
                 </View>
 
                 <View style={styles.inputGroup}>
@@ -968,17 +972,17 @@ export default function Index() {
                     <Ionicons name="document-text" size={16} color="#7f8c8d" /> Firma Açıklaması *
                   </Text>
                   <TextInput
-                    style={[styles.input, styles.textArea]}
+                    style={[styles.input, styles.textArea, errors.company_description && styles.inputError]}
                     placeholder="Firmanızı tanıtın, hizmetlerinizi açıklayın..."
                     multiline
                     numberOfLines={4}
                     value={registerForm.company_description}
-                    onChangeText={(text) => setRegisterForm({...registerForm, company_description: text})}
+                    onChangeText={(text) => {
+                      setRegisterForm({...registerForm, company_description: text});
+                      if (errors.company_description) setErrors(prev => ({...prev, company_description: ''}));
+                    }}
                   />
-                  <Text style={styles.helperText}>
-                    Müşterilerinize firmanızı tanıtın, deneyiminizi ve hizmetlerinizi açıklayın.
-                  </Text>
-                </View>
+                  {renderErrorMessage('company_description')}
 
                 <View style={styles.inputGroup}>
                   <Text style={styles.inputLabel}>

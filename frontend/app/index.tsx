@@ -1322,6 +1322,8 @@ export default function Index() {
       return renderRegisterScreen();
     case 'dashboard':
       return renderDashboard();
+    case 'profile':
+      return renderProfileScreen();
     default:
       return renderWelcomeScreen();
   }

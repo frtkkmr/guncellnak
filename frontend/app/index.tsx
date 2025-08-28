@@ -294,12 +294,27 @@ export default function Index() {
 
   const renderWelcomeScreen = () => (
     <SafeAreaView style={styles.container}>
-      <View style={styles.welcomeContainer}>
-        <Ionicons name="home" size={80} color="#007AFF" />
+      <ScrollView contentContainerStyle={styles.welcomeContainer}>
+        <Ionicons name="home" size={60} color="#007AFF" />
         <Text style={styles.welcomeTitle}>Nakliyat Platformu</Text>
         <Text style={styles.welcomeSubtitle}>
           Evini taşıtacaklar ile nakliyecileri buluşturan platform
         </Text>
+        
+        {/* Üye olmadan teklif isteme butonu */}
+        <TouchableOpacity
+          style={styles.quoteRequestButton}
+          onPress={() => setCurrentScreen('quote_request')}
+        >
+          <Ionicons name="add-circle-outline" size={24} color="#28a745" />
+          <Text style={styles.quoteRequestButtonText}>Ücretsiz Teklif İste</Text>
+        </TouchableOpacity>
+        
+        <View style={styles.divider}>
+          <View style={styles.dividerLine} />
+          <Text style={styles.dividerText}>veya</Text>
+          <View style={styles.dividerLine} />
+        </View>
         
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -316,7 +331,7 @@ export default function Index() {
             <Text style={styles.secondaryButtonText}>Kayıt Ol</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 

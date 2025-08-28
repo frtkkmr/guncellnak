@@ -168,7 +168,25 @@ export default function Index() {
     }
   };
 
-  const handleVerification = async (type: 'email' | 'phone') => {
+  const handleQuoteRequest = async () => {
+    if (!quoteForm.customer_name || !quoteForm.customer_phone || !quoteForm.from_location || !quoteForm.to_location || !quoteForm.moving_date) {
+      Alert.alert('Hata', 'Lütfen tüm zorunlu alanları doldurun');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Store quote data temporarily and redirect to register
+      setQuoteSubmitted(true);
+      setCurrentScreen('register');
+      Alert.alert('Teklif İsteğiniz Alındı', 'Teklifleri görmek için lütfen kayıt olun ve giriş yapın.');
+    } catch (error) {
+      Alert.alert('Hata', 'Teklif gönderiminde hata oluştu');
+      console.error('Quote error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
     const code = type === 'email' ? verificationForm.email_code : verificationForm.phone_code;
     
     if (!code) {

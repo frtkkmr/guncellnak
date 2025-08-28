@@ -1211,11 +1211,10 @@ export default function Index() {
   );
 
   const renderAdminPanel = () => {
+    // Auto-fetch data when entering admin panel
     React.useEffect(() => {
-      if (currentScreen === 'admin_panel') {
-        fetchAdminData();
-      }
-    }, [currentScreen]);
+      fetchAdminData();
+    }, []);
 
     return (
       <SafeAreaView style={styles.safeArea}>

@@ -1206,7 +1206,149 @@ export default function Index() {
         </ScrollView>
       </SafeAreaView>
     </View>
+    </View>
   );
+
+  const renderAdminPanel = () => {
+    React.useEffect(() => {
+      if (currentScreen === 'admin_panel') {
+        fetchAdminData();
+      }
+    }, [currentScreen]);
+
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.adminHeader}>
+          <Text style={styles.adminHeaderTitle}>Admin Panel</Text>
+          <TouchableOpacity onPress={handleLogout}>
+            <Ionicons name="log-out-outline" size={24} color="#2c3e50" />
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.adminContainer}>
+          {renderSuccessMessage()}
+          {errors.general && (
+            <View style={styles.errorContainer}>
+              <Ionicons name="alert-circle" size={16} color="#e74c3c" />
+              <Text style={styles.errorText}>{errors.general}</Text>
+            </View>
+          )}
+          
+          <Text style={styles.adminWelcomeText}>
+            Hoş geldiniz, {user?.name || 'Admin'}!
+          </Text>
+          
+          {/* Tab selector */}
+          <View style={styles.adminTabSelector}>
+            <TouchableOpacity
+              style={[
+                styles.adminTab,
+                adminTab === 'users' && styles.adminTabActive
+              ]}
+              onPress={() => setAdminTab('users')}
+            >
+              <Text style={[
+                styles.adminTabText,
+                adminTab === 'users' && styles.adminTabTextActive
+              ]}>
+                Kullanıcılar ({allUsers.length})
+              </Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity
+              style={[
+                styles.adminTab,
+                adminTab === 'requests' && styles.adminTabActive
+              ]}
+              onPress={() => setAdminTab('requests')}
+            >
+              <Text style={[
+                styles.adminTabText,
+                adminTab === 'requests' && styles.adminTabTextActive
+              ]}>
+                Talepler ({allRequests.length})
+              </Text>
+            </TouchableOpacity>
+          </View>
+          
+          {/* Content */}
+          <ScrollView style={styles.adminContent}>
+            {adminTab === 'users' ? (
+              <View>
+                <Text style={styles.adminSectionTitle}>Tüm Kullanıcılar</Text>
+                {allUsers.map((user) => (
+                  <View key={user.id} style={styles.adminUserCard}>
+                    <View style={styles.adminUserInfo}>
+                      <Text style={styles.adminUserName}>{user.name}</Text>
+                      <Text style={styles.adminUserEmail}>{user.email}</Text>
+                      <View style={styles.adminUserBadges}>
+                        <View style={[
+                          styles.adminBadge,
+                          user.user_type === 'admin' ? styles.adminBadgeAdmin :
+                          user.user_type === 'mover' ? styles.adminBadgeMover : 
+                          styles.adminBadgeCustomer
+                        ]}>
+                          <Text style={styles.adminBadgeText}>
+                            {user.user_type === 'admin' ? 'Admin' : 
+                             user.user_type === 'mover' ? 'Nakliyeci' : 'Müşteri'}
+                          </Text>
+                        </View>
+                        
+                        {user.is_email_verified && (
+                          <View style={[styles.adminBadge, styles.adminBadgeVerified]}>
+                            <Text style={styles.adminBadgeText}>Email ✓</Text>
+                          </View>
+                        )}
+                        
+                        {user.is_phone_verified && (
+                          <View style={[styles.adminBadge, styles.adminBadgeVerified]}>
+                            <Text style={styles.adminBadgeText}>Telefon ✓</Text>
+                          </View>
+                        )}
+                      </View>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.adminSectionTitle}>Tüm Talepler</Text>
+                {allRequests.map((request) => (
+                  <View key={request.id} style={styles.adminRequestCard}>
+                    <View style={styles.adminRequestHeader}>
+                      <Text style={styles.adminRequestCustomer}>{request.customer_name}</Text>
+                      <View style={[
+                        styles.adminBadge,
+                        request.status === 'pending' ? styles.adminBadgePending :
+                        request.status === 'approved' ? styles.adminBadgeApproved :
+                        styles.adminBadgeCompleted
+                      ]}>
+                        <Text style={styles.adminBadgeText}>
+                          {request.status === 'pending' ? 'Bekliyor' :
+                           request.status === 'approved' ? 'Onaylandı' : 'Tamamlandı'}
+                        </Text>
+                      </View>
+                    </View>
+                    <Text style={styles.adminRequestRoute}>
+                      {request.from_location} → {request.to_location}
+                    </Text>
+                    <Text style={styles.adminRequestDate}>
+                      Tarih: {new Date(request.moving_date).toLocaleDateString('tr-TR')}
+                    </Text>
+                    {request.description && (
+                      <Text style={styles.adminRequestDescription}>
+                        {request.description}
+                      </Text>
+                    )}
+                  </View>
+                ))}
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    );
+  };
 
   if (showVerification) {
     return renderVerificationScreen();
@@ -1227,6 +1369,8 @@ export default function Index() {
       return renderResetPasswordScreen();
     case 'dashboard':
       return renderDashboard();
+    case 'admin_panel':
+      return renderAdminPanel();
     default:
       return renderWelcomeScreen();
   }

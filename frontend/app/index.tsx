@@ -496,6 +496,22 @@ export default function Index() {
               <Text style={styles.heroSubtitle}>
                 Türkiye'nin en güvenilir taşınma çözümü
               </Text>
+              
+              {/* Trust indicators */}
+              <View style={styles.trustIndicators}>
+                <View style={styles.trustItem}>
+                  <Ionicons name="shield-checkmark" size={20} color="#fff" />
+                  <Text style={styles.trustText}>Sigortalı Taşıma</Text>
+                </View>
+                <View style={styles.trustItem}>
+                  <Ionicons name="people" size={20} color="#fff" />
+                  <Text style={styles.trustText}>Onaylı Firmalar</Text>
+                </View>
+                <View style={styles.trustItem}>
+                  <Ionicons name="time" size={20} color="#fff" />
+                  <Text style={styles.trustText}>7/24 Destek</Text>
+                </View>
+              </View>
             </View>
 
             <TouchableOpacity
@@ -532,6 +548,29 @@ export default function Index() {
               >
                 <Text style={[styles.authButtonText, styles.registerButtonText]}>Kayıt Ol</Text>
               </TouchableOpacity>
+            </View>
+            
+            {/* Professional features */}
+            <View style={styles.featuresSection}>
+              <Text style={styles.featuresTitle}>Neden Biz?</Text>
+              <View style={styles.featureGrid}>
+                <View style={styles.featureCard}>
+                  <Ionicons name="star" size={24} color="#FFD700" />
+                  <Text style={styles.featureCardText}>5 Yıldızlı Hizmet</Text>
+                </View>
+                <View style={styles.featureCard}>
+                  <Ionicons name="cash" size={24} color="#27ae60" />
+                  <Text style={styles.featureCardText}>Uygun Fiyat</Text>
+                </View>
+                <View style={styles.featureCard}>
+                  <Ionicons name="checkmark-circle" size={24} color="#3498db" />
+                  <Text style={styles.featureCardText}>Güvenli Teslimat</Text>
+                </View>
+                <View style={styles.featureCard}>
+                  <Ionicons name="time" size={24} color="#e67e22" />
+                  <Text style={styles.featureCardText}>Hızlı Hizmet</Text>
+                </View>
+              </View>
             </View>
           </ScrollView>
         </SafeAreaView>

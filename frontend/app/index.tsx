@@ -508,6 +508,13 @@ export default function Index() {
               </LinearGradient>
             </TouchableOpacity>
             
+            <TouchableOpacity 
+              style={styles.forgotPasswordButton}
+              onPress={() => setCurrentScreen('forgot_password')}
+            >
+              <Text style={styles.forgotPasswordText}>Şifremi Unuttum</Text>
+            </TouchableOpacity>
+            
             <TouchableOpacity onPress={() => setCurrentScreen('register')}>
               <Text style={styles.linkText}>Hesabınız yok mu? Kayıt olun</Text>
             </TouchableOpacity>

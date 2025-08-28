@@ -211,7 +211,7 @@ docker-compose restart
 - Güvenlik önlemleri
 
 **🌐 Erişim Linkleri:**
-- Web: https://ev-tasima-pro.preview.emergentagent.com
+- Web: https://shiftease.preview.emergentagent.com
 - Mobil: exp://ev-tasima-pro.preview.emergentagent.com
 
 **🚚 Kolay taşınmalar dileriz!**

@@ -572,11 +572,6 @@ export default function Index() {
   };
 
   const renderWelcomeScreen = () => {
-    // Load sample data when component mounts
-    React.useEffect(() => {
-      fetchSampleData();
-    }, []);
-
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content" />

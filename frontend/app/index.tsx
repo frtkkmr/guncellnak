@@ -672,6 +672,34 @@ export default function Index() {
               />
               {renderErrorMessage('password')}
             </View>
+
+            {/* reCAPTCHA Section */}
+            <View style={styles.recaptchaSection}>
+              <Text style={styles.recaptchaLabel}>Robot Doğrulaması</Text>
+              <TouchableOpacity
+                style={[
+                  styles.recaptchaButton,
+                  isRecaptchaVerified && styles.recaptchaButtonVerified
+                ]}
+                onPress={simulateRecaptcha}
+                disabled={isRecaptchaVerified}
+              >
+                {isRecaptchaVerified ? (
+                  <>
+                    <Ionicons name="checkmark-circle" size={20} color="#27ae60" />
+                    <Text style={styles.recaptchaVerifiedText}>Doğrulandı</Text>
+                  </>
+                ) : (
+                  <>
+                    <View style={styles.recaptchaBox} />
+                    <Text style={styles.recaptchaText}>Robot değilim</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+              <Text style={styles.recaptchaHelper}>
+                Güvenlik için lütfen robot olmadığınızı doğrulayın
+              </Text>
+            </View>
             
             <TouchableOpacity
               style={[styles.submitButton, loading && styles.disabledButton]}

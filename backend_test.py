@@ -623,6 +623,147 @@ def test_admin_panel_data_flow():
     except Exception as e:
         results.log_fail("Admin panel data flow", str(e))
 
+def test_new_admin_endpoints():
+    """Test the new admin endpoints that are reportedly not working"""
+    print("\n🔧 Testing New Admin Endpoints...")
+    
+    if not test_data['admin_token']:
+        results.log_fail("New admin endpoints", "No admin token available")
+        return
+    
+    headers = {"Authorization": f"Bearer {test_data['admin_token']}"}
+    
+    # Test 1: POST /api/admin/update-user-role/{user_email}
+    try:
+        # First get a user to update
+        users_response = requests.get(f"{API_BASE}/admin/users", headers=headers)
+        if users_response.status_code == 200:
+            users = users_response.json()
+            test_user = None
+            for user in users:
+                if user.get('user_type') == 'customer' and user.get('email') != 'kmrfrt@gmail.com':
+                    test_user = user
+                    break
+            
+            if test_user:
+                role_data = {"role": "moderator"}
+                response = requests.post(f"{API_BASE}/admin/update-user-role/{test_user['email']}", 
+                                       json=role_data, headers=headers)
+                if response.status_code == 200:
+                    results.log_pass("Admin update-user-role endpoint")
+                else:
+                    results.log_fail("Admin update-user-role endpoint", 
+                                   f"Status: {response.status_code}, Response: {response.text}")
+            else:
+                results.log_fail("Admin update-user-role endpoint", "No suitable test user found")
+        else:
+            results.log_fail("Admin update-user-role endpoint", "Could not get users list")
+    except Exception as e:
+        results.log_fail("Admin update-user-role endpoint", str(e))
+    
+    # Test 2: POST /api/admin/ban-user/{user_email}
+    try:
+        # Get a user to ban
+        users_response = requests.get(f"{API_BASE}/admin/users", headers=headers)
+        if users_response.status_code == 200:
+            users = users_response.json()
+            test_user = None
+            for user in users:
+                if user.get('user_type') == 'customer' and user.get('email') != 'kmrfrt@gmail.com':
+                    test_user = user
+                    break
+            
+            if test_user:
+                ban_data = {
+                    "ban_days": 3,
+                    "reason": "Test ban for API testing"
+                }
+                response = requests.post(f"{API_BASE}/admin/ban-user/{test_user['email']}", 
+                                       json=ban_data, headers=headers)
+                if response.status_code == 200:
+                    results.log_pass("Admin ban-user endpoint")
+                    
+                    # Test 3: POST /api/admin/unban-user/{user_email}
+                    unban_response = requests.post(f"{API_BASE}/admin/unban-user/{test_user['email']}", 
+                                                 headers=headers)
+                    if unban_response.status_code == 200:
+                        results.log_pass("Admin unban-user endpoint")
+                    else:
+                        results.log_fail("Admin unban-user endpoint", 
+                                       f"Status: {unban_response.status_code}, Response: {unban_response.text}")
+                else:
+                    results.log_fail("Admin ban-user endpoint", 
+                                   f"Status: {response.status_code}, Response: {response.text}")
+            else:
+                results.log_fail("Admin ban-user endpoint", "No suitable test user found")
+        else:
+            results.log_fail("Admin ban-user endpoint", "Could not get users list")
+    except Exception as e:
+        results.log_fail("Admin ban-user endpoint", str(e))
+    
+    # Test 4: DELETE /api/admin/delete-request/{request_id}
+    try:
+        # Get a request to delete
+        requests_response = requests.get(f"{API_BASE}/moving-requests", headers=headers)
+        if requests_response.status_code == 200:
+            moving_requests = requests_response.json()
+            if moving_requests:
+                test_request = moving_requests[0]  # Use first request
+                response = requests.delete(f"{API_BASE}/admin/delete-request/{test_request['id']}", 
+                                         headers=headers)
+                if response.status_code == 200:
+                    results.log_pass("Admin delete-request endpoint")
+                else:
+                    results.log_fail("Admin delete-request endpoint", 
+                                   f"Status: {response.status_code}, Response: {response.text}")
+            else:
+                results.log_fail("Admin delete-request endpoint", "No requests available to delete")
+        else:
+            results.log_fail("Admin delete-request endpoint", "Could not get requests list")
+    except Exception as e:
+        results.log_fail("Admin delete-request endpoint", str(e))
+
+def test_openapi_docs():
+    """Test if endpoints appear in OpenAPI documentation"""
+    print("\n📚 Testing OpenAPI Documentation...")
+    
+    try:
+        response = requests.get(f"{BACKEND_URL}/docs")
+        if response.status_code == 200:
+            results.log_pass("OpenAPI docs accessible")
+            
+            # Check if we can get the OpenAPI JSON
+            openapi_response = requests.get(f"{BACKEND_URL}/openapi.json")
+            if openapi_response.status_code == 200:
+                openapi_data = openapi_response.json()
+                paths = openapi_data.get('paths', {})
+                
+                # Check for new admin endpoints
+                expected_endpoints = [
+                    '/api/admin/update-user-role/{user_email}',
+                    '/api/admin/ban-user/{user_email}',
+                    '/api/admin/unban-user/{user_email}',
+                    '/api/admin/delete-request/{request_id}'
+                ]
+                
+                found_endpoints = []
+                for endpoint in expected_endpoints:
+                    if endpoint in paths:
+                        found_endpoints.append(endpoint)
+                
+                if len(found_endpoints) == len(expected_endpoints):
+                    results.log_pass("All new admin endpoints in OpenAPI")
+                else:
+                    missing = set(expected_endpoints) - set(found_endpoints)
+                    results.log_fail("New admin endpoints in OpenAPI", 
+                                   f"Missing endpoints: {list(missing)}")
+            else:
+                results.log_fail("OpenAPI JSON", f"Status: {openapi_response.status_code}")
+        else:
+            results.log_fail("OpenAPI docs", f"Status: {response.status_code}")
+    except Exception as e:
+        results.log_fail("OpenAPI docs", str(e))
+
 def run_all_tests():
     """Run all backend tests in sequence"""
     print("🚀 Starting Nakliyat Platform Backend API Tests")
@@ -633,6 +774,11 @@ def run_all_tests():
     
     # Specific admin functionality tests
     test_admin_login_specific()
+    
+    # NEW: Test the reported problematic admin endpoints
+    test_new_admin_endpoints()
+    test_openapi_docs()
+    
     test_admin_users_endpoint()
     test_admin_requests_endpoint()
     test_admin_panel_data_flow()

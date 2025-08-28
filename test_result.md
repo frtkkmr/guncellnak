@@ -208,3 +208,7 @@ test_plan:
 agent_communication:
     - agent: "main"
       message: "Implemented complete nakliyat platform backend with user auth, moving requests, bidding system and basic frontend with auth UI. Ready for backend testing first."
+    - agent: "testing"
+      message: "✅ BACKEND TESTING COMPLETED SUCCESSFULLY: All 19 backend API tests passed. Authentication system (registration, verification, login, JWT), moving request management, bid system, admin panel, and error handling all working perfectly. Backend is production-ready."
+    - agent: "user"
+      message: "FRONTEND ENHANCEMENT REQUEST: User wants homepage improvements: 1) Quote request section without registration, 2) Redirect to registration after quote, 3) Display quotes on homepage, 4) Separate mover registration area, 5) Separate mover quote viewing panel. These are frontend changes needed."

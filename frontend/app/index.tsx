@@ -844,10 +844,21 @@ export default function Index() {
               style={[styles.submitButton, loading && styles.disabledButton]}
               onPress={handleRegister}
               disabled={loading}
+              activeOpacity={0.8}
             >
-              <Text style={styles.submitButtonText}>
-                {loading ? 'Kayıt Oluşturuluyor...' : 'Kayıt Ol'}
-              </Text>
+              <LinearGradient
+                colors={loading ? ['#bdc3c7', '#95a5a6'] : ['#27ae60', '#2ecc71']}
+                style={styles.submitButtonGradient}
+              >
+                {loading ? (
+                  <Text style={styles.submitButtonText}>Kayıt Oluşturuluyor...</Text>
+                ) : (
+                  <>
+                    <Ionicons name="person-add" size={20} color="#fff" />
+                    <Text style={styles.submitButtonText}>Kayıt Ol</Text>
+                  </>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
             
             <TouchableOpacity onPress={() => setCurrentScreen('login')}>

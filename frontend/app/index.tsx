@@ -162,20 +162,62 @@ export default function Index() {
 
       if (response.ok) {
         setToken(data.access_token);
-        // Set dummy user for demo
-        setUser({
-          id: '1',
-          name: 'Test User',
-          email: loginForm.email,
-          phone: '555-0123',
-          user_type: 'customer',
-          is_active: true,
-          is_email_verified: true,
-          is_phone_verified: true,
-          is_approved: true
+        
+        // Get user info from backend
+        const userResponse = await fetch(`${BACKEND_URL}/api/admin/users`, {
+          headers: {
+            'Authorization': `Bearer ${data.access_token}`,
+            'Content-Type': 'application/json',
+          },
         });
-        setCurrentScreen('dashboard');
-        showSuccess('Başarıyla giriş yapıldı!');
+        
+        if (userResponse.ok) {
+          const users = await userResponse.json();
+          const currentUser = users.find((u: User) => u.email === loginForm.email);
+          
+          if (currentUser) {
+            setUser(currentUser);
+            
+            // If admin, go to admin panel
+            if (currentUser.user_type === 'admin') {
+              setCurrentScreen('admin_panel');
+            } else {
+              setCurrentScreen('dashboard');
+            }
+            
+            showSuccess('Başarıyla giriş yapıldı!');
+          } else {
+            // Fallback for non-admin users
+            setUser({
+              id: '1',
+              name: 'User',
+              email: loginForm.email,
+              phone: '555-0123',
+              user_type: 'customer',
+              is_active: true,
+              is_email_verified: true,
+              is_phone_verified: true,
+              is_approved: true
+            });
+            setCurrentScreen('dashboard');
+            showSuccess('Başarıyla giriş yapıldı!');
+          }
+        } else {
+          // Fallback if can't get user info
+          setUser({
+            id: '1',
+            name: 'User',
+            email: loginForm.email,
+            phone: '555-0123',
+            user_type: 'customer',
+            is_active: true,
+            is_email_verified: true,
+            is_phone_verified: true,
+            is_approved: true
+          });
+          setCurrentScreen('dashboard');
+          showSuccess('Başarıyla giriş yapıldı!');
+        }
       } else {
         if (response.status === 401) {
           showError('general', 'Email veya şifre hatalı');

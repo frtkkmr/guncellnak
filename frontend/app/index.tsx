@@ -52,11 +52,16 @@ interface MovingRequest {
 }
 
 export default function Index() {
-  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'quote_request' | 'login' | 'register' | 'dashboard'>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'quote_request' | 'login' | 'register' | 'dashboard' | 'profile'>('welcome');
   const [userType, setUserType] = useState<'customer' | 'mover'>('customer');
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Error and success states
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
+  const [successMessage, setSuccessMessage] = useState<string>('');
+  const [showErrors, setShowErrors] = useState(false);
 
   // Form states
   const [loginForm, setLoginForm] = useState({

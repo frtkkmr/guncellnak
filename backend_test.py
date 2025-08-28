@@ -368,19 +368,8 @@ def test_mover_login_after_approval():
     """Test mover login after admin approval"""
     print("\n🔓 Testing Mover Login After Approval...")
     
-    # Verify mover first
+    # Now try to login
     try:
-        verify_data = {
-            "email": "mehmet.tasiyici@example.com",
-            "verification_code": "123456",
-            "verification_type": "email"
-        }
-        requests.post(f"{API_BASE}/verify", json=verify_data)
-        
-        verify_data["verification_type"] = "phone"
-        requests.post(f"{API_BASE}/verify", json=verify_data)
-        
-        # Now try to login
         login_data = {
             "email": "mehmet.tasiyici@example.com",
             "password": "moverpass123"

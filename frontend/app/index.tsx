@@ -81,7 +81,55 @@ export default function Index() {
   // Auto-load sample data on component mount
   React.useEffect(() => {
     fetchSampleData();
+    loadStoredSession();
   }, []);
+
+  // Load stored session from AsyncStorage
+  const loadStoredSession = async () => {
+    try {
+      const storedToken = await AsyncStorage.getItem('userToken');
+      const storedUser = await AsyncStorage.getItem('userData');
+      
+      if (storedToken && storedUser) {
+        const userData = JSON.parse(storedUser);
+        setToken(storedToken);
+        setUser(userData);
+        
+        // Redirect based on user type
+        if (userData.user_type === 'admin') {
+          setCurrentScreen('admin_panel');
+        } else {
+          setCurrentScreen('dashboard');
+        }
+        
+        console.log('Session restored for:', userData.email);
+      }
+    } catch (error) {
+      console.error('Error loading stored session:', error);
+    }
+  };
+
+  // Save session to AsyncStorage
+  const saveSession = async (tokenData: string, userData: User) => {
+    try {
+      await AsyncStorage.setItem('userToken', tokenData);
+      await AsyncStorage.setItem('userData', JSON.stringify(userData));
+      console.log('Session saved for:', userData.email);
+    } catch (error) {
+      console.error('Error saving session:', error);
+    }
+  };
+
+  // Clear session from AsyncStorage  
+  const clearSession = async () => {
+    try {
+      await AsyncStorage.removeItem('userToken');
+      await AsyncStorage.removeItem('userData');
+      console.log('Session cleared');
+    } catch (error) {
+      console.error('Error clearing session:', error);
+    }
+  };
 
   // Form states
   const [loginForm, setLoginForm] = useState({

@@ -187,6 +187,8 @@ export default function Index() {
       setLoading(false);
     }
   };
+
+  const handleVerification = async (type: 'email' | 'phone') => {
     const code = type === 'email' ? verificationForm.email_code : verificationForm.phone_code;
     
     if (!code) {

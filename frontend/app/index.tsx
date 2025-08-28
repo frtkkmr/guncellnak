@@ -142,8 +142,23 @@ export default function Index() {
   };
 
   const handleLogin = async () => {
-    if (!loginForm.email || !loginForm.password) {
-      Alert.alert('Hata', 'Lütfen tüm alanları doldurun');
+    clearMessages();
+
+    // Validation
+    if (!loginForm.email.trim()) {
+      showError('email', 'Email adresi gereklidir');
+      return;
+    }
+    if (!validateEmail(loginForm.email)) {
+      showError('email', 'Geçerli bir email adresi girin');
+      return;
+    }
+    if (!loginForm.password.trim()) {
+      showError('password', 'Şifre gereklidir');
+      return;
+    }
+    if (loginForm.password.length < 6) {
+      showError('password', 'Şifre en az 6 karakter olmalıdır');
       return;
     }
 
@@ -163,12 +178,16 @@ export default function Index() {
         setToken(data.access_token);
         await fetchUserProfile(data.access_token);
         setCurrentScreen('dashboard');
-        Alert.alert('Başarılı', 'Giriş yapıldı!');
+        showSuccess('Başarıyla giriş yapıldı!');
       } else {
-        Alert.alert('Hata', data.detail || 'Giriş yapılamadı');
+        if (response.status === 401) {
+          showError('general', 'Email veya şifre hatalı');
+        } else {
+          showError('general', data.detail || 'Giriş yapılamadı');
+        }
       }
     } catch (error) {
-      Alert.alert('Hata', 'Sunucu bağlantı hatası');
+      showError('general', 'Sunucu bağlantı hatası. Lütfen tekrar deneyin.');
       console.error('Login error:', error);
     } finally {
       setLoading(false);

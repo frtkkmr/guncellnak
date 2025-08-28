@@ -231,14 +231,56 @@ export default function Index() {
   };
 
   const handleRegister = async () => {
-    if (!registerForm.name || !registerForm.email || !registerForm.phone || !registerForm.password) {
-      Alert.alert('Hata', 'Lütfen tüm zorunlu alanları doldurun');
+    clearMessages();
+
+    // Basic validation
+    if (!registerForm.name.trim()) {
+      showError('name', 'Ad soyad gereklidir');
+      return;
+    }
+    if (registerForm.name.trim().length < 2) {
+      showError('name', 'Ad soyad en az 2 karakter olmalıdır');
+      return;
+    }
+    if (!registerForm.email.trim()) {
+      showError('email', 'Email adresi gereklidir');
+      return;
+    }
+    if (!validateEmail(registerForm.email)) {
+      showError('email', 'Geçerli bir email adresi girin');
+      return;
+    }
+    if (!registerForm.phone.trim()) {
+      showError('phone', 'Telefon numarası gereklidir');
+      return;
+    }
+    if (!validatePhone(registerForm.phone)) {
+      showError('phone', 'Geçerli bir telefon numarası girin (en az 10 rakam)');
+      return;
+    }
+    if (!registerForm.password.trim()) {
+      showError('password', 'Şifre gereklidir');
+      return;
+    }
+    if (registerForm.password.length < 6) {
+      showError('password', 'Şifre en az 6 karakter olmalıdır');
       return;
     }
 
-    if (userType === 'mover' && (!registerForm.company_name || !registerForm.company_description)) {
-      Alert.alert('Hata', 'Nakliyeci kayıt için şirket adı ve açıklama zorunludur');
-      return;
+    // Mover-specific validation
+    if (userType === 'mover') {
+      if (!registerForm.company_name.trim()) {
+        showError('company_name', 'Şirket adı gereklidir');
+        return;
+      }
+      if (!registerForm.company_description.trim()) {
+        showError('company_description', 'Firma açıklaması gereklidir');
+        return;
+      }
+      if (registerForm.company_description.length < 20) {
+        showError('company_description', 'Firma açıklaması en az 20 karakter olmalıdır');
+        return;
+      }
     }
 
     setLoading(true);
@@ -263,12 +305,16 @@ export default function Index() {
           phone_code: ''
         });
         setShowVerification(true);
-        Alert.alert('Başarılı', 'Kayıt oluşturuldu! Lütfen email ve telefon doğrulama kodlarınızı girin.');
+        showSuccess('Kayıt oluşturuldu! Lütfen email ve telefon doğrulama kodlarınızı girin.');
       } else {
-        Alert.alert('Hata', data.detail || 'Kayıt oluşturulamadı');
+        if (response.status === 400 && data.detail?.includes('already registered')) {
+          showError('email', 'Bu email adresi zaten kayıtlı');
+        } else {
+          showError('general', data.detail || 'Kayıt oluşturulamadı');
+        }
       }
     } catch (error) {
-      Alert.alert('Hata', 'Sunucu bağlantı hatası');
+      showError('general', 'Sunucu bağlantı hatası. Lütfen tekrar deneyin.');
       console.error('Register error:', error);
     } finally {
       setLoading(false);

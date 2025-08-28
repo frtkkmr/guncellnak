@@ -992,6 +992,10 @@ export default function Index() {
     </View>
   );
 
+  if (showVerification) {
+    return renderVerificationScreen();
+  }
+
   switch (currentScreen) {
     case 'welcome':
       return renderWelcomeScreen();

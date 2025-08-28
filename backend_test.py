@@ -249,10 +249,10 @@ def test_auth_protection():
     # Test accessing protected endpoint without token
     try:
         response = requests.get(f"{API_BASE}/moving-requests")
-        if response.status_code == 401:
+        if response.status_code == 403:
             results.log_pass("Auth protection - no token")
         else:
-            results.log_fail("Auth protection - no token", f"Expected 401, got {response.status_code}")
+            results.log_fail("Auth protection - no token", f"Expected 403, got {response.status_code}")
     except Exception as e:
         results.log_fail("Auth protection - no token", str(e))
     

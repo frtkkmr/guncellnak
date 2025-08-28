@@ -649,10 +649,21 @@ export default function Index() {
               style={[styles.submitButton, loading && styles.disabledButton]}
               onPress={handleLogin}
               disabled={loading}
+              activeOpacity={0.8}
             >
-              <Text style={styles.submitButtonText}>
-                {loading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
-              </Text>
+              <LinearGradient
+                colors={loading ? ['#bdc3c7', '#95a5a6'] : ['#3498db', '#2980b9']}
+                style={styles.submitButtonGradient}
+              >
+                {loading ? (
+                  <Text style={styles.submitButtonText}>Giriş Yapılıyor...</Text>
+                ) : (
+                  <>
+                    <Ionicons name="log-in" size={20} color="#fff" />
+                    <Text style={styles.submitButtonText}>Giriş Yap</Text>
+                  </>
+                )}
+              </LinearGradient>
             </TouchableOpacity>
             
             <TouchableOpacity onPress={() => setCurrentScreen('register')}>

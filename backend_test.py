@@ -488,10 +488,154 @@ def test_error_handling():
     except Exception as e:
         results.log_fail("Invalid login rejection", str(e))
 
+def test_admin_login_specific():
+    """Test specific admin user kmrfrt@gmail.com login"""
+    print("\n🔐 Testing Specific Admin Login (kmrfrt@gmail.com)...")
+    
+    try:
+        login_data = {
+            "email": "kmrfrt@gmail.com",
+            "password": "Frt19o7"
+        }
+        
+        response = requests.post(f"{API_BASE}/login", json=login_data)
+        if response.status_code == 200:
+            data = response.json()
+            test_data['admin_token'] = data.get('access_token')
+            results.log_pass("Admin kmrfrt@gmail.com login")
+        else:
+            results.log_fail("Admin kmrfrt@gmail.com login", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Admin kmrfrt@gmail.com login", str(e))
+
+def test_admin_users_endpoint():
+    """Test admin users listing endpoint"""
+    print("\n👥 Testing Admin Users Endpoint...")
+    
+    if not test_data['admin_token']:
+        results.log_fail("Admin users endpoint", "No admin token available")
+        return
+    
+    try:
+        headers = {"Authorization": f"Bearer {test_data['admin_token']}"}
+        response = requests.get(f"{API_BASE}/admin/users", headers=headers)
+        if response.status_code == 200:
+            users = response.json()
+            if isinstance(users, list):
+                print(f"   Found {len(users)} users in system")
+                
+                # Check for test data users
+                user_types = {}
+                for user in users:
+                    user_type = user.get('user_type', 'unknown')
+                    user_types[user_type] = user_types.get(user_type, 0) + 1
+                
+                print(f"   User breakdown: {user_types}")
+                
+                # Verify we have expected test data
+                if user_types.get('customer', 0) >= 5 and user_types.get('mover', 0) >= 3:
+                    results.log_pass("Admin users endpoint with test data")
+                else:
+                    results.log_fail("Admin users endpoint", f"Expected at least 5 customers and 3 movers, got {user_types}")
+            else:
+                results.log_fail("Admin users endpoint", "Invalid response format")
+        else:
+            results.log_fail("Admin users endpoint", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Admin users endpoint", str(e))
+
+def test_admin_requests_endpoint():
+    """Test admin viewing all moving requests"""
+    print("\n📋 Testing Admin Moving Requests Endpoint...")
+    
+    if not test_data['admin_token']:
+        results.log_fail("Admin requests endpoint", "No admin token available")
+        return
+    
+    try:
+        headers = {"Authorization": f"Bearer {test_data['admin_token']}"}
+        response = requests.get(f"{API_BASE}/moving-requests", headers=headers)
+        if response.status_code == 200:
+            requests_data = response.json()
+            if isinstance(requests_data, list):
+                print(f"   Found {len(requests_data)} moving requests in system")
+                
+                # Verify we have expected test data (should be at least 5 requests)
+                if len(requests_data) >= 5:
+                    results.log_pass("Admin requests endpoint with test data")
+                    
+                    # Check request details
+                    for req in requests_data[:3]:  # Show first 3 requests
+                        print(f"   Request: {req.get('from_location')} → {req.get('to_location')} (Status: {req.get('status')})")
+                else:
+                    results.log_fail("Admin requests endpoint", f"Expected at least 5 requests, got {len(requests_data)}")
+            else:
+                results.log_fail("Admin requests endpoint", "Invalid response format")
+        else:
+            results.log_fail("Admin requests endpoint", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Admin requests endpoint", str(e))
+
+def test_test_data_creation():
+    """Test the test data creation endpoint"""
+    print("\n🏗️ Testing Test Data Creation Endpoint...")
+    
+    try:
+        response = requests.post(f"{API_BASE}/admin/create-test-data")
+        if response.status_code == 200:
+            data = response.json()
+            print(f"   Test data creation response: {data.get('message', 'Success')}")
+            if 'created' in data:
+                created = data['created']
+                print(f"   Created: {created}")
+            results.log_pass("Test data creation endpoint")
+        else:
+            results.log_fail("Test data creation endpoint", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Test data creation endpoint", str(e))
+
+def test_admin_panel_data_flow():
+    """Test complete admin panel data flow"""
+    print("\n🎛️ Testing Complete Admin Panel Data Flow...")
+    
+    if not test_data['admin_token']:
+        results.log_fail("Admin panel data flow", "No admin token available")
+        return
+    
+    try:
+        headers = {"Authorization": f"Bearer {test_data['admin_token']}"}
+        
+        # Get users count
+        users_response = requests.get(f"{API_BASE}/admin/users", headers=headers)
+        users_count = len(users_response.json()) if users_response.status_code == 200 else 0
+        
+        # Get requests count
+        requests_response = requests.get(f"{API_BASE}/moving-requests", headers=headers)
+        requests_count = len(requests_response.json()) if requests_response.status_code == 200 else 0
+        
+        print(f"   Admin panel summary: {users_count} users, {requests_count} requests")
+        
+        if users_count > 0 and requests_count > 0:
+            results.log_pass("Admin panel data flow")
+        else:
+            results.log_fail("Admin panel data flow", f"Insufficient data: {users_count} users, {requests_count} requests")
+            
+    except Exception as e:
+        results.log_fail("Admin panel data flow", str(e))
+
 def run_all_tests():
     """Run all backend tests in sequence"""
     print("🚀 Starting Nakliyat Platform Backend API Tests")
     print(f"Backend URL: {API_BASE}")
+    
+    # Test data creation first
+    test_test_data_creation()
+    
+    # Specific admin functionality tests
+    test_admin_login_specific()
+    test_admin_users_endpoint()
+    test_admin_requests_endpoint()
+    test_admin_panel_data_flow()
     
     # Authentication System Tests
     test_user_registration()

@@ -55,6 +55,9 @@ export default function Index() {
   const [resetToken, setResetToken] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [resetMethod, setResetMethod] = useState<'email' | 'sms'>('email');
+  
+  // Verification state
+  const [showVerification, setShowVerification] = useState(false);
 
   // Form states
   const [loginForm, setLoginForm] = useState({

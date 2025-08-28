@@ -69,7 +69,9 @@ export default function Index() {
     email: '',
     phone: '',
     password: '',
-    company_name: ''
+    company_name: '',
+    company_description: '',
+    company_images: [] as string[], // Base64 images
   });
 
   const [verificationForm, setVerificationForm] = useState({

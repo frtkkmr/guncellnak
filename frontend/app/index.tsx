@@ -801,7 +801,147 @@ export default function Index() {
     </SafeAreaView>
   );
 
-  switch (currentScreen) {
+  const renderForgotPasswordScreen = () => (
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.formContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setCurrentScreen('login')}
+          >
+            <Ionicons name="arrow-back" size={24} color="#2c3e50" />
+          </TouchableOpacity>
+          
+          <View style={styles.authCard}>
+            {renderSuccessMessage()}
+            {errors.general && (
+              <View style={styles.errorContainer}>
+                <Ionicons name="alert-circle" size={16} color="#e74c3c" />
+                <Text style={styles.errorText}>{errors.general}</Text>
+              </View>
+            )}
+            
+            <Text style={styles.authTitle}>Şifre Sıfırlama</Text>
+            <Text style={styles.authSubtitle}>Email adresinizi girin, size şifre sıfırlama kodu gönderelim</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Email Adresiniz</Text>
+              <TextInput
+                style={[styles.input, errors.email && styles.inputError]}
+                placeholder="Email adresinizi girin"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={resetEmail}
+                onChangeText={(text) => {
+                  setResetEmail(text);
+                  if (errors.email) setErrors(prev => ({...prev, email: ''}));
+                }}
+              />
+              {renderErrorMessage('email')}
+            </View>
+            
+            <TouchableOpacity
+              style={[styles.submitButton, loading && styles.disabledButton]}
+              onPress={handleForgotPassword}
+              disabled={loading}
+            >
+              <LinearGradient
+                colors={loading ? ['#bdc3c7', '#95a5a6'] : ['#e67e22', '#d35400']}
+                style={styles.submitButtonGradient}
+              >
+                <Text style={styles.submitButtonText}>
+                  {loading ? 'Gönderiliyor...' : 'Sıfırlama Kodu Gönder'}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => setCurrentScreen('login')}>
+              <Text style={styles.linkText}>Şifrenizi hatırladınız mı? Giriş yapın</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+
+  const renderResetPasswordScreen = () => (
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.formContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setCurrentScreen('forgot_password')}
+          >
+            <Ionicons name="arrow-back" size={24} color="#2c3e50" />
+          </TouchableOpacity>
+          
+          <View style={styles.authCard}>
+            {renderSuccessMessage()}
+            {errors.general && (
+              <View style={styles.errorContainer}>
+                <Ionicons name="alert-circle" size={16} color="#e74c3c" />
+                <Text style={styles.errorText}>{errors.general}</Text>
+              </View>
+            )}
+            
+            <Text style={styles.authTitle}>Yeni Şifre Belirleyin</Text>
+            <Text style={styles.authSubtitle}>Emailinize gönderilen kodu girin ve yeni şifrenizi belirleyin</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Doğrulama Kodu</Text>
+              <TextInput
+                style={[styles.input, errors.token && styles.inputError]}
+                placeholder="Email ile gelen 6 haneli kodu girin"
+                keyboardType="numeric"
+                value={resetToken}
+                onChangeText={(text) => {
+                  setResetToken(text);
+                  if (errors.token) setErrors(prev => ({...prev, token: ''}));
+                }}
+              />
+              {renderErrorMessage('token')}
+            </View>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Yeni Şifre</Text>
+              <TextInput
+                style={[styles.input, errors.password && styles.inputError]}
+                placeholder="Yeni şifrenizi girin"
+                secureTextEntry
+                value={newPassword}
+                onChangeText={(text) => {
+                  setNewPassword(text);
+                  if (errors.password) setErrors(prev => ({...prev, password: ''}));
+                }}
+              />
+              {renderErrorMessage('password')}
+            </View>
+            
+            <TouchableOpacity
+              style={[styles.submitButton, loading && styles.disabledButton]}
+              onPress={handleResetPassword}
+              disabled={loading}
+            >
+              <LinearGradient
+                colors={loading ? ['#bdc3c7', '#95a5a6'] : ['#27ae60', '#2ecc71']}
+                style={styles.submitButtonGradient}
+              >
+                <Text style={styles.submitButtonText}>
+                  {loading ? 'Şifre Değiştiriliyor...' : 'Şifremi Değiştir'}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => setCurrentScreen('login')}>
+              <Text style={styles.linkText}>Giriş sayfasına dön</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
     case 'welcome':
       return renderWelcomeScreen();
     case 'quote_request':

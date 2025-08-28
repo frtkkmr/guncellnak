@@ -81,8 +81,8 @@ def test_user_registration():
         response = requests.post(f"{API_BASE}/register", json=customer_data)
         if response.status_code == 200:
             data = response.json()
-            test_data['email_code'] = data.get('email_code')
-            test_data['phone_code'] = data.get('phone_code')
+            test_data['customer_email_code'] = data.get('email_code')
+            test_data['customer_phone_code'] = data.get('phone_code')
             results.log_pass("Customer registration")
         else:
             results.log_fail("Customer registration", f"Status: {response.status_code}, Response: {response.text}")
@@ -102,6 +102,9 @@ def test_user_registration():
         
         response = requests.post(f"{API_BASE}/register", json=mover_data)
         if response.status_code == 200:
+            data = response.json()
+            test_data['mover_email_code'] = data.get('email_code')
+            test_data['mover_phone_code'] = data.get('phone_code')
             results.log_pass("Mover registration")
         else:
             results.log_fail("Mover registration", f"Status: {response.status_code}, Response: {response.text}")
@@ -120,6 +123,9 @@ def test_user_registration():
         
         response = requests.post(f"{API_BASE}/register", json=admin_data)
         if response.status_code == 200:
+            data = response.json()
+            test_data['admin_email_code'] = data.get('email_code')
+            test_data['admin_phone_code'] = data.get('phone_code')
             results.log_pass("Admin registration")
         else:
             results.log_fail("Admin registration", f"Status: {response.status_code}, Response: {response.text}")

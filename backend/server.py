@@ -72,7 +72,7 @@ class UserBase(BaseModel):
     
     @validator('user_type')
     def validate_user_type(cls, v):
-        if v not in ['customer', 'mover', 'admin']:
+        if v not in ['customer', 'mover', 'admin', 'moderator']:
             raise ValueError('Invalid user type')
         return v
 

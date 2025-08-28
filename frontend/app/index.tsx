@@ -277,11 +277,23 @@ export default function Index() {
       setLoading(false);
     }
   };
+
+  const handleRegister = async () => {
     clearMessages();
+
+    // reCAPTCHA kontrolü
+    if (!isRecaptchaVerified) {
+      showError('general', 'Lütfen robot olmadığınızı doğrulayın');
+      return;
+    }
 
     // Basic validation
     if (!registerForm.name.trim()) {
       showError('name', 'Ad soyad gereklidir');
+      return;
+    }
+    if (registerForm.name.trim().length < 2) {
+      showError('name', 'Ad soyad en az 2 karakter olmalıdır');
       return;
     }
     if (!registerForm.email.trim()) {
@@ -334,6 +346,8 @@ export default function Index() {
 
       if (response.ok) {
         showSuccess('Kayıt oluşturuldu! Email ve telefon doğrulaması gerekiyor.');
+        // Reset reCAPTCHA
+        setIsRecaptchaVerified(false);
         // For demo, redirect to login
         setTimeout(() => {
           setCurrentScreen('login');

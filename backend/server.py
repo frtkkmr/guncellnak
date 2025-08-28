@@ -929,6 +929,13 @@ async def delete_request(request_id: str, current_user: User = Depends(get_curre
         "customer": request.get('customer_name')
     }
 
-@app.on_event("shutdown")
-async def shutdown_db_client():
-    client.close()
+# Include the router in the main app
+app.include_router(api_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

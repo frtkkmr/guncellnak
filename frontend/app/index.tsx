@@ -746,15 +746,87 @@ export default function Index() {
             </View>
             
             {userType === 'mover' && (
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>Şirket Adı</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Şirket adınızı girin"
-                  value={registerForm.company_name}
-                  onChangeText={(text) => setRegisterForm({...registerForm, company_name: text})}
-                />
-              </View>
+              <>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>
+                    <Ionicons name="business" size={16} color="#7f8c8d" /> Şirket Adı *
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Şirket adınızı girin"
+                    value={registerForm.company_name}
+                    onChangeText={(text) => setRegisterForm({...registerForm, company_name: text})}
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>
+                    <Ionicons name="document-text" size={16} color="#7f8c8d" /> Firma Açıklaması *
+                  </Text>
+                  <TextInput
+                    style={[styles.input, styles.textArea]}
+                    placeholder="Firmanızı tanıtın, hizmetlerinizi açıklayın..."
+                    multiline
+                    numberOfLines={4}
+                    value={registerForm.company_description}
+                    onChangeText={(text) => setRegisterForm({...registerForm, company_description: text})}
+                  />
+                  <Text style={styles.helperText}>
+                    Müşterilerinize firmanızı tanıtın, deneyiminizi ve hizmetlerinizi açıklayın.
+                  </Text>
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>
+                    <Ionicons name="images" size={16} color="#7f8c8d" /> Firma Resimleri/Videoları 
+                    <Text style={styles.optionalText}> (İsteğe bağlı, maks 5)</Text>
+                  </Text>
+                  
+                  <TouchableOpacity
+                    style={styles.imagePickerButton}
+                    onPress={handleImagePicker}
+                    disabled={registerForm.company_images.length >= 5}
+                  >
+                    <Ionicons name="camera" size={24} color="#007AFF" />
+                    <Text style={styles.imagePickerText}>
+                      {registerForm.company_images.length >= 5 ? 'Maksimum 5 resim' : 'Resim/Video Ekle'}
+                    </Text>
+                  </TouchableOpacity>
+
+                  {registerForm.company_images.length > 0 && (
+                    <View style={styles.imagePreviewContainer}>
+                      <Text style={styles.imageCountText}>
+                        {registerForm.company_images.length}/5 resim eklendi
+                      </Text>
+                      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        {registerForm.company_images.map((image, index) => (
+                          <View key={index} style={styles.imagePreview}>
+                            <Text style={styles.imageNumber}>{index + 1}</Text>
+                            <TouchableOpacity
+                              style={styles.removeImageButton}
+                              onPress={() => removeImage(index)}
+                            >
+                              <Ionicons name="close-circle" size={20} color="#e74c3c" />
+                            </TouchableOpacity>
+                          </View>
+                        ))}
+                      </ScrollView>
+                    </View>
+                  )}
+                  
+                  <Text style={styles.helperText}>
+                    Araçlarınızın, ekibinizin ve önceki işlerinizin fotoğraflarını ekleyin.
+                  </Text>
+                </View>
+
+                <View style={styles.infoCard}>
+                  <Ionicons name="information-circle" size={20} color="#3498db" />
+                  <Text style={styles.infoText}>
+                    Nakliyeci hesabınız admin onayı sonrası aktif olacaktır. 
+                    Gerekli belgelerinizi hazır bulundurun.
+                  </Text>
+                </View>
+              </>
             )}
             
             <View style={styles.inputGroup}>

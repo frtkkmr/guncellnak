@@ -54,8 +54,12 @@ test_data = {
     'admin_id': None,
     'moving_request_id': None,
     'bid_id': None,
-    'email_code': None,
-    'phone_code': None
+    'customer_email_code': None,
+    'customer_phone_code': None,
+    'mover_email_code': None,
+    'mover_phone_code': None,
+    'admin_email_code': None,
+    'admin_phone_code': None
 }
 
 results = TestResults()

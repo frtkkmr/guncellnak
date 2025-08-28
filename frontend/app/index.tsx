@@ -70,6 +70,18 @@ export default function Index() {
   const [sampleJobs, setSampleJobs] = useState<any[]>([]);
   const [sampleCompanies, setSampleCompanies] = useState<any[]>([]);
 
+  // Auto-fetch admin data when entering admin panel
+  React.useEffect(() => {
+    if (currentScreen === 'admin_panel') {
+      fetchAdminData();
+    }
+  }, [currentScreen]);
+
+  // Auto-load sample data on component mount
+  React.useEffect(() => {
+    fetchSampleData();
+  }, []);
+
   // Form states
   const [loginForm, setLoginForm] = useState({
     email: '',

@@ -1219,14 +1219,14 @@ export default function Index() {
 
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.adminHeader}>
-          <Text style={styles.adminHeaderTitle}>Admin Panel</Text>
+        <View style={adminStyles.adminHeader}>
+          <Text style={adminStyles.adminHeaderTitle}>Admin Panel</Text>
           <TouchableOpacity onPress={handleLogout}>
-            <Ionicons name="log-out-outline" size={24} color="#2c3e50" />
+            <Ionicons name="log-out-outline" size={24} color="#fff" />
           </TouchableOpacity>
         </View>
         
-        <View style={styles.adminContainer}>
+        <View style={adminStyles.adminContainer}>
           {renderSuccessMessage()}
           {errors.general && (
             <View style={styles.errorContainer}>
@@ -1235,22 +1235,22 @@ export default function Index() {
             </View>
           )}
           
-          <Text style={styles.adminWelcomeText}>
+          <Text style={adminStyles.adminWelcomeText}>
             Hoş geldiniz, {user?.name || 'Admin'}!
           </Text>
           
           {/* Tab selector */}
-          <View style={styles.adminTabSelector}>
+          <View style={adminStyles.adminTabSelector}>
             <TouchableOpacity
               style={[
-                styles.adminTab,
-                adminTab === 'users' && styles.adminTabActive
+                adminStyles.adminTab,
+                adminTab === 'users' && adminStyles.adminTabActive
               ]}
               onPress={() => setAdminTab('users')}
             >
               <Text style={[
-                styles.adminTabText,
-                adminTab === 'users' && styles.adminTabTextActive
+                adminStyles.adminTabText,
+                adminTab === 'users' && adminStyles.adminTabTextActive
               ]}>
                 Kullanıcılar ({allUsers.length})
               </Text>
@@ -1258,14 +1258,14 @@ export default function Index() {
             
             <TouchableOpacity
               style={[
-                styles.adminTab,
-                adminTab === 'requests' && styles.adminTabActive
+                adminStyles.adminTab,
+                adminTab === 'requests' && adminStyles.adminTabActive
               ]}
               onPress={() => setAdminTab('requests')}
             >
               <Text style={[
-                styles.adminTabText,
-                adminTab === 'requests' && styles.adminTabTextActive
+                adminStyles.adminTabText,
+                adminTab === 'requests' && adminStyles.adminTabTextActive
               ]}>
                 Talepler ({allRequests.length})
               </Text>
@@ -1273,37 +1273,37 @@ export default function Index() {
           </View>
           
           {/* Content */}
-          <ScrollView style={styles.adminContent}>
+          <ScrollView style={adminStyles.adminContent}>
             {adminTab === 'users' ? (
               <View>
-                <Text style={styles.adminSectionTitle}>Tüm Kullanıcılar</Text>
-                {allUsers.map((user) => (
-                  <View key={user.id} style={styles.adminUserCard}>
-                    <View style={styles.adminUserInfo}>
-                      <Text style={styles.adminUserName}>{user.name}</Text>
-                      <Text style={styles.adminUserEmail}>{user.email}</Text>
-                      <View style={styles.adminUserBadges}>
+                <Text style={adminStyles.adminSectionTitle}>Tüm Kullanıcılar</Text>
+                {allUsers.map((userItem) => (
+                  <View key={userItem.id} style={adminStyles.adminUserCard}>
+                    <View style={adminStyles.adminUserInfo}>
+                      <Text style={adminStyles.adminUserName}>{userItem.name}</Text>
+                      <Text style={adminStyles.adminUserEmail}>{userItem.email}</Text>
+                      <View style={adminStyles.adminUserBadges}>
                         <View style={[
-                          styles.adminBadge,
-                          user.user_type === 'admin' ? styles.adminBadgeAdmin :
-                          user.user_type === 'mover' ? styles.adminBadgeMover : 
-                          styles.adminBadgeCustomer
+                          adminStyles.adminBadge,
+                          userItem.user_type === 'admin' ? adminStyles.adminBadgeAdmin :
+                          userItem.user_type === 'mover' ? adminStyles.adminBadgeMover : 
+                          adminStyles.adminBadgeCustomer
                         ]}>
-                          <Text style={styles.adminBadgeText}>
-                            {user.user_type === 'admin' ? 'Admin' : 
-                             user.user_type === 'mover' ? 'Nakliyeci' : 'Müşteri'}
+                          <Text style={adminStyles.adminBadgeText}>
+                            {userItem.user_type === 'admin' ? 'Admin' : 
+                             userItem.user_type === 'mover' ? 'Nakliyeci' : 'Müşteri'}
                           </Text>
                         </View>
                         
-                        {user.is_email_verified && (
-                          <View style={[styles.adminBadge, styles.adminBadgeVerified]}>
-                            <Text style={styles.adminBadgeText}>Email ✓</Text>
+                        {userItem.is_email_verified && (
+                          <View style={[adminStyles.adminBadge, adminStyles.adminBadgeVerified]}>
+                            <Text style={adminStyles.adminBadgeText}>Email ✓</Text>
                           </View>
                         )}
                         
-                        {user.is_phone_verified && (
-                          <View style={[styles.adminBadge, styles.adminBadgeVerified]}>
-                            <Text style={styles.adminBadgeText}>Telefon ✓</Text>
+                        {userItem.is_phone_verified && (
+                          <View style={[adminStyles.adminBadge, adminStyles.adminBadgeVerified]}>
+                            <Text style={adminStyles.adminBadgeText}>Telefon ✓</Text>
                           </View>
                         )}
                       </View>
@@ -1313,31 +1313,31 @@ export default function Index() {
               </View>
             ) : (
               <View>
-                <Text style={styles.adminSectionTitle}>Tüm Talepler</Text>
+                <Text style={adminStyles.adminSectionTitle}>Tüm Talepler</Text>
                 {allRequests.map((request) => (
-                  <View key={request.id} style={styles.adminRequestCard}>
-                    <View style={styles.adminRequestHeader}>
-                      <Text style={styles.adminRequestCustomer}>{request.customer_name}</Text>
+                  <View key={request.id} style={adminStyles.adminRequestCard}>
+                    <View style={adminStyles.adminRequestHeader}>
+                      <Text style={adminStyles.adminRequestCustomer}>{request.customer_name}</Text>
                       <View style={[
-                        styles.adminBadge,
-                        request.status === 'pending' ? styles.adminBadgePending :
-                        request.status === 'approved' ? styles.adminBadgeApproved :
-                        styles.adminBadgeCompleted
+                        adminStyles.adminBadge,
+                        request.status === 'pending' ? adminStyles.adminBadgePending :
+                        request.status === 'approved' ? adminStyles.adminBadgeApproved :
+                        adminStyles.adminBadgeCompleted
                       ]}>
-                        <Text style={styles.adminBadgeText}>
+                        <Text style={adminStyles.adminBadgeText}>
                           {request.status === 'pending' ? 'Bekliyor' :
                            request.status === 'approved' ? 'Onaylandı' : 'Tamamlandı'}
                         </Text>
                       </View>
                     </View>
-                    <Text style={styles.adminRequestRoute}>
+                    <Text style={adminStyles.adminRequestRoute}>
                       {request.from_location} → {request.to_location}
                     </Text>
-                    <Text style={styles.adminRequestDate}>
+                    <Text style={adminStyles.adminRequestDate}>
                       Tarih: {new Date(request.moving_date).toLocaleDateString('tr-TR')}
                     </Text>
                     {request.description && (
-                      <Text style={styles.adminRequestDescription}>
+                      <Text style={adminStyles.adminRequestDescription}>
                         {request.description}
                       </Text>
                     )}

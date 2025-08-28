@@ -416,6 +416,24 @@ async def admin_reset_password(
         "email": user_email
     }
 
+@api_router.post("/admin/verify-user/{user_email}")
+async def verify_user_public(user_email: str):
+    """Temporary public endpoint to verify user"""
+    # Update user to be verified
+    result = await db.users.update_one(
+        {"email": user_email}, 
+        {"$set": {
+            "is_email_verified": True, 
+            "is_phone_verified": True,
+            "is_approved": True
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": f"User {user_email} verified and approved"}
+
 @api_router.post("/admin/reset-password-public/{user_email}")
 async def public_reset_password(
     user_email: str,

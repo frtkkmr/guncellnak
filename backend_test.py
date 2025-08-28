@@ -1,0 +1,506 @@
+#!/usr/bin/env python3
+"""
+Backend API Test Suite for Nakliyat Platform
+Tests authentication, moving requests, bidding system, and admin endpoints
+"""
+
+import requests
+import json
+import os
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv('/app/frontend/.env')
+
+# Get backend URL from environment
+BACKEND_URL = os.getenv('EXPO_PUBLIC_BACKEND_URL', 'http://localhost:8001')
+API_BASE = f"{BACKEND_URL}/api"
+
+print(f"Testing backend at: {API_BASE}")
+
+class TestResults:
+    def __init__(self):
+        self.passed = 0
+        self.failed = 0
+        self.errors = []
+    
+    def log_pass(self, test_name):
+        print(f"✅ PASS: {test_name}")
+        self.passed += 1
+    
+    def log_fail(self, test_name, error):
+        print(f"❌ FAIL: {test_name} - {error}")
+        self.failed += 1
+        self.errors.append(f"{test_name}: {error}")
+    
+    def summary(self):
+        total = self.passed + self.failed
+        print(f"\n{'='*60}")
+        print(f"TEST SUMMARY: {self.passed}/{total} tests passed")
+        if self.errors:
+            print(f"\nFAILED TESTS:")
+            for error in self.errors:
+                print(f"  - {error}")
+        print(f"{'='*60}")
+
+# Global test data storage
+test_data = {
+    'customer_token': None,
+    'mover_token': None,
+    'admin_token': None,
+    'customer_id': None,
+    'mover_id': None,
+    'admin_id': None,
+    'moving_request_id': None,
+    'bid_id': None,
+    'email_code': None,
+    'phone_code': None
+}
+
+results = TestResults()
+
+def test_user_registration():
+    """Test user registration for different user types"""
+    print("\n🔧 Testing User Registration...")
+    
+    # Test customer registration
+    try:
+        customer_data = {
+            "name": "Ahmet Yılmaz",
+            "email": "ahmet.yilmaz@example.com",
+            "phone": "+905551234567",
+            "user_type": "customer",
+            "password": "securepass123"
+        }
+        
+        response = requests.post(f"{API_BASE}/register", json=customer_data)
+        if response.status_code == 200:
+            data = response.json()
+            test_data['email_code'] = data.get('email_code')
+            test_data['phone_code'] = data.get('phone_code')
+            results.log_pass("Customer registration")
+        else:
+            results.log_fail("Customer registration", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Customer registration", str(e))
+    
+    # Test mover registration
+    try:
+        mover_data = {
+            "name": "Mehmet Taşıyıcı",
+            "email": "mehmet.tasiyici@example.com",
+            "phone": "+905559876543",
+            "user_type": "mover",
+            "password": "moverpass123",
+            "company_name": "Güvenli Nakliyat Ltd."
+        }
+        
+        response = requests.post(f"{API_BASE}/register", json=mover_data)
+        if response.status_code == 200:
+            results.log_pass("Mover registration")
+        else:
+            results.log_fail("Mover registration", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Mover registration", str(e))
+    
+    # Test admin registration
+    try:
+        admin_data = {
+            "name": "Admin User",
+            "email": "admin@nakliyat.com",
+            "phone": "+905551111111",
+            "user_type": "admin",
+            "password": "adminpass123"
+        }
+        
+        response = requests.post(f"{API_BASE}/register", json=admin_data)
+        if response.status_code == 200:
+            results.log_pass("Admin registration")
+        else:
+            results.log_fail("Admin registration", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Admin registration", str(e))
+
+def test_email_phone_verification():
+    """Test email and phone verification"""
+    print("\n📧 Testing Email and Phone Verification...")
+    
+    if not test_data['email_code'] or not test_data['phone_code']:
+        results.log_fail("Verification setup", "No verification codes available from registration")
+        return
+    
+    # Test email verification
+    try:
+        verify_data = {
+            "email": "ahmet.yilmaz@example.com",
+            "verification_code": test_data['email_code'],
+            "verification_type": "email"
+        }
+        
+        response = requests.post(f"{API_BASE}/verify", json=verify_data)
+        if response.status_code == 200:
+            results.log_pass("Email verification")
+        else:
+            results.log_fail("Email verification", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Email verification", str(e))
+    
+    # Test phone verification
+    try:
+        verify_data = {
+            "email": "ahmet.yilmaz@example.com",
+            "verification_code": test_data['phone_code'],
+            "verification_type": "phone"
+        }
+        
+        response = requests.post(f"{API_BASE}/verify", json=verify_data)
+        if response.status_code == 200:
+            results.log_pass("Phone verification")
+        else:
+            results.log_fail("Phone verification", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Phone verification", str(e))
+
+def test_login_and_jwt():
+    """Test login functionality and JWT token generation"""
+    print("\n🔐 Testing Login and JWT Token Generation...")
+    
+    # Test customer login
+    try:
+        login_data = {
+            "email": "ahmet.yilmaz@example.com",
+            "password": "securepass123"
+        }
+        
+        response = requests.post(f"{API_BASE}/login", json=login_data)
+        if response.status_code == 200:
+            data = response.json()
+            test_data['customer_token'] = data.get('access_token')
+            results.log_pass("Customer login")
+        else:
+            results.log_fail("Customer login", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Customer login", str(e))
+    
+    # Test admin login (verify admin first)
+    try:
+        # Verify admin email
+        verify_data = {
+            "email": "admin@nakliyat.com",
+            "verification_code": "123456",  # We'll need to get this from registration
+            "verification_type": "email"
+        }
+        requests.post(f"{API_BASE}/verify", json=verify_data)
+        
+        # Verify admin phone
+        verify_data["verification_type"] = "phone"
+        requests.post(f"{API_BASE}/verify", json=verify_data)
+        
+        # Login as admin
+        login_data = {
+            "email": "admin@nakliyat.com",
+            "password": "adminpass123"
+        }
+        
+        response = requests.post(f"{API_BASE}/login", json=login_data)
+        if response.status_code == 200:
+            data = response.json()
+            test_data['admin_token'] = data.get('access_token')
+            results.log_pass("Admin login")
+        else:
+            results.log_fail("Admin login", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Admin login", str(e))
+
+def test_auth_protection():
+    """Test authentication protection on protected endpoints"""
+    print("\n🛡️ Testing Authentication Protection...")
+    
+    # Test accessing protected endpoint without token
+    try:
+        response = requests.get(f"{API_BASE}/moving-requests")
+        if response.status_code == 401:
+            results.log_pass("Auth protection - no token")
+        else:
+            results.log_fail("Auth protection - no token", f"Expected 401, got {response.status_code}")
+    except Exception as e:
+        results.log_fail("Auth protection - no token", str(e))
+    
+    # Test accessing protected endpoint with invalid token
+    try:
+        headers = {"Authorization": "Bearer invalid_token"}
+        response = requests.get(f"{API_BASE}/moving-requests", headers=headers)
+        if response.status_code == 401:
+            results.log_pass("Auth protection - invalid token")
+        else:
+            results.log_fail("Auth protection - invalid token", f"Expected 401, got {response.status_code}")
+    except Exception as e:
+        results.log_fail("Auth protection - invalid token", str(e))
+
+def test_moving_request_creation():
+    """Test moving request creation by customers"""
+    print("\n📦 Testing Moving Request Creation...")
+    
+    if not test_data['customer_token']:
+        results.log_fail("Moving request creation", "No customer token available")
+        return
+    
+    try:
+        headers = {"Authorization": f"Bearer {test_data['customer_token']}"}
+        moving_date = (datetime.now() + timedelta(days=7)).isoformat()
+        
+        request_data = {
+            "from_location": "Kadıköy, İstanbul",
+            "to_location": "Beşiktaş, İstanbul",
+            "from_floor": 3,
+            "to_floor": 2,
+            "has_elevator_from": True,
+            "has_elevator_to": False,
+            "needs_mobile_elevator": True,
+            "truck_distance": "Kamyon binaya 50 metre mesafede park edebilir",
+            "packing_service": True,
+            "moving_date": moving_date,
+            "description": "2+1 daire taşınması, beyaz eşyalar dahil"
+        }
+        
+        response = requests.post(f"{API_BASE}/moving-requests", json=request_data, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            test_data['moving_request_id'] = data.get('id')
+            results.log_pass("Moving request creation")
+        else:
+            results.log_fail("Moving request creation", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Moving request creation", str(e))
+
+def test_moving_request_privacy():
+    """Test moving request viewing with privacy controls"""
+    print("\n👁️ Testing Moving Request Privacy Controls...")
+    
+    if not test_data['customer_token']:
+        results.log_fail("Moving request privacy", "No customer token available")
+        return
+    
+    # Test customer viewing their own requests
+    try:
+        headers = {"Authorization": f"Bearer {test_data['customer_token']}"}
+        response = requests.get(f"{API_BASE}/moving-requests", headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            if isinstance(data, list) and len(data) > 0:
+                results.log_pass("Customer viewing own requests")
+            else:
+                results.log_fail("Customer viewing own requests", "No requests returned")
+        else:
+            results.log_fail("Customer viewing own requests", f"Status: {response.status_code}")
+    except Exception as e:
+        results.log_fail("Customer viewing own requests", str(e))
+
+def test_mover_approval_system():
+    """Test mover approval system"""
+    print("\n✅ Testing Mover Approval System...")
+    
+    if not test_data['admin_token']:
+        results.log_fail("Mover approval", "No admin token available")
+        return
+    
+    # First, get all users to find the mover
+    try:
+        headers = {"Authorization": f"Bearer {test_data['admin_token']}"}
+        response = requests.get(f"{API_BASE}/admin/users", headers=headers)
+        if response.status_code == 200:
+            users = response.json()
+            mover_user = None
+            for user in users:
+                if user.get('user_type') == 'mover' and user.get('email') == 'mehmet.tasiyici@example.com':
+                    mover_user = user
+                    test_data['mover_id'] = user.get('id')
+                    break
+            
+            if mover_user:
+                results.log_pass("Admin viewing users")
+                
+                # Test mover approval
+                if test_data['mover_id']:
+                    response = requests.post(f"{API_BASE}/admin/approve-mover/{test_data['mover_id']}", headers=headers)
+                    if response.status_code == 200:
+                        results.log_pass("Mover approval")
+                    else:
+                        results.log_fail("Mover approval", f"Status: {response.status_code}")
+            else:
+                results.log_fail("Admin viewing users", "Mover user not found")
+        else:
+            results.log_fail("Admin viewing users", f"Status: {response.status_code}")
+    except Exception as e:
+        results.log_fail("Mover approval", str(e))
+
+def test_mover_login_after_approval():
+    """Test mover login after admin approval"""
+    print("\n🔓 Testing Mover Login After Approval...")
+    
+    # Verify mover first
+    try:
+        verify_data = {
+            "email": "mehmet.tasiyici@example.com",
+            "verification_code": "123456",
+            "verification_type": "email"
+        }
+        requests.post(f"{API_BASE}/verify", json=verify_data)
+        
+        verify_data["verification_type"] = "phone"
+        requests.post(f"{API_BASE}/verify", json=verify_data)
+        
+        # Now try to login
+        login_data = {
+            "email": "mehmet.tasiyici@example.com",
+            "password": "moverpass123"
+        }
+        
+        response = requests.post(f"{API_BASE}/login", json=login_data)
+        if response.status_code == 200:
+            data = response.json()
+            test_data['mover_token'] = data.get('access_token')
+            results.log_pass("Mover login after approval")
+        else:
+            results.log_fail("Mover login after approval", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Mover login after approval", str(e))
+
+def test_bid_creation():
+    """Test bid creation by movers"""
+    print("\n💰 Testing Bid Creation...")
+    
+    if not test_data['mover_token'] or not test_data['moving_request_id']:
+        results.log_fail("Bid creation", "Missing mover token or moving request ID")
+        return
+    
+    try:
+        headers = {"Authorization": f"Bearer {test_data['mover_token']}"}
+        bid_data = {
+            "price": 2500.00,
+            "message": "Profesyonel ekip ile güvenli taşıma hizmeti. Sigortalı ve garantili."
+        }
+        
+        response = requests.post(f"{API_BASE}/moving-requests/{test_data['moving_request_id']}/bids", 
+                               json=bid_data, headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            test_data['bid_id'] = data.get('id')
+            results.log_pass("Bid creation")
+        else:
+            results.log_fail("Bid creation", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Bid creation", str(e))
+
+def test_bid_viewing_permissions():
+    """Test bid viewing permissions"""
+    print("\n👀 Testing Bid Viewing Permissions...")
+    
+    if not test_data['customer_token'] or not test_data['moving_request_id']:
+        results.log_fail("Bid viewing", "Missing customer token or moving request ID")
+        return
+    
+    try:
+        headers = {"Authorization": f"Bearer {test_data['customer_token']}"}
+        response = requests.get(f"{API_BASE}/moving-requests/{test_data['moving_request_id']}/bids", headers=headers)
+        if response.status_code == 200:
+            data = response.json()
+            if isinstance(data, list):
+                results.log_pass("Customer viewing bids")
+            else:
+                results.log_fail("Customer viewing bids", "Invalid response format")
+        else:
+            results.log_fail("Customer viewing bids", f"Status: {response.status_code}")
+    except Exception as e:
+        results.log_fail("Customer viewing bids", str(e))
+
+def test_bid_acceptance():
+    """Test bid acceptance by customers"""
+    print("\n🤝 Testing Bid Acceptance...")
+    
+    if not test_data['customer_token'] or not test_data['bid_id']:
+        results.log_fail("Bid acceptance", "Missing customer token or bid ID")
+        return
+    
+    try:
+        headers = {"Authorization": f"Bearer {test_data['customer_token']}"}
+        response = requests.post(f"{API_BASE}/bids/{test_data['bid_id']}/accept", headers=headers)
+        if response.status_code == 200:
+            results.log_pass("Bid acceptance")
+        else:
+            results.log_fail("Bid acceptance", f"Status: {response.status_code}, Response: {response.text}")
+    except Exception as e:
+        results.log_fail("Bid acceptance", str(e))
+
+def test_error_handling():
+    """Test various error conditions"""
+    print("\n⚠️ Testing Error Handling...")
+    
+    # Test duplicate registration
+    try:
+        duplicate_data = {
+            "name": "Ahmet Yılmaz",
+            "email": "ahmet.yilmaz@example.com",
+            "phone": "+905551234567",
+            "user_type": "customer",
+            "password": "securepass123"
+        }
+        
+        response = requests.post(f"{API_BASE}/register", json=duplicate_data)
+        if response.status_code == 400:
+            results.log_pass("Duplicate registration prevention")
+        else:
+            results.log_fail("Duplicate registration prevention", f"Expected 400, got {response.status_code}")
+    except Exception as e:
+        results.log_fail("Duplicate registration prevention", str(e))
+    
+    # Test invalid login
+    try:
+        login_data = {
+            "email": "nonexistent@example.com",
+            "password": "wrongpass"
+        }
+        
+        response = requests.post(f"{API_BASE}/login", json=login_data)
+        if response.status_code == 401:
+            results.log_pass("Invalid login rejection")
+        else:
+            results.log_fail("Invalid login rejection", f"Expected 401, got {response.status_code}")
+    except Exception as e:
+        results.log_fail("Invalid login rejection", str(e))
+
+def run_all_tests():
+    """Run all backend tests in sequence"""
+    print("🚀 Starting Nakliyat Platform Backend API Tests")
+    print(f"Backend URL: {API_BASE}")
+    
+    # Authentication System Tests
+    test_user_registration()
+    test_email_phone_verification()
+    test_login_and_jwt()
+    test_auth_protection()
+    
+    # Admin System Tests
+    test_mover_approval_system()
+    test_mover_login_after_approval()
+    
+    # Moving Request Tests
+    test_moving_request_creation()
+    test_moving_request_privacy()
+    
+    # Bid Management Tests
+    test_bid_creation()
+    test_bid_viewing_permissions()
+    test_bid_acceptance()
+    
+    # Error Handling Tests
+    test_error_handling()
+    
+    # Print final results
+    results.summary()
+    
+    return results
+
+if __name__ == "__main__":
+    test_results = run_all_tests()

@@ -59,11 +59,10 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 def generate_verification_code():
     return ''.join(random.choices(string.digits, k=6))
 
-# Models
-class UserType(BaseModel):
-    USER_CUSTOMER = "customer"
-    USER_MOVER = "mover"
-    USER_ADMIN = "admin"
+# Models - User type constants
+USER_CUSTOMER = "customer"
+USER_MOVER = "mover"
+USER_ADMIN = "admin"
 
 class UserBase(BaseModel):
     name: str

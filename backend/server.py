@@ -416,6 +416,79 @@ async def admin_reset_password(
         "email": user_email
     }
 
+@api_router.post("/admin/make-admin/{user_email}")
+async def make_user_admin(user_email: str):
+    """Make user admin"""
+    result = await db.users.update_one(
+        {"email": user_email}, 
+        {"$set": {"user_type": "admin"}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    return {"message": f"User {user_email} is now admin"}
+
+@api_router.post("/forgot-password")
+async def forgot_password(email: EmailStr):
+    """Send password reset email"""
+    user = await db.users.find_one({"email": email})
+    if not user:
+        # Don't reveal if email exists for security
+        return {"message": "If this email is registered, you will receive a password reset link."}
+    
+    # Generate reset token
+    reset_token = generate_verification_code()
+    
+    # Store reset token with expiration (1 hour)
+    await db.users.update_one(
+        {"email": email},
+        {"$set": {
+            "password_reset_token": reset_token,
+            "password_reset_expires": datetime.utcnow() + timedelta(hours=1)
+        }}
+    )
+    
+    # TODO: Send email with reset link
+    # For now, return the token (remove in production)
+    return {
+        "message": "Password reset instructions sent to your email.",
+        "reset_token": reset_token  # Remove in production
+    }
+
+@api_router.post("/reset-password")
+async def reset_password_with_token(
+    email: EmailStr,
+    token: str,
+    new_password: str
+):
+    """Reset password with token"""
+    user = await db.users.find_one({"email": email})
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="Invalid reset request")
+    
+    # Check token and expiration
+    if (user.get("password_reset_token") != token or 
+        user.get("password_reset_expires", datetime.min) < datetime.utcnow()):
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+    
+    # Validate new password
+    if len(new_password) < 6:
+        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+    
+    # Update password and clear reset token
+    hashed_password = get_password_hash(new_password)
+    await db.users.update_one(
+        {"email": email},
+        {
+            "$set": {"hashed_password": hashed_password},
+            "$unset": {"password_reset_token": "", "password_reset_expires": ""}
+        }
+    )
+    
+    return {"message": "Password reset successful. You can now login with your new password."}
+
 @api_router.post("/admin/verify-user/{user_email}")
 async def verify_user_public(user_email: str):
     """Temporary public endpoint to verify user"""

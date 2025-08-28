@@ -427,6 +427,44 @@ export default function Index() {
     } finally {
       setLoading(false);
     }
+    }
+  };
+
+  const fetchAdminData = async () => {
+    if (!token) return;
+    
+    setLoading(true);
+    try {
+      // Fetch all users
+      const usersResponse = await fetch(`${BACKEND_URL}/api/admin/users`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (usersResponse.ok) {
+        const users = await usersResponse.json();
+        setAllUsers(users);
+      }
+      
+      // Fetch all moving requests  
+      const requestsResponse = await fetch(`${BACKEND_URL}/api/moving-requests`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (requestsResponse.ok) {
+        const requests = await requestsResponse.json();
+        setAllRequests(requests);
+      }
+    } catch (error) {
+      showError('general', 'Veriler yüklenemedi');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = () => {

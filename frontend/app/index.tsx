@@ -590,6 +590,9 @@ export default function Index() {
           </View>
 
           <ScrollView contentContainerStyle={styles.formContainer} showsVerticalScrollIndicator={false}>
+            {renderSuccessMessage()}
+            {renderGeneralError()}
+
             <View style={styles.formCard}>
               <View style={styles.formHeader}>
                 <Ionicons name="document-text" size={32} color="#3498db" />
@@ -604,11 +607,15 @@ export default function Index() {
                   <Ionicons name="person" size={16} color="#7f8c8d" /> Adınız Soyadınız *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.customer_name && styles.inputError]}
                   placeholder="Adınızı soyadınızı girin"
                   value={quoteForm.customer_name}
-                  onChangeText={(text) => setQuoteForm({...quoteForm, customer_name: text})}
+                  onChangeText={(text) => {
+                    setQuoteForm({...quoteForm, customer_name: text});
+                    if (errors.customer_name) setErrors(prev => ({...prev, customer_name: ''}));
+                  }}
                 />
+                {renderErrorMessage('customer_name')}
               </View>
               
               <View style={styles.inputGroup}>
@@ -616,12 +623,16 @@ export default function Index() {
                   <Ionicons name="call" size={16} color="#7f8c8d" /> Telefon Numaranız *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.customer_phone && styles.inputError]}
                   placeholder="Telefon numaranızı girin"
                   keyboardType="phone-pad"
                   value={quoteForm.customer_phone}
-                  onChangeText={(text) => setQuoteForm({...quoteForm, customer_phone: text})}
+                  onChangeText={(text) => {
+                    setQuoteForm({...quoteForm, customer_phone: text});
+                    if (errors.customer_phone) setErrors(prev => ({...prev, customer_phone: ''}));
+                  }}
                 />
+                {renderErrorMessage('customer_phone')}
               </View>
               
               <View style={styles.inputGroup}>
@@ -629,11 +640,15 @@ export default function Index() {
                   <Ionicons name="location" size={16} color="#7f8c8d" /> Nereden Taşınacak *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.from_location && styles.inputError]}
                   placeholder="Mevcut adresinizi girin"
                   value={quoteForm.from_location}
-                  onChangeText={(text) => setQuoteForm({...quoteForm, from_location: text})}
+                  onChangeText={(text) => {
+                    setQuoteForm({...quoteForm, from_location: text});
+                    if (errors.from_location) setErrors(prev => ({...prev, from_location: ''}));
+                  }}
                 />
+                {renderErrorMessage('from_location')}
               </View>
               
               <View style={styles.inputGroup}>
@@ -641,11 +656,15 @@ export default function Index() {
                   <Ionicons name="location-outline" size={16} color="#7f8c8d" /> Nereye Taşınacak *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.to_location && styles.inputError]}
                   placeholder="Yeni adresinizi girin"
                   value={quoteForm.to_location}
-                  onChangeText={(text) => setQuoteForm({...quoteForm, to_location: text})}
+                  onChangeText={(text) => {
+                    setQuoteForm({...quoteForm, to_location: text});
+                    if (errors.to_location) setErrors(prev => ({...prev, to_location: ''}));
+                  }}
                 />
+                {renderErrorMessage('to_location')}
               </View>
               
               <View style={styles.row}>

@@ -475,63 +475,9 @@ export default function Index() {
 
   const fetchSampleData = async () => {
     try {
-      // Fetch sample moving requests
-      const requestsResponse = await fetch(`${BACKEND_URL}/api/moving-requests`);
-      if (requestsResponse.status === 401 || requestsResponse.status === 403) {
-        // If not authenticated, create sample data
-        setSampleJobs([
-          {
-            id: '1',
-            customer_name: 'Ayşe Yılmaz',
-            from_location: 'Beşiktaş, İstanbul',
-            to_location: 'Kadıköy, İstanbul',
-            moving_date: '2024-07-15',
-            description: '2+1 daire, beyaz eşyalar dahil. Hassas eşyalar var (cam masalar).'
-          },
-          {
-            id: '2', 
-            customer_name: 'Can Demir',
-            from_location: 'Şişli, İstanbul',
-            to_location: 'Ataşehir, İstanbul',
-            moving_date: '2024-07-20',
-            description: '3+1 büyük daire. Piyanom var, özel dikkat gerekiyor.'
-          },
-          {
-            id: '3',
-            customer_name: 'Elif Kaya',
-            from_location: 'Bakırköy, İstanbul',
-            to_location: 'Pendik, İstanbul', 
-            moving_date: '2024-07-25',
-            description: 'Stüdyo daire, az eşya. Hızlı taşınma istiyorum.'
-          }
-        ]);
-        
-        setSampleCompanies([
-          {
-            id: '1',
-            name: 'Ahmet Taşımacılık',
-            company_name: 'Ahmet Taşımacılık Ltd.',
-            description: '15 yıllık deneyimle güvenilir nakliyat hizmeti.'
-          },
-          {
-            id: '2',
-            name: 'Mehmet Nakliyat',
-            company_name: 'Mehmet Express Nakliyat',
-            description: 'Avrupa yakası uzmanı nakliyat firması.'
-          },
-          {
-            id: '3',
-            name: 'Özkan Lojistik',
-            company_name: 'Özkan Premium Lojistik',
-            description: 'Lüks ev eşyalarında uzman nakliyeci.'
-          }
-        ]);
-      } else if (requestsResponse.ok) {
-        const requests = await requestsResponse.json();
-        setSampleJobs(requests.slice(0, 3)); // Show first 3 requests
-      }
-    } catch (error) {
-      // Fallback sample data
+      console.log('Fetching sample data...');
+      
+      // Always show sample data (don't depend on API)
       setSampleJobs([
         {
           id: '1',
@@ -539,9 +485,50 @@ export default function Index() {
           from_location: 'Beşiktaş, İstanbul',
           to_location: 'Kadıköy, İstanbul',
           moving_date: '2024-07-15',
-          description: '2+1 daire, beyaz eşyalar dahil.'
+          description: '2+1 daire, beyaz eşyalar dahil. Hassas eşyalar var (cam masalar).'
+        },
+        {
+          id: '2', 
+          customer_name: 'Can Demir',
+          from_location: 'Şişli, İstanbul',
+          to_location: 'Ataşehir, İstanbul',
+          moving_date: '2024-07-20',
+          description: '3+1 büyük daire. Piyanom var, özel dikkat gerekiyor.'
+        },
+        {
+          id: '3',
+          customer_name: 'Elif Kaya',
+          from_location: 'Bakırköy, İstanbul',
+          to_location: 'Pendik, İstanbul', 
+          moving_date: '2024-07-25',
+          description: 'Stüdyo daire, az eşya. Hızlı taşınma istiyorum.'
         }
       ]);
+      
+      setSampleCompanies([
+        {
+          id: '1',
+          name: 'Ahmet Taşımacılık',
+          company_name: 'Ahmet Taşımacılık Ltd.',
+          description: '15 yıllık deneyimle güvenilir nakliyat hizmeti.'
+        },
+        {
+          id: '2',
+          name: 'Mehmet Nakliyat',
+          company_name: 'Mehmet Express Nakliyat',
+          description: 'Avrupa yakası uzmanı nakliyat firması.'
+        },
+        {
+          id: '3',
+          name: 'Özkan Lojistik',
+          company_name: 'Özkan Premium Lojistik',
+          description: 'Lüks ev eşyalarında uzman nakliyeci.'
+        }
+      ]);
+      
+      console.log('Sample data loaded successfully!');
+    } catch (error) {
+      console.error('Error loading sample data:', error);
     }
   };
 

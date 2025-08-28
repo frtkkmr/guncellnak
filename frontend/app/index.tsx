@@ -321,7 +321,36 @@ export default function Index() {
     }
   };
 
-  const handleQuoteRequest = async () => {
+  // Error and Success Message Components
+  const renderErrorMessage = (field: string) => {
+    if (!errors[field] || !showErrors) return null;
+    return (
+      <View style={styles.errorContainer}>
+        <Ionicons name="warning" size={16} color="#e74c3c" />
+        <Text style={styles.errorText}>{errors[field]}</Text>
+      </View>
+    );
+  };
+
+  const renderSuccessMessage = () => {
+    if (!successMessage) return null;
+    return (
+      <View style={styles.successContainer}>
+        <Ionicons name="checkmark-circle" size={20} color="#27ae60" />
+        <Text style={styles.successText}>{successMessage}</Text>
+      </View>
+    );
+  };
+
+  const renderGeneralError = () => {
+    if (!errors.general || !showErrors) return null;
+    return (
+      <View style={styles.generalErrorContainer}>
+        <Ionicons name="alert-circle" size={20} color="#e74c3c" />
+        <Text style={styles.generalErrorText}>{errors.general}</Text>
+      </View>
+    );
+  };
     if (!quoteForm.customer_name || !quoteForm.customer_phone || !quoteForm.from_location || !quoteForm.to_location || !quoteForm.moving_date) {
       Alert.alert('Hata', 'Lütfen tüm zorunlu alanları doldurun');
       return;

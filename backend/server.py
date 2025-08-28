@@ -806,11 +806,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 @api_router.post("/admin/update-user-role/{user_email}")
-async def update_user_role(user_email: str, request_data: dict, current_user: dict = Depends(get_current_user)):
+async def update_user_role(user_email: str, request_data: dict, current_user: User = Depends(get_current_user)):
     """Update user role (admin only)"""
     
     # Check if current user is admin
-    if current_user.get('user_type') != 'admin':
+    if current_user.user_type != 'admin':
         raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
     
     # Find user
@@ -836,11 +836,11 @@ async def update_user_role(user_email: str, request_data: dict, current_user: di
     }
 
 @api_router.post("/admin/ban-user/{user_email}")
-async def ban_user(user_email: str, request_data: dict, current_user: dict = Depends(get_current_user)):
+async def ban_user(user_email: str, request_data: dict, current_user: User = Depends(get_current_user)):
     """Ban user for specified days (admin only)"""
     
     # Check if current user is admin
-    if current_user.get('user_type') != 'admin':
+    if current_user.user_type != 'admin':
         raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
     
     # Find user
@@ -860,7 +860,7 @@ async def ban_user(user_email: str, request_data: dict, current_user: dict = Dep
             "is_active": False,
             "ban_until": ban_until,
             "ban_reason": reason,
-            "banned_by": current_user.get('email'),
+            "banned_by": current_user.email,
             "updated_at": datetime.utcnow()
         }}
     )
@@ -873,11 +873,11 @@ async def ban_user(user_email: str, request_data: dict, current_user: dict = Dep
     }
 
 @api_router.post("/admin/unban-user/{user_email}")
-async def unban_user(user_email: str, current_user: dict = Depends(get_current_user)):
+async def unban_user(user_email: str, current_user: User = Depends(get_current_user)):
     """Unban user (admin only)"""
     
     # Check if current user is admin
-    if current_user.get('user_type') != 'admin':
+    if current_user.user_type != 'admin':
         raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
     
     # Find user
@@ -905,11 +905,11 @@ async def unban_user(user_email: str, current_user: dict = Depends(get_current_u
     }
 
 @api_router.delete("/admin/delete-request/{request_id}")
-async def delete_request(request_id: str, current_user: dict = Depends(get_current_user)):
+async def delete_request(request_id: str, current_user: User = Depends(get_current_user)):
     """Delete moving request (admin only)"""
     
     # Check if current user is admin
-    if current_user.get('user_type') != 'admin':
+    if current_user.user_type != 'admin':
         raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
     
     # Find and delete request

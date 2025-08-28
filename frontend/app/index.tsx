@@ -1364,7 +1364,6 @@ export default function Index() {
         </ScrollView>
       </SafeAreaView>
     </View>
-    </View>
   );
 
   const renderAdminPanel = () => {

@@ -244,6 +244,9 @@ export default function Index() {
           if (currentUser) {
             setUser(currentUser);
             
+            // Save session to storage
+            await saveSession(data.access_token, currentUser);
+            
             // If admin, go to admin panel
             if (currentUser.user_type === 'admin') {
               setCurrentScreen('admin_panel');
@@ -254,33 +257,37 @@ export default function Index() {
             showSuccess('Başarıyla giriş yapıldı!');
           } else {
             // Fallback for non-admin users
-            setUser({
+            const fallbackUser = {
               id: '1',
               name: 'User',
               email: loginForm.email,
               phone: '555-0123',
-              user_type: 'customer',
+              user_type: 'customer' as const,
               is_active: true,
               is_email_verified: true,
               is_phone_verified: true,
               is_approved: true
-            });
+            };
+            setUser(fallbackUser);
+            await saveSession(data.access_token, fallbackUser);
             setCurrentScreen('dashboard');
             showSuccess('Başarıyla giriş yapıldı!');
           }
         } else {
           // Fallback if can't get user info
-          setUser({
+          const fallbackUser = {
             id: '1',
             name: 'User',
             email: loginForm.email,
             phone: '555-0123',
-            user_type: 'customer',
+            user_type: 'customer' as const,
             is_active: true,
             is_email_verified: true,
             is_phone_verified: true,
             is_approved: true
-          });
+          };
+          setUser(fallbackUser);
+          await saveSession(data.access_token, fallbackUser);
           setCurrentScreen('dashboard');
           showSuccess('Başarıyla giriş yapıldı!');
         }

@@ -29,7 +29,15 @@ interface User {
 }
 
 export default function Index() {
-  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'quote_request' | 'login' | 'register' | 'dashboard' | 'forgot_password' | 'reset_password'>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<
+    'welcome' | 
+    'quote_request' | 
+    'login' | 
+    'register' | 
+    'dashboard' | 
+    'forgot_password' | 
+    'reset_password'
+  >('welcome');
   const [userType, setUserType] = useState<'customer' | 'mover'>('customer');
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);

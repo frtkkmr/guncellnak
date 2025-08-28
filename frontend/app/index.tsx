@@ -1617,11 +1617,13 @@ export default function Index() {
                         <View style={[
                           adminStyles.adminBadge,
                           userItem.user_type === 'admin' ? adminStyles.adminBadgeAdmin :
+                          userItem.user_type === 'moderator' ? adminStyles.adminBadgeMover :
                           userItem.user_type === 'mover' ? adminStyles.adminBadgeMover : 
                           adminStyles.adminBadgeCustomer
                         ]}>
                           <Text style={adminStyles.adminBadgeText}>
                             {userItem.user_type === 'admin' ? 'Admin' : 
+                             userItem.user_type === 'moderator' ? 'Moderatör' :
                              userItem.user_type === 'mover' ? 'Nakliyeci' : 'Müşteri'}
                           </Text>
                         </View>
@@ -1637,7 +1639,26 @@ export default function Index() {
                             <Text style={adminStyles.adminBadgeText}>Telefon ✓</Text>
                           </View>
                         )}
+                        
+                        {!userItem.is_active && (
+                          <View style={[adminStyles.adminBadge, { backgroundColor: '#e74c3c' }]}>
+                            <Text style={adminStyles.adminBadgeText}>Yasaklı</Text>
+                          </View>
+                        )}
                       </View>
+                      
+                      {/* Admin Actions - Only for non-admin users and if current user is admin */}
+                      {user?.user_type === 'admin' && userItem.email !== user.email && (
+                        <TouchableOpacity
+                          style={[adminStyles.adminBadge, { backgroundColor: '#3498db', marginTop: 8 }]}
+                          onPress={() => {
+                            setSelectedUser(userItem);
+                            setShowUserActions(true);
+                          }}
+                        >
+                          <Text style={adminStyles.adminBadgeText}>İşlemler</Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   </View>
                 ))}
@@ -1672,11 +1693,84 @@ export default function Index() {
                         {request.description}
                       </Text>
                     )}
+                    
+                    {/* Admin Actions - Delete request */}
+                    {user?.user_type === 'admin' && (
+                      <TouchableOpacity
+                        style={[adminStyles.adminBadge, { backgroundColor: '#e74c3c', marginTop: 8 }]}
+                        onPress={() => handleDeleteRequest(request.id)}
+                      >
+                        <Text style={adminStyles.adminBadgeText}>Talebi Sil</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 ))}
               </View>
             )}
           </ScrollView>
+          
+          {/* User Actions Modal */}
+          {showUserActions && selectedUser && (
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>
+                  Kullanıcı İşlemleri: {selectedUser.name}
+                </Text>
+                
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: '#f39c12' }]}
+                  onPress={() => handleUserAction('make_moderator', selectedUser.email)}
+                  disabled={loading}
+                >
+                  <Text style={styles.modalButtonText}>Moderatör Yap</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: '#e67e22' }]}
+                  onPress={() => handleUserAction('ban_3_days', selectedUser.email)}
+                  disabled={loading}
+                >
+                  <Text style={styles.modalButtonText}>3 Gün Yasakla</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: '#d35400' }]}
+                  onPress={() => handleUserAction('ban_5_days', selectedUser.email)}
+                  disabled={loading}
+                >
+                  <Text style={styles.modalButtonText}>5 Gün Yasakla</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: '#c0392b' }]}
+                  onPress={() => handleUserAction('ban_7_days', selectedUser.email)}
+                  disabled={loading}
+                >
+                  <Text style={styles.modalButtonText}>7 Gün Yasakla</Text>
+                </TouchableOpacity>
+                
+                {!selectedUser.is_active && (
+                  <TouchableOpacity
+                    style={[styles.modalButton, { backgroundColor: '#27ae60' }]}
+                    onPress={() => handleUserAction('unban', selectedUser.email)}
+                    disabled={loading}
+                  >
+                    <Text style={styles.modalButtonText}>Yasağı Kaldır</Text>
+                  </TouchableOpacity>
+                )}
+                
+                <TouchableOpacity
+                  style={[styles.modalButton, { backgroundColor: '#95a5a6' }]}
+                  onPress={() => {
+                    setShowUserActions(false);
+                    setSelectedUser(null);
+                  }}
+                >
+                  <Text style={styles.modalButtonText}>İptal</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          )}
         </View>
       </SafeAreaView>
     );

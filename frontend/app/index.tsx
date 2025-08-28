@@ -866,6 +866,9 @@ export default function Index() {
           </TouchableOpacity>
           
           <View style={styles.authCard}>
+            {renderGeneralError()}
+            {renderSuccessMessage()}
+            
             <Text style={styles.authTitle}>Hesap Oluştur</Text>
             <Text style={styles.authSubtitle}>Platformumuza katılın</Text>
             
@@ -904,34 +907,46 @@ export default function Index() {
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Ad Soyad</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.name && styles.inputError]}
                 placeholder="Ad soyadınızı girin"
                 value={registerForm.name}
-                onChangeText={(text) => setRegisterForm({...registerForm, name: text})}
+                onChangeText={(text) => {
+                  setRegisterForm({...registerForm, name: text});
+                  if (errors.name) setErrors(prev => ({...prev, name: ''}));
+                }}
               />
+              {renderErrorMessage('name')}
             </View>
             
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Email</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.email && styles.inputError]}
                 placeholder="Email adresinizi girin"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={registerForm.email}
-                onChangeText={(text) => setRegisterForm({...registerForm, email: text})}
+                onChangeText={(text) => {
+                  setRegisterForm({...registerForm, email: text});
+                  if (errors.email) setErrors(prev => ({...prev, email: ''}));
+                }}
               />
+              {renderErrorMessage('email')}
             </View>
             
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Telefon</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.phone && styles.inputError]}
                 placeholder="Telefon numaranızı girin"
                 keyboardType="phone-pad"
                 value={registerForm.phone}
-                onChangeText={(text) => setRegisterForm({...registerForm, phone: text})}
+                onChangeText={(text) => {
+                  setRegisterForm({...registerForm, phone: text});
+                  if (errors.phone) setErrors(prev => ({...prev, phone: ''}));
+                }}
               />
+              {renderErrorMessage('phone')}
             </View>
             
             {userType === 'mover' && (

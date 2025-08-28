@@ -720,7 +720,7 @@ export default function Index() {
         showError('general', errorData?.detail || 'İşlem başarısız');
       }
     } catch (error) {
-      showError('general', 'Bir hata oluştu: ' + error.message);
+      showError('general', 'Bir hata oluştu: ' + (error instanceof Error ? error.message : String(error)));
     } finally {
       setLoading(false);
     }

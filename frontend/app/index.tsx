@@ -432,7 +432,6 @@ export default function Index() {
     } finally {
       setLoading(false);
     }
-    }
   };
 
   const fetchAdminData = async () => {

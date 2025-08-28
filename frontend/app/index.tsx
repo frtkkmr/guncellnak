@@ -351,6 +351,48 @@ export default function Index() {
       </View>
     );
   };
+
+  const handleQuoteRequest = async () => {
+    clearMessages();
+
+    // Validation for quote request
+    if (!quoteForm.customer_name.trim()) {
+      showError('customer_name', 'Ad soyad gereklidir');
+      return;
+    }
+    if (!quoteForm.customer_phone.trim()) {
+      showError('customer_phone', 'Telefon numarası gereklidir');
+      return;
+    }
+    if (!validatePhone(quoteForm.customer_phone)) {
+      showError('customer_phone', 'Geçerli bir telefon numarası girin');
+      return;
+    }
+    if (!quoteForm.from_location.trim()) {
+      showError('from_location', 'Nereden taşınacak adresi gereklidir');
+      return;
+    }
+    if (!quoteForm.to_location.trim()) {
+      showError('to_location', 'Nereye taşınacak adresi gereklidir');
+      return;
+    }
+    if (!quoteForm.moving_date.trim()) {
+      showError('moving_date', 'Taşınma tarihi gereklidir');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Store quote data and redirect to register
+      setCurrentScreen('register');
+      showSuccess('Teklif isteğiniz alındı! Lütfen kayıt olun ve teklifleri görün.');
+    } catch (error) {
+      showError('general', 'Teklif gönderiminde hata oluştu. Lütfen tekrar deneyin.');
+      console.error('Quote error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
     if (!quoteForm.customer_name || !quoteForm.customer_phone || !quoteForm.from_location || !quoteForm.to_location || !quoteForm.moving_date) {
       Alert.alert('Hata', 'Lütfen tüm zorunlu alanları doldurun');
       return;

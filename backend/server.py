@@ -573,6 +573,238 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+@api_router.post("/admin/create-test-data")
+async def create_test_data():
+    """Create test data for demonstration"""
+    
+    # Create 3 test mover companies
+    test_movers = [
+        {
+            "name": "Ahmet Taşımacılık",
+            "email": "ahmet@tasima.com", 
+            "phone": "05321234567",
+            "password": "123456",
+            "user_type": "mover",
+            "company_name": "Ahmet Taşımacılık Ltd.",
+            "company_description": "İstanbul genelinde 15 yıllık deneyimle güvenilir nakliyat hizmeti. Sigortalı taşımacılık, ambalajlama ve kurulum dahil."
+        },
+        {
+            "name": "Mehmet Nakliyat", 
+            "email": "mehmet@nakliyat.com",
+            "phone": "05339876543", 
+            "password": "123456",
+            "user_type": "mover",
+            "company_name": "Mehmet Express Nakliyat",
+            "company_description": "Avrupa yakası uzmanı nakliyat firması. Hızlı, güvenli ve uygun fiyatlı ev taşıma hizmetleri. 7/24 destek."
+        },
+        {
+            "name": "Özkan Lojistik",
+            "email": "ozkan@lojistik.com", 
+            "phone": "05367891234",
+            "password": "123456", 
+            "user_type": "mover",
+            "company_name": "Özkan Premium Lojistik",
+            "company_description": "Lüks ev eşyalarında uzman nakliyeci. Antika, piano, tablo taşımacılığında özel ekipman kullanırız."
+        }
+    ]
+    
+    # Create movers
+    created_movers = []
+    for mover_data in test_movers:
+        # Check if already exists
+        existing = await db.users.find_one({"email": mover_data["email"]})
+        if not existing:
+            user_dict = mover_data.copy()
+            password = user_dict.pop('password')
+            user_dict['hashed_password'] = get_password_hash(password)
+            user_dict['id'] = str(uuid.uuid4())
+            user_dict['is_active'] = True
+            user_dict['is_email_verified'] = True
+            user_dict['is_phone_verified'] = True
+            user_dict['is_approved'] = True
+            user_dict['created_at'] = datetime.utcnow()
+            user_dict['updated_at'] = datetime.utcnow()
+            
+            await db.users.insert_one(user_dict)
+            created_movers.append(user_dict)
+    
+    # Create 5 test moving requests
+    test_customers = [
+        {
+            "name": "Ayşe Yılmaz",
+            "email": "ayse@gmail.com",
+            "phone": "05301111111"
+        },
+        {
+            "name": "Can Demir", 
+            "email": "can@hotmail.com",
+            "phone": "05302222222"
+        },
+        {
+            "name": "Elif Kaya",
+            "email": "elif@yahoo.com", 
+            "phone": "05303333333"
+        },
+        {
+            "name": "Murat Şahin",
+            "email": "murat@gmail.com",
+            "phone": "05304444444"
+        },
+        {
+            "name": "Zehra Öz",
+            "email": "zehra@outlook.com",
+            "phone": "05305555555"
+        }
+    ]
+    
+    test_requests = [
+        {
+            "customer": test_customers[0],
+            "from_location": "Beşiktaş, İstanbul",
+            "to_location": "Kadıköy, İstanbul", 
+            "from_floor": 3,
+            "to_floor": 2,
+            "has_elevator_from": True,
+            "has_elevator_to": False,
+            "needs_mobile_elevator": True,
+            "truck_distance": "Kapıya kadar çıkabilir",
+            "packing_service": False,
+            "moving_date": datetime(2024, 7, 15, 9, 0),
+            "description": "2+1 daire, beyaz eşyalar dahil. Hassas eşyalar var (cam masalar)."
+        },
+        {
+            "customer": test_customers[1],
+            "from_location": "Şişli, İstanbul",
+            "to_location": "Ataşehir, İstanbul",
+            "from_floor": 1,
+            "to_floor": 5,
+            "has_elevator_from": False,
+            "has_elevator_to": True,
+            "needs_mobile_elevator": False,
+            "truck_distance": "50 metre mesafe var",
+            "packing_service": True,
+            "moving_date": datetime(2024, 7, 20, 14, 0),
+            "description": "3+1 büyük daire. Piyanom var, özel dikkat gerekiyor."
+        },
+        {
+            "customer": test_customers[2],
+            "from_location": "Bakırköy, İstanbul", 
+            "to_location": "Pendik, İstanbul",
+            "from_floor": 2,
+            "to_floor": 1,
+            "has_elevator_from": True,
+            "has_elevator_to": False,
+            "needs_mobile_elevator": False,
+            "truck_distance": "Sokak dar, 100m taşıma",
+            "packing_service": False,
+            "moving_date": datetime(2024, 7, 25, 10, 0),
+            "description": "Stüdyo daire, az eşya. Hızlı taşınma istiyorum."
+        },
+        {
+            "customer": test_customers[3],
+            "from_location": "Üsküdar, İstanbul",
+            "to_location": "Beylikdüzü, İstanbul", 
+            "from_floor": 4,
+            "to_floor": 3,
+            "has_elevator_from": False,
+            "has_elevator_to": True,
+            "needs_mobile_elevator": True,
+            "truck_distance": "Kapının önüne park edilebilir",
+            "packing_service": True,
+            "moving_date": datetime(2024, 8, 1, 8, 0),
+            "description": "4+1 dubleks ev. Çok eşya var, dikkatli ambalaj istiyorum."
+        },
+        {
+            "customer": test_customers[4],
+            "from_location": "Maltepe, İstanbul",
+            "to_location": "Tuzla, İstanbul",
+            "from_floor": 0,
+            "to_floor": 2,  
+            "has_elevator_from": False,
+            "has_elevator_to": False,
+            "needs_mobile_elevator": False,
+            "truck_distance": "Bahçeli ev, kolay erişim",
+            "packing_service": False,
+            "moving_date": datetime(2024, 8, 5, 11, 0),
+            "description": "Müstakil evden apartmana taşınma. Bahçe mobilyaları da var."
+        }
+    ]
+    
+    # Create customers and requests
+    created_requests = []
+    for i, req_data in enumerate(test_requests):
+        customer_data = req_data["customer"]
+        
+        # Create customer if not exists
+        customer = await db.users.find_one({"email": customer_data["email"]})
+        if not customer:
+            customer_dict = {
+                "id": str(uuid.uuid4()),
+                "name": customer_data["name"],
+                "email": customer_data["email"], 
+                "phone": customer_data["phone"],
+                "user_type": "customer",
+                "hashed_password": get_password_hash("123456"),
+                "is_active": True,
+                "is_email_verified": True,
+                "is_phone_verified": True,
+                "is_approved": True,
+                "created_at": datetime.utcnow(),
+                "updated_at": datetime.utcnow()
+            }
+            await db.users.insert_one(customer_dict)
+            customer = customer_dict
+        
+        # Create moving request
+        request_dict = {
+            "id": str(uuid.uuid4()),
+            "customer_id": customer["id"],
+            "customer_name": customer["name"],
+            "from_location": req_data["from_location"],
+            "to_location": req_data["to_location"],
+            "from_floor": req_data["from_floor"],
+            "to_floor": req_data["to_floor"],
+            "has_elevator_from": req_data["has_elevator_from"],
+            "has_elevator_to": req_data["has_elevator_to"],
+            "needs_mobile_elevator": req_data["needs_mobile_elevator"],
+            "truck_distance": req_data["truck_distance"],
+            "packing_service": req_data["packing_service"],
+            "moving_date": req_data["moving_date"],
+            "description": req_data["description"],
+            "status": "pending",
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.moving_requests.insert_one(request_dict)
+        created_requests.append(request_dict)
+        
+        # Create some bids for the first 3 requests
+        if i < 3 and created_movers:
+            for j, mover in enumerate(created_movers):
+                if j <= i:  # Create varying numbers of bids
+                    bid_dict = {
+                        "id": str(uuid.uuid4()),
+                        "request_id": request_dict["id"],
+                        "mover_id": mover["id"],
+                        "mover_name": mover["name"],
+                        "company_name": mover["company_name"],
+                        "price": 2000 + (j * 500) + (i * 200),
+                        "message": f"Deneyimli ekibimizle güvenli taşıma garantisi. {mover['company_name']}",
+                        "status": "pending",
+                        "created_at": datetime.utcnow()
+                    }
+                    await db.bids.insert_one(bid_dict)
+    
+    return {
+        "message": "Test verileri başarıyla oluşturuldu!",
+        "created": {
+            "movers": len(created_movers),
+            "customers": len(test_customers), 
+            "requests": len(created_requests),
+            "bids": "Çeşitli teklifler oluşturuldu"
+        }
+    }
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()

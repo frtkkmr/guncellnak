@@ -225,34 +225,8 @@ def test_login_and_jwt():
     except Exception as e:
         results.log_fail("Customer login", str(e))
     
-    # Test admin login (verify admin first)
+    # Test admin login
     try:
-        # Get admin verification codes by registering again and capturing codes
-        admin_reg_data = {
-            "name": "Admin User",
-            "email": "admin@nakliyat.com",
-            "phone": "+905551111111",
-            "user_type": "admin",
-            "password": "adminpass123"
-        }
-        
-        # This will fail due to duplicate but we can get codes from first registration
-        admin_response = requests.post(f"{API_BASE}/register", json=admin_reg_data)
-        
-        # Use default codes that are returned in development
-        verify_data = {
-            "email": "admin@nakliyat.com",
-            "verification_code": test_data.get('email_code', '123456'),
-            "verification_type": "email"
-        }
-        requests.post(f"{API_BASE}/verify", json=verify_data)
-        
-        # Verify admin phone
-        verify_data["verification_code"] = test_data.get('phone_code', '123456')
-        verify_data["verification_type"] = "phone"
-        requests.post(f"{API_BASE}/verify", json=verify_data)
-        
-        # Login as admin
         login_data = {
             "email": "admin@nakliyat.com",
             "password": "adminpass123"

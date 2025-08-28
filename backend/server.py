@@ -387,6 +387,44 @@ async def approve_mover(
     
     return {"message": "Mover approved successfully"}
 
+@api_router.post("/admin/reset-password/{user_email}")
+async def admin_reset_password(
+    user_email: str,
+    new_password: str,
+    current_user: User = Depends(get_admin_user)
+):
+    # Find user by email
+    user = await db.users.find_one({"email": user_email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    # Hash new password
+    hashed_password = get_password_hash(new_password)
+    
+    # Update password
+    result = await db.users.update_one(
+        {"email": user_email}, 
+        {"$set": {"hashed_password": hashed_password}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Failed to update password")
+    
+    return {
+        "message": "Password updated successfully",
+        "user": user['name'],
+        "email": user_email
+    }
+
+@api_router.get("/admin/list-users")
+async def list_all_users():
+    """Public endpoint to list users for debugging"""
+    try:
+        users = await db.users.find({}, {"name": 1, "email": 1, "user_type": 1, "_id": 0}).to_list(1000)
+        return {"users": users, "count": len(users)}
+    except Exception as e:
+        return {"error": str(e), "users": [], "count": 0}
+
 # Include the router in the main app
 app.include_router(api_router)
 

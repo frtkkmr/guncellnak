@@ -1003,6 +1003,86 @@ export default function Index() {
     </View>
   );
 
+  const renderVerificationScreen = () => (
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView contentContainerStyle={styles.formContainer}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setShowVerification(false)}
+          >
+            <Ionicons name="arrow-back" size={24} color="#2c3e50" />
+          </TouchableOpacity>
+          
+          <View style={styles.authCard}>
+            {renderSuccessMessage()}
+            {errors.general && (
+              <View style={styles.errorContainer}>
+                <Ionicons name="alert-circle" size={16} color="#e74c3c" />
+                <Text style={styles.errorText}>{errors.general}</Text>
+              </View>
+            )}
+            
+            <Text style={styles.authTitle}>Hesap Doğrulaması</Text>
+            <Text style={styles.authSubtitle}>Email ve telefon doğrulama kodlarınızı girin</Text>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Email Doğrulama Kodu</Text>
+              <TextInput
+                style={[styles.input, errors.email_code && styles.inputError]}
+                placeholder="Email ile gelen 6 haneli kodu girin"
+                keyboardType="numeric"
+                value=""
+                onChangeText={(text) => {
+                  if (errors.email_code) setErrors(prev => ({...prev, email_code: ''}));
+                }}
+              />
+              {renderErrorMessage('email_code')}
+            </View>
+            
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>Telefon Doğrulama Kodu</Text>
+              <TextInput
+                style={[styles.input, errors.phone_code && styles.inputError]}
+                placeholder="SMS ile gelen 6 haneli kodu girin"
+                keyboardType="numeric"
+                value=""
+                onChangeText={(text) => {
+                  if (errors.phone_code) setErrors(prev => ({...prev, phone_code: ''}));
+                }}
+              />
+              {renderErrorMessage('phone_code')}
+            </View>
+            
+            <TouchableOpacity
+              style={[styles.submitButton, loading && styles.disabledButton]}
+              onPress={() => {
+                showSuccess('Doğrulama tamamlandı!');
+                setShowVerification(false);
+                setCurrentScreen('login');
+              }}
+              disabled={loading}
+            >
+              <LinearGradient
+                colors={loading ? ['#bdc3c7', '#95a5a6'] : ['#27ae60', '#2ecc71']}
+                style={styles.submitButtonGradient}
+              >
+                <Text style={styles.submitButtonText}>
+                  {loading ? 'Doğrulanıyor...' : 'Doğrula'}
+                </Text>
+              </LinearGradient>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => setCurrentScreen('register')}>
+              <Text style={styles.linkText}>Kayıt sayfasına dön</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
+
   if (showVerification) {
     return renderVerificationScreen();
   }

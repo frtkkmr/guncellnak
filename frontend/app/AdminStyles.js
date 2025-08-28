@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 
-export const adminStyles = StyleSheet.create({
+const adminStyles = StyleSheet.create({
   // Admin Panel Styles
   adminHeader: {
     flexDirection: 'row',
@@ -69,10 +69,6 @@ export const adminStyles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e9ecef',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
     elevation: 3,
   },
   adminUserInfo: {
@@ -134,10 +130,6 @@ export const adminStyles = StyleSheet.create({
     marginBottom: 12,
     borderWidth: 1,
     borderColor: '#e9ecef',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
     elevation: 3,
   },
   adminRequestHeader: {
@@ -168,3 +160,6 @@ export const adminStyles = StyleSheet.create({
     fontStyle: 'italic',
   },
 });
+
+export { adminStyles };
+export default adminStyles;

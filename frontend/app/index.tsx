@@ -787,30 +787,40 @@ export default function Index() {
           </TouchableOpacity>
           
           <View style={styles.authCard}>
+            {renderGeneralError()}
+            
             <Text style={styles.authTitle}>Hoş Geldiniz</Text>
             <Text style={styles.authSubtitle}>Hesabınıza giriş yapın</Text>
             
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Email</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.email && styles.inputError]}
                 placeholder="Email adresinizi girin"
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={loginForm.email}
-                onChangeText={(text) => setLoginForm({...loginForm, email: text})}
+                onChangeText={(text) => {
+                  setLoginForm({...loginForm, email: text});
+                  if (errors.email) setErrors(prev => ({...prev, email: ''}));
+                }}
               />
+              {renderErrorMessage('email')}
             </View>
             
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Şifre</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.password && styles.inputError]}
                 placeholder="Şifrenizi girin"
                 secureTextEntry
                 value={loginForm.password}
-                onChangeText={(text) => setLoginForm({...loginForm, password: text})}
+                onChangeText={(text) => {
+                  setLoginForm({...loginForm, password: text});
+                  if (errors.password) setErrors(prev => ({...prev, password: ''}));
+                }}
               />
+              {renderErrorMessage('password')}
             </View>
             
             <TouchableOpacity

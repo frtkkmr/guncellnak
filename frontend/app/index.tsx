@@ -133,7 +133,41 @@ export default function Index() {
     }
   };
 
-  const handleRegister = async () => {
+  const handleImagePicker = async () => {
+    try {
+      Alert.alert(
+        'Resim Seçin',
+        'Nereden resim eklemek istiyorsunuz?',
+        [
+          { text: 'Kamera', onPress: () => pickImage('camera') },
+          { text: 'Galeri', onPress: () => pickImage('gallery') },
+          { text: 'İptal', style: 'cancel' }
+        ]
+      );
+    } catch (error) {
+      Alert.alert('Hata', 'Resim seçme işleminde hata oluştu');
+    }
+  };
+
+  const pickImage = async (source: 'camera' | 'gallery') => {
+    // Simulated image picker - in production use expo-image-picker
+    const fakeBase64 = "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD//gA7Q1JFQVR..."; // Shortened
+    
+    if (registerForm.company_images.length < 5) {
+      setRegisterForm({
+        ...registerForm,
+        company_images: [...registerForm.company_images, fakeBase64]
+      });
+      Alert.alert('Başarılı', 'Resim eklendi');
+    } else {
+      Alert.alert('Uyarı', 'En fazla 5 resim ekleyebilirsiniz');
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const newImages = registerForm.company_images.filter((_, i) => i !== index);
+    setRegisterForm({...registerForm, company_images: newImages});
+  };
     if (!registerForm.name || !registerForm.email || !registerForm.phone || !registerForm.password) {
       Alert.alert('Hata', 'Lütfen tüm alanları doldurun');
       return;

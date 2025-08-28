@@ -632,6 +632,127 @@ export default function Index() {
     clearMessages();
   };
 
+  const handleUserAction = async (action: string, userEmail: string, extraData?: any) => {
+    if (!token) return;
+    
+    setLoading(true);
+    try {
+      let response;
+      
+      switch (action) {
+        case 'make_moderator':
+          response = await fetch(`${BACKEND_URL}/api/admin/update-user-role/${userEmail}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ role: 'moderator' })
+          });
+          break;
+          
+        case 'ban_3_days':
+          response = await fetch(`${BACKEND_URL}/api/admin/ban-user/${userEmail}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              ban_days: 3, 
+              reason: 'Kullanıcı davranış kurallarını ihlal etti (3 gün)' 
+            })
+          });
+          break;
+          
+        case 'ban_5_days':
+          response = await fetch(`${BACKEND_URL}/api/admin/ban-user/${userEmail}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              ban_days: 5, 
+              reason: 'Ciddi ihlal - 5 gün yasak' 
+            })
+          });
+          break;
+          
+        case 'ban_7_days':
+          response = await fetch(`${BACKEND_URL}/api/admin/ban-user/${userEmail}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+              ban_days: 7, 
+              reason: 'Tekrarlayan ihlaller - 7 gün yasak' 
+            })
+          });
+          break;
+          
+        case 'unban':
+          response = await fetch(`${BACKEND_URL}/api/admin/unban-user/${userEmail}`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            }
+          });
+          break;
+          
+        default:
+          throw new Error('Geçersiz işlem');
+      }
+      
+      if (response && response.ok) {
+        const data = await response.json();
+        showSuccess(data.message);
+        
+        // Refresh user data
+        await fetchAdminData();
+        setShowUserActions(false);
+        setSelectedUser(null);
+      } else {
+        const errorData = await response?.json();
+        showError('general', errorData?.detail || 'İşlem başarısız');
+      }
+    } catch (error) {
+      showError('general', 'Bir hata oluştu: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteRequest = async (requestId: string) => {
+    if (!token) return;
+    
+    setLoading(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/admin/delete-request/${requestId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      if (response.ok) {
+        showSuccess('Talep başarıyla silindi');
+        await fetchAdminData();
+      } else {
+        const errorData = await response.json();
+        showError('general', errorData?.detail || 'Talep silinemedi');
+      }
+    } catch (error) {
+      showError('general', 'Bir hata oluştu: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderWelcomeScreen = () => {
     return (
       <View style={styles.container}>

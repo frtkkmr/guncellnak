@@ -740,11 +740,15 @@ export default function Index() {
                   <Ionicons name="calendar" size={16} color="#7f8c8d" /> Taşınma Tarihi *
                 </Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, errors.moving_date && styles.inputError]}
                   placeholder="GG/AA/YYYY"
                   value={quoteForm.moving_date}
-                  onChangeText={(text) => setQuoteForm({...quoteForm, moving_date: text})}
+                  onChangeText={(text) => {
+                    setQuoteForm({...quoteForm, moving_date: text});
+                    if (errors.moving_date) setErrors(prev => ({...prev, moving_date: ''}));
+                  }}
                 />
+                {renderErrorMessage('moving_date')}
               </View>
               
               <View style={styles.inputGroup}>

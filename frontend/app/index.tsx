@@ -827,10 +827,50 @@ export default function Index() {
             )}
             
             <Text style={styles.authTitle}>Şifre Sıfırlama</Text>
-            <Text style={styles.authSubtitle}>Email adresinizi girin, size şifre sıfırlama kodu gönderelim</Text>
+            <Text style={styles.authSubtitle}>Email veya SMS ile doğrulama kodu alın</Text>
+            
+            {/* Method Selection */}
+            <View style={styles.methodSelector}>
+              <Text style={styles.methodLabel}>Kod gönderme yöntemi:</Text>
+              <View style={styles.methodButtons}>
+                <TouchableOpacity
+                  style={[
+                    styles.methodButton,
+                    resetMethod === 'email' && styles.methodButtonActive
+                  ]}
+                  onPress={() => setResetMethod('email')}
+                >
+                  <Ionicons name="mail" size={20} color={resetMethod === 'email' ? '#fff' : '#3498db'} />
+                  <Text style={[
+                    styles.methodButtonText,
+                    resetMethod === 'email' && styles.methodButtonTextActive
+                  ]}>
+                    Email
+                  </Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[
+                    styles.methodButton,
+                    resetMethod === 'sms' && styles.methodButtonActive
+                  ]}
+                  onPress={() => setResetMethod('sms')}
+                >
+                  <Ionicons name="phone-portrait" size={20} color={resetMethod === 'sms' ? '#fff' : '#3498db'} />
+                  <Text style={[
+                    styles.methodButtonText,
+                    resetMethod === 'sms' && styles.methodButtonTextActive
+                  ]}>
+                    SMS
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
             
             <View style={styles.inputGroup}>
-              <Text style={styles.inputLabel}>Email Adresiniz</Text>
+              <Text style={styles.inputLabel}>
+                {resetMethod === 'email' ? 'Email Adresiniz' : 'Kayıtlı Email Adresiniz'}
+              </Text>
               <TextInput
                 style={[styles.input, errors.email && styles.inputError]}
                 placeholder="Email adresinizi girin"
@@ -843,6 +883,11 @@ export default function Index() {
                 }}
               />
               {renderErrorMessage('email')}
+              <Text style={styles.helperText}>
+                {resetMethod === 'email' 
+                  ? 'Doğrulama kodu bu email adresine gönderilecek' 
+                  : 'Bu email adresine kayıtlı telefon numarasına SMS gönderilecek'}
+              </Text>
             </View>
             
             <TouchableOpacity

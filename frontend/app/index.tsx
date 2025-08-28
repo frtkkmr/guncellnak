@@ -554,107 +554,181 @@ export default function Index() {
     clearMessages();
   };
 
-  const renderWelcomeScreen = () => (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <LinearGradient
-        colors={['#667eea', '#764ba2', '#f093fb']}
-        style={styles.gradientBackground}
-      >
-        <SafeAreaView style={styles.safeArea}>
-          <ScrollView contentContainerStyle={styles.welcomeContainer}>
-            <View style={styles.heroSection}>
-              <View style={styles.logoContainer}>
-                <View style={styles.logoIcon}>
-                  <Ionicons name="home" size={50} color="#fff" />
+  const renderWelcomeScreen = () => {
+    // Load sample data when component mounts
+    React.useEffect(() => {
+      fetchSampleData();
+    }, []);
+
+    return (
+      <View style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <LinearGradient
+          colors={['#667eea', '#764ba2', '#f093fb']}
+          style={styles.gradientBackground}
+        >
+          <SafeAreaView style={styles.safeArea}>
+            <ScrollView contentContainerStyle={styles.welcomeContainer}>
+              <View style={styles.heroSection}>
+                <View style={styles.logoContainer}>
+                  <View style={styles.logoIcon}>
+                    <Ionicons name="home" size={50} color="#fff" />
+                  </View>
+                </View>
+                
+                <Text style={styles.heroTitle}>Nakliyat Platformu</Text>
+                <Text style={styles.heroSubtitle}>
+                  Türkiye'nin en güvenilir taşınma çözümü
+                </Text>
+                
+                {/* Trust indicators */}
+                <View style={styles.trustIndicators}>
+                  <View style={styles.trustItem}>
+                    <Ionicons name="shield-checkmark" size={20} color="#fff" />
+                    <Text style={styles.trustText}>Sigortalı Taşıma</Text>
+                  </View>
+                  <View style={styles.trustItem}>
+                    <Ionicons name="people" size={20} color="#fff" />
+                    <Text style={styles.trustText}>Onaylı Firmalar</Text>
+                  </View>
+                  <View style={styles.trustItem}>
+                    <Ionicons name="time" size={20} color="#fff" />
+                    <Text style={styles.trustText}>7/24 Destek</Text>
+                  </View>
                 </View>
               </View>
-              
-              <Text style={styles.heroTitle}>Nakliyat Platformu</Text>
-              <Text style={styles.heroSubtitle}>
-                Türkiye'nin en güvenilir taşınma çözümü
-              </Text>
-              
-              {/* Trust indicators */}
-              <View style={styles.trustIndicators}>
-                <View style={styles.trustItem}>
-                  <Ionicons name="shield-checkmark" size={20} color="#fff" />
-                  <Text style={styles.trustText}>Sigortalı Taşıma</Text>
-                </View>
-                <View style={styles.trustItem}>
-                  <Ionicons name="people" size={20} color="#fff" />
-                  <Text style={styles.trustText}>Onaylı Firmalar</Text>
-                </View>
-                <View style={styles.trustItem}>
-                  <Ionicons name="time" size={20} color="#fff" />
-                  <Text style={styles.trustText}>7/24 Destek</Text>
-                </View>
-              </View>
-            </View>
 
-            <TouchableOpacity
-              style={styles.primaryCTA}
-              onPress={() => setCurrentScreen('quote_request')}
-              activeOpacity={0.8}
-            >
-              <LinearGradient
-                colors={['#56CCF2', '#2F80ED']}
-                style={styles.primaryCTAGradient}
-              >
-                <Ionicons name="add-circle-outline" size={24} color="#fff" />
-                <Text style={styles.primaryCTAText}>Ücretsiz Teklif Al</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-
-            <View style={styles.divider}>
-              <View style={styles.dividerLine} />
-              <Text style={styles.dividerText}>veya</Text>
-              <View style={styles.dividerLine} />
-            </View>
-
-            <View style={styles.authButtons}>
               <TouchableOpacity
-                style={styles.authButton}
+                style={styles.primaryCTA}
+                onPress={() => setCurrentScreen('quote_request')}
+                activeOpacity={0.8}
+              >
+                <LinearGradient
+                  colors={['#56CCF2', '#2F80ED']}
+                  style={styles.primaryCTAGradient}
+                >
+                  <Ionicons name="add-circle-outline" size={24} color="#fff" />
+                  <Text style={styles.primaryCTAText}>Ücretsiz Teklif Al</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <View style={styles.divider}>
+                <View style={styles.dividerLine} />
+                <Text style={styles.dividerText}>veya</Text>
+                <View style={styles.dividerLine} />
+              </View>
+
+              <View style={styles.authButtons}>
+                <TouchableOpacity
+                  style={styles.authButton}
+                  onPress={() => setCurrentScreen('login')}
+                >
+                  <Text style={styles.authButtonText}>Giriş Yap</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={[styles.authButton, styles.registerButton]}
+                  onPress={() => setCurrentScreen('register')}
+                >
+                  <Text style={[styles.authButtonText, styles.registerButtonText]}>Kayıt Ol</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Admin Panel Link */}
+              <TouchableOpacity
+                style={styles.adminLinkButton}
                 onPress={() => setCurrentScreen('login')}
               >
-                <Text style={styles.authButtonText}>Giriş Yap</Text>
+                <Ionicons name="settings" size={16} color="rgba(255, 255, 255, 0.8)" />
+                <Text style={styles.adminLinkText}>Admin Paneli (kmrfrt@gmail.com)</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity
-                style={[styles.authButton, styles.registerButton]}
-                onPress={() => setCurrentScreen('register')}
-              >
-                <Text style={[styles.authButtonText, styles.registerButtonText]}>Kayıt Ol</Text>
-              </TouchableOpacity>
-            </View>
-            
-            {/* Professional features */}
-            <View style={styles.featuresSection}>
-              <Text style={styles.featuresTitle}>Neden Biz?</Text>
-              <View style={styles.featureGrid}>
-                <View style={styles.featureCard}>
-                  <Ionicons name="star" size={24} color="#FFD700" />
-                  <Text style={styles.featureCardText}>5 Yıldızlı Hizmet</Text>
+              {/* Sample Jobs Section */}
+              {sampleJobs.length > 0 && (
+                <View style={styles.sampleSection}>
+                  <Text style={styles.sampleSectionTitle}>Güncel Taşınma İlanları</Text>
+                  {sampleJobs.map((job, index) => (
+                    <View key={job.id || index} style={styles.jobCard}>
+                      <View style={styles.jobHeader}>
+                        <Text style={styles.jobCustomer}>{job.customer_name}</Text>
+                        <Text style={styles.jobDate}>
+                          {new Date(job.moving_date).toLocaleDateString('tr-TR')}
+                        </Text>
+                      </View>
+                      <Text style={styles.jobRoute}>
+                        <Ionicons name="location" size={16} color="#3498db" />
+                        {' '}{job.from_location} → {job.to_location}
+                      </Text>
+                      <Text style={styles.jobDescription}>{job.description}</Text>
+                      <TouchableOpacity
+                        style={styles.bidButton}
+                        onPress={() => {
+                          showSuccess('Teklif vermek için kayıt olun!');
+                          setCurrentScreen('register');
+                        }}
+                      >
+                        <Text style={styles.bidButtonText}>Teklif Ver</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
                 </View>
-                <View style={styles.featureCard}>
-                  <Ionicons name="cash" size={24} color="#27ae60" />
-                  <Text style={styles.featureCardText}>Uygun Fiyat</Text>
+              )}
+
+              {/* Sample Companies Section */}
+              {sampleCompanies.length > 0 && (
+                <View style={styles.sampleSection}>
+                  <Text style={styles.sampleSectionTitle}>Güvenilir Nakliye Firmaları</Text>
+                  {sampleCompanies.map((company, index) => (
+                    <View key={company.id || index} style={styles.companyCard}>
+                      <View style={styles.companyHeader}>
+                        <Ionicons name="business" size={24} color="#2c3e50" />
+                        <View style={styles.companyInfo}>
+                          <Text style={styles.companyName}>{company.company_name}</Text>
+                          <Text style={styles.companyDescription}>{company.description}</Text>
+                        </View>
+                      </View>
+                      <TouchableOpacity
+                        style={styles.contactButton}
+                        onPress={() => {
+                          showSuccess('Firmalarla iletişim için kayıt olun!');
+                          setCurrentScreen('register');
+                        }}
+                      >
+                        <Text style={styles.contactButtonText}>İletişime Geç</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ))}
                 </View>
-                <View style={styles.featureCard}>
-                  <Ionicons name="checkmark-circle" size={24} color="#3498db" />
-                  <Text style={styles.featureCardText}>Güvenli Teslimat</Text>
-                </View>
-                <View style={styles.featureCard}>
-                  <Ionicons name="time" size={24} color="#e67e22" />
-                  <Text style={styles.featureCardText}>Hızlı Hizmet</Text>
+              )}
+              
+              {/* Professional features */}
+              <View style={styles.featuresSection}>
+                <Text style={styles.featuresTitle}>Neden Biz?</Text>
+                <View style={styles.featureGrid}>
+                  <View style={styles.featureCard}>
+                    <Ionicons name="star" size={24} color="#FFD700" />
+                    <Text style={styles.featureCardText}>5 Yıldızlı Hizmet</Text>
+                  </View>
+                  <View style={styles.featureCard}>
+                    <Ionicons name="cash" size={24} color="#27ae60" />
+                    <Text style={styles.featureCardText}>Uygun Fiyat</Text>
+                  </View>
+                  <View style={styles.featureCard}>
+                    <Ionicons name="checkmark-circle" size={24} color="#3498db" />
+                    <Text style={styles.featureCardText}>Güvenli Teslimat</Text>
+                  </View>
+                  <View style={styles.featureCard}>
+                    <Ionicons name="time" size={24} color="#e67e22" />
+                    <Text style={styles.featureCardText}>Hızlı Hizmet</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </ScrollView>
-        </SafeAreaView>
-      </LinearGradient>
-    </View>
-  );
+            </ScrollView>
+          </SafeAreaView>
+        </LinearGradient>
+      </View>
+    );
+  };
 
   const renderLoginScreen = () => (
     <View style={styles.container}>

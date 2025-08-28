@@ -1038,7 +1038,7 @@ async def create_test_data():
     }
 
 @api_router.post("/admin/update-user-role/{user_email}")
-async def update_user_role(user_email: str, role: str, current_user: dict = Depends(get_current_user)):
+async def update_user_role(user_email: str, request_data: dict, current_user: dict = Depends(get_current_user)):
     """Update user role (admin only)"""
     
     # Check if current user is admin
@@ -1051,6 +1051,7 @@ async def update_user_role(user_email: str, role: str, current_user: dict = Depe
         raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
     
     # Update user role
+    role = request_data.get('role')
     valid_roles = ['customer', 'mover', 'moderator', 'admin']
     if role not in valid_roles:
         raise HTTPException(status_code=400, detail="Geçersiz rol")
@@ -1067,7 +1068,7 @@ async def update_user_role(user_email: str, role: str, current_user: dict = Depe
     }
 
 @api_router.post("/admin/ban-user/{user_email}")
-async def ban_user(user_email: str, ban_days: int, reason: str, current_user: dict = Depends(get_current_user)):
+async def ban_user(user_email: str, request_data: dict, current_user: dict = Depends(get_current_user)):
     """Ban user for specified days (admin only)"""
     
     # Check if current user is admin
@@ -1080,6 +1081,8 @@ async def ban_user(user_email: str, ban_days: int, reason: str, current_user: di
         raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
     
     # Calculate ban expiry date
+    ban_days = request_data.get('ban_days', 3)
+    reason = request_data.get('reason', 'Kullanıcı davranış kurallarını ihlal etti')
     ban_until = datetime.utcnow() + timedelta(days=ban_days)
     
     # Update user with ban info

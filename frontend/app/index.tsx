@@ -646,14 +646,7 @@ export default function Index() {
                 </TouchableOpacity>
               </View>
 
-              {/* Admin Panel Link */}
-              <TouchableOpacity
-                style={styles.adminLinkButton}
-                onPress={() => setCurrentScreen('login')}
-              >
-                <Ionicons name="settings" size={16} color="rgba(255, 255, 255, 0.8)" />
-                <Text style={styles.adminLinkText}>Admin Paneli (kmrfrt@gmail.com)</Text>
-              </TouchableOpacity>
+
               
               {/* Sample Jobs Section */}
               {sampleJobs.length > 0 && (

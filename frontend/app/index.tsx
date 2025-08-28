@@ -210,7 +210,10 @@ export default function Index() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email: resetEmail }),
+        body: JSON.stringify({ 
+          email: resetEmail,
+          method: resetMethod
+        }),
       });
 
       const data = await response.json();

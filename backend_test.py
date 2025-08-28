@@ -136,7 +136,7 @@ def test_email_phone_verification():
     """Test email and phone verification"""
     print("\n📧 Testing Email and Phone Verification...")
     
-    if not test_data['email_code'] or not test_data['phone_code']:
+    if not test_data['customer_email_code'] or not test_data['customer_phone_code']:
         results.log_fail("Verification setup", "No verification codes available from registration")
         return
     
@@ -144,7 +144,7 @@ def test_email_phone_verification():
     try:
         verify_data = {
             "email": "ahmet.yilmaz@example.com",
-            "verification_code": test_data['email_code'],
+            "verification_code": test_data['customer_email_code'],
             "verification_type": "email"
         }
         
@@ -160,7 +160,7 @@ def test_email_phone_verification():
     try:
         verify_data = {
             "email": "ahmet.yilmaz@example.com",
-            "verification_code": test_data['phone_code'],
+            "verification_code": test_data['customer_phone_code'],
             "verification_type": "phone"
         }
         
@@ -171,6 +171,38 @@ def test_email_phone_verification():
             results.log_fail("Phone verification", f"Status: {response.status_code}, Response: {response.text}")
     except Exception as e:
         results.log_fail("Phone verification", str(e))
+    
+    # Verify admin email and phone for later tests
+    if test_data['admin_email_code'] and test_data['admin_phone_code']:
+        try:
+            verify_data = {
+                "email": "admin@nakliyat.com",
+                "verification_code": test_data['admin_email_code'],
+                "verification_type": "email"
+            }
+            requests.post(f"{API_BASE}/verify", json=verify_data)
+            
+            verify_data["verification_code"] = test_data['admin_phone_code']
+            verify_data["verification_type"] = "phone"
+            requests.post(f"{API_BASE}/verify", json=verify_data)
+        except:
+            pass  # Don't fail the test if admin verification fails
+    
+    # Verify mover email and phone for later tests
+    if test_data['mover_email_code'] and test_data['mover_phone_code']:
+        try:
+            verify_data = {
+                "email": "mehmet.tasiyici@example.com",
+                "verification_code": test_data['mover_email_code'],
+                "verification_type": "email"
+            }
+            requests.post(f"{API_BASE}/verify", json=verify_data)
+            
+            verify_data["verification_code"] = test_data['mover_phone_code']
+            verify_data["verification_type"] = "phone"
+            requests.post(f"{API_BASE}/verify", json=verify_data)
+        except:
+            pass  # Don't fail the test if mover verification fails
 
 def test_login_and_jwt():
     """Test login functionality and JWT token generation"""

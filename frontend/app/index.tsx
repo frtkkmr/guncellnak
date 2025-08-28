@@ -767,6 +767,8 @@ export default function Index() {
   switch (currentScreen) {
     case 'welcome':
       return renderWelcomeScreen();
+    case 'quote_request':
+      return renderQuoteRequestScreen();
     case 'login':
       return renderLoginScreen();
     case 'register':

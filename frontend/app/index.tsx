@@ -436,9 +436,14 @@ export default function Index() {
   };
 
   const fetchAdminData = async () => {
-    if (!token) return;
+    if (!token) {
+      console.log('No token available for admin data fetch');
+      return;
+    }
     
+    console.log('Fetching admin data with token:', token.substring(0, 20) + '...');
     setLoading(true);
+    
     try {
       // Fetch all users
       const usersResponse = await fetch(`${BACKEND_URL}/api/admin/users`, {
@@ -448,9 +453,16 @@ export default function Index() {
         },
       });
       
+      console.log('Users response status:', usersResponse.status);
+      
       if (usersResponse.ok) {
         const users = await usersResponse.json();
+        console.log('Fetched users:', users.length);
         setAllUsers(users);
+      } else {
+        const errorText = await usersResponse.text();
+        console.error('Users fetch error:', usersResponse.status, errorText);
+        showError('general', 'Kullanıcı verileri yüklenemedi: ' + usersResponse.status);
       }
       
       // Fetch all moving requests  
@@ -461,15 +473,22 @@ export default function Index() {
         },
       });
       
+      console.log('Requests response status:', requestsResponse.status);
+      
       if (requestsResponse.ok) {
         const requests = await requestsResponse.json();
+        console.log('Fetched requests:', requests.length);
         setAllRequests(requests);
+      } else {
+        const errorText = await requestsResponse.text();
+        console.error('Requests fetch error:', requestsResponse.status, errorText);
+        showError('general', 'Talep verileri yüklenemedi: ' + requestsResponse.status);
       }
     } catch (error) {
-      showError('general', 'Veriler yüklenemedi');
+      console.error('Admin data fetch error:', error);
+      showError('general', 'Veri yükleme hatası: ' + error.message);
     } finally {
       setLoading(false);
-    }
     }
   };
 

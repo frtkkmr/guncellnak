@@ -618,7 +618,8 @@ export default function Index() {
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await clearSession();
     setToken(null);
     setUser(null);
     setCurrentScreen('welcome');

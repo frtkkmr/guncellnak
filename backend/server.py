@@ -93,6 +93,8 @@ class User(UserBase):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
     hashed_password: str
+    company_description: Optional[str] = None  # For movers
+    company_images: Optional[List[str]] = []  # For movers - base64 images
 
 class MovingRequest(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))

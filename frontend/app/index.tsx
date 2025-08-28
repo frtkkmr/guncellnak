@@ -102,7 +102,44 @@ export default function Index() {
     description: ''
   });
 
+  // Profile form for updates
+  const [profileForm, setProfileForm] = useState({
+    name: '',
+    phone: '',
+    company_name: '',
+    company_description: '',
+    profile_image: '',
+  });
+
   const [showVerification, setShowVerification] = useState(false);
+
+  // Validation functions
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const validatePhone = (phone: string) => {
+    const phoneRegex = /^[+]?[\d\s\-()]{10,}$/;
+    return phoneRegex.test(phone.replace(/\s/g, ''));
+  };
+
+  const clearMessages = () => {
+    setErrors({});
+    setSuccessMessage('');
+    setShowErrors(false);
+  };
+
+  const showError = (field: string, message: string) => {
+    setErrors(prev => ({...prev, [field]: message}));
+    setShowErrors(true);
+  };
+
+  const showSuccess = (message: string) => {
+    setSuccessMessage(message);
+    setErrors({});
+    setTimeout(() => setSuccessMessage(''), 5000);
+  };
 
   const handleLogin = async () => {
     if (!loginForm.email || !loginForm.password) {

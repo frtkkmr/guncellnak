@@ -36,7 +36,8 @@ export default function Index() {
     'register' | 
     'dashboard' | 
     'forgot_password' | 
-    'reset_password'
+    'reset_password' |
+    'admin_panel'
   >('welcome');
   const [userType, setUserType] = useState<'customer' | 'mover'>('customer');
   const [user, setUser] = useState<User | null>(null);

@@ -1037,6 +1037,127 @@ async def create_test_data():
         }
     }
 
+@api_router.post("/admin/update-user-role/{user_email}")
+async def update_user_role(user_email: str, role: str, current_user: dict = Depends(get_current_user)):
+    """Update user role (admin only)"""
+    
+    # Check if current user is admin
+    if current_user.get('user_type') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
+    
+    # Find user
+    user = await db.users.find_one({"email": user_email})
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    # Update user role
+    valid_roles = ['customer', 'mover', 'moderator', 'admin']
+    if role not in valid_roles:
+        raise HTTPException(status_code=400, detail="Geçersiz rol")
+    
+    await db.users.update_one(
+        {"email": user_email},
+        {"$set": {"user_type": role, "updated_at": datetime.utcnow()}}
+    )
+    
+    return {
+        "message": f"Kullanıcı {user_email} rolü '{role}' olarak güncellendi",
+        "user": user['name'],
+        "new_role": role
+    }
+
+@api_router.post("/admin/ban-user/{user_email}")
+async def ban_user(user_email: str, ban_days: int, reason: str, current_user: dict = Depends(get_current_user)):
+    """Ban user for specified days (admin only)"""
+    
+    # Check if current user is admin
+    if current_user.get('user_type') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
+    
+    # Find user
+    user = await db.users.find_one({"email": user_email})
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    # Calculate ban expiry date
+    ban_until = datetime.utcnow() + timedelta(days=ban_days)
+    
+    # Update user with ban info
+    await db.users.update_one(
+        {"email": user_email},
+        {"$set": {
+            "is_active": False,
+            "ban_until": ban_until,
+            "ban_reason": reason,
+            "banned_by": current_user.get('email'),
+            "updated_at": datetime.utcnow()
+        }}
+    )
+    
+    return {
+        "message": f"Kullanıcı {user_email} {ban_days} gün boyunca yasaklandı",
+        "user": user['name'],
+        "ban_until": ban_until.isoformat(),
+        "reason": reason
+    }
+
+@api_router.post("/admin/unban-user/{user_email}")
+async def unban_user(user_email: str, current_user: dict = Depends(get_current_user)):
+    """Unban user (admin only)"""
+    
+    # Check if current user is admin
+    if current_user.get('user_type') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
+    
+    # Find user
+    user = await db.users.find_one({"email": user_email})
+    if not user:
+        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
+    
+    # Remove ban
+    await db.users.update_one(
+        {"email": user_email},
+        {"$set": {
+            "is_active": True,
+            "updated_at": datetime.utcnow()
+        },
+        "$unset": {
+            "ban_until": "",
+            "ban_reason": "",
+            "banned_by": ""
+        }}
+    )
+    
+    return {
+        "message": f"Kullanıcı {user_email} yasağı kaldırıldı",
+        "user": user['name']
+    }
+
+@api_router.delete("/admin/delete-request/{request_id}")
+async def delete_request(request_id: str, current_user: dict = Depends(get_current_user)):
+    """Delete moving request (admin only)"""
+    
+    # Check if current user is admin
+    if current_user.get('user_type') != 'admin':
+        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
+    
+    # Find and delete request
+    request = await db.moving_requests.find_one({"id": request_id})
+    if not request:
+        raise HTTPException(status_code=404, detail="Talep bulunamadı")
+    
+    # Delete related bids first
+    await db.bids.delete_many({"request_id": request_id})
+    
+    # Delete the request
+    await db.moving_requests.delete_one({"id": request_id})
+    
+    return {
+        "message": f"Talep başarıyla silindi",
+        "request_id": request_id,
+        "customer": request.get('customer_name')
+    }
+
 @app.on_event("shutdown")
 async def shutdown_db_client():
     client.close()

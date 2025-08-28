@@ -1094,7 +1094,139 @@ export default function Index() {
     </SafeAreaView>
   );
 
-  const renderDashboard = () => (
+  const renderProfileScreen = () => (
+    <View style={styles.container}>
+      <StatusBar barStyle="dark-content" />
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => setCurrentScreen('dashboard')}
+          >
+            <Ionicons name="arrow-back" size={24} color="#2c3e50" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Profil Düzenle</Text>
+          <View style={styles.placeholder} />
+        </View>
+
+        <ScrollView contentContainerStyle={styles.formContainer} showsVerticalScrollIndicator={false}>
+          {renderSuccessMessage()}
+          {renderGeneralError()}
+
+          <View style={styles.formCard}>
+            <View style={styles.profileImageSection}>
+              <View style={styles.profileImageContainer}>
+                {profileForm.profile_image ? (
+                  <Text style={styles.profileImagePlaceholder}>📷</Text>
+                ) : (
+                  <Ionicons name="person" size={60} color="#bdc3c7" />
+                )}
+              </View>
+              <TouchableOpacity
+                style={styles.imagePickerButton}
+                onPress={() => Alert.alert('Profil Resmi', 'Yakında eklenecek!')}
+              >
+                <Ionicons name="camera" size={20} color="#3498db" />
+                <Text style={styles.imagePickerText}>Profil Resmi Değiştir</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>
+                <Ionicons name="person" size={16} color="#7f8c8d" /> Ad Soyad
+              </Text>
+              <TextInput
+                style={[styles.input, errors.name && styles.inputError]}
+                placeholder="Adınızı soyadınızı girin"
+                value={profileForm.name}
+                onChangeText={(text) => {
+                  setProfileForm({...profileForm, name: text});
+                  if (errors.name) setErrors(prev => ({...prev, name: ''}));
+                }}
+              />
+              {renderErrorMessage('name')}
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>
+                <Ionicons name="call" size={16} color="#7f8c8d" /> Telefon
+              </Text>
+              <TextInput
+                style={[styles.input, errors.phone && styles.inputError]}
+                placeholder="Telefon numaranızı girin"
+                keyboardType="phone-pad"
+                value={profileForm.phone}
+                onChangeText={(text) => {
+                  setProfileForm({...profileForm, phone: text});
+                  if (errors.phone) setErrors(prev => ({...prev, phone: ''}));
+                }}
+              />
+              {renderErrorMessage('phone')}
+            </View>
+
+            {user?.user_type === 'mover' && (
+              <>
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>
+                    <Ionicons name="business" size={16} color="#7f8c8d" /> Şirket Adı
+                  </Text>
+                  <TextInput
+                    style={[styles.input, errors.company_name && styles.inputError]}
+                    placeholder="Şirket adınızı girin"
+                    value={profileForm.company_name}
+                    onChangeText={(text) => {
+                      setProfileForm({...profileForm, company_name: text});
+                      if (errors.company_name) setErrors(prev => ({...prev, company_name: ''}));
+                    }}
+                  />
+                  {renderErrorMessage('company_name')}
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>
+                    <Ionicons name="document-text" size={16} color="#7f8c8d" /> Firma Açıklaması
+                  </Text>
+                  <TextInput
+                    style={[styles.input, styles.textArea, errors.company_description && styles.inputError]}
+                    placeholder="Firmanızı tanıtın, hizmetlerinizi açıklayın..."
+                    multiline
+                    numberOfLines={4}
+                    value={profileForm.company_description}
+                    onChangeText={(text) => {
+                      setProfileForm({...profileForm, company_description: text});
+                      if (errors.company_description) setErrors(prev => ({...prev, company_description: ''}));
+                    }}
+                  />
+                  {renderErrorMessage('company_description')}
+                </View>
+              </>
+            )}
+
+            <TouchableOpacity
+              style={[styles.submitButton, loading && styles.disabledButton]}
+              onPress={() => Alert.alert('Güncelleme', 'Profil güncelleme yakında aktif olacak!')}
+              disabled={loading}
+              activeOpacity={0.8}
+            >
+              <LinearGradient
+                colors={loading ? ['#bdc3c7', '#95a5a6'] : ['#e67e22', '#d35400']}
+                style={styles.submitButtonGradient}
+              >
+                {loading ? (
+                  <Text style={styles.submitButtonText}>Güncelleniyor...</Text>
+                ) : (
+                  <>
+                    <Ionicons name="save" size={20} color="#fff" />
+                    <Text style={styles.submitButtonText}>Profili Güncelle</Text>
+                  </>
+                )}
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
+  );
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Nakliyat Platformu</Text>

@@ -505,6 +505,8 @@ export default function Index() {
       </ScrollView>
     </SafeAreaView>
   );
+
+  const renderLoginScreen = () => (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.formContainer}>
         <TouchableOpacity

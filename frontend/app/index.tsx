@@ -1040,12 +1040,16 @@ export default function Index() {
             <View style={styles.inputGroup}>
               <Text style={styles.inputLabel}>Şifre</Text>
               <TextInput
-                style={styles.input}
+                style={[styles.input, errors.password && styles.inputError]}
                 placeholder="Şifrenizi girin"
                 secureTextEntry
                 value={registerForm.password}
-                onChangeText={(text) => setRegisterForm({...registerForm, password: text})}
+                onChangeText={(text) => {
+                  setRegisterForm({...registerForm, password: text});
+                  if (errors.password) setErrors(prev => ({...prev, password: ''}));
+                }}
               />
+              {renderErrorMessage('password')}
             </View>
             
             <TouchableOpacity

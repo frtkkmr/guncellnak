@@ -991,14 +991,7 @@ export default function Index() {
       </SafeAreaView>
     </View>
   );
-    case 'welcome':
-      return renderWelcomeScreen();
-    case 'quote_request':
-      return renderQuoteRequestScreen();
-    case 'login':
-      return renderLoginScreen();
-    case 'register':
-      return renderRegisterScreen();
+
   switch (currentScreen) {
     case 'welcome':
       return renderWelcomeScreen();

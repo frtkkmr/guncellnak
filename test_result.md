@@ -164,6 +164,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ COMPREHENSIVE TESTING COMPLETED: Admin system working perfectly. Tested admin user management, mover approval system (movers require admin approval before login), proper admin authentication, and all admin-only endpoints. All tests passed successfully."
+        - working: true
+          agent: "testing"
+          comment: "✅ ADMIN FUNCTIONALITY RE-VERIFIED: Specific admin user kmrfrt@gmail.com login successful, /api/admin/users endpoint returning 12 users (6 customers, 4 movers, 2 admins), /api/moving-requests returning 11 requests for admin view, test data creation working, complete admin panel data flow verified. All admin endpoints working perfectly for admin panel integration."
 
 frontend:
   - task: "Professional Login Page & Admin Panel"

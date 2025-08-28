@@ -172,7 +172,111 @@ export default function Index() {
     }
   };
 
-  const handleRegister = async () => {
+  // Simple reCAPTCHA simulation (in production use react-google-recaptcha)
+  const simulateRecaptcha = () => {
+    Alert.alert(
+      'reCAPTCHA Doğrulaması',
+      'Robot olmadığınızı doğrulayın',
+      [
+        { text: 'İptal', style: 'cancel' },
+        { 
+          text: 'Doğrula', 
+          onPress: () => {
+            setIsRecaptchaVerified(true);
+            showSuccess('reCAPTCHA doğrulandı!');
+          }
+        }
+      ]
+    );
+  };
+
+  const handleForgotPassword = async () => {
+    clearMessages();
+    
+    if (!resetEmail.trim()) {
+      showError('email', 'Email adresi gereklidir');
+      return;
+    }
+    if (!validateEmail(resetEmail)) {
+      showError('email', 'Geçerli bir email adresi girin');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/forgot-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSuccess(data.message);
+        setResetToken(data.reset_token); // For demo purposes
+        setCurrentScreen('reset_password');
+      } else {
+        showError('general', data.detail || 'Şifre sıfırlama isteği gönderilemedi');
+      }
+    } catch (error) {
+      showError('general', 'Sunucu bağlantı hatası. Lütfen tekrar deneyin.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    clearMessages();
+
+    if (!resetToken.trim()) {
+      showError('token', 'Doğrulama kodu gereklidir');
+      return;
+    }
+    if (!newPassword.trim()) {
+      showError('password', 'Yeni şifre gereklidir');
+      return;
+    }
+    if (newPassword.length < 6) {
+      showError('password', 'Şifre en az 6 karakter olmalıdır');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/reset-password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          email: resetEmail, 
+          token: resetToken,
+          new_password: newPassword
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showSuccess(data.message);
+        setTimeout(() => {
+          setCurrentScreen('login');
+          setResetEmail('');
+          setResetToken('');
+          setNewPassword('');
+        }, 2000);
+      } else {
+        showError('general', data.detail || 'Şifre sıfırlanamadı');
+      }
+    } catch (error) {
+      showError('general', 'Sunucu bağlantı hatası. Lütfen tekrar deneyin.');
+    } finally {
+      setLoading(false);
+    }
+  };
     clearMessages();
 
     // Basic validation

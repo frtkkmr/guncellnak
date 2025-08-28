@@ -225,9 +225,46 @@ export default function Index() {
     } finally {
       setLoading(false);
     }
-  };
+  const handleVerification = async (type: 'email' | 'phone') => {
+    const code = type === 'email' ? verificationForm.email_code : verificationForm.phone_code;
+    
+    if (!code) {
+      Alert.alert('Hata', 'Lütfen doğrulama kodunu girin');
+      return;
+    }
 
-  const fetchUserProfile = async (authToken: string) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: verificationForm.email,
+          verification_code: code,
+          verification_type: type,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        Alert.alert('Başarılı', data.message);
+        if (type === 'phone') {
+          setShowVerification(false);
+          setCurrentScreen('login');
+        }
+      } else {
+        Alert.alert('Hata', data.detail || 'Doğrulama başarısız');
+      }
+    } catch (error) {
+      Alert.alert('Hata', 'Sunucu bağlantı hatası');
+      console.error('Verification error:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
     try {
       // For now, we'll skip fetching user profile and just set basic info
       // In a real app, you'd make an API call to get user profile

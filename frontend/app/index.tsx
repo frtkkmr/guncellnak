@@ -950,6 +950,19 @@ export default function Index() {
       return renderLoginScreen();
     case 'register':
       return renderRegisterScreen();
+  switch (currentScreen) {
+    case 'welcome':
+      return renderWelcomeScreen();
+    case 'quote_request':
+      return renderQuoteRequestScreen();
+    case 'login':
+      return renderLoginScreen();
+    case 'register':
+      return renderRegisterScreen();
+    case 'forgot_password':
+      return renderForgotPasswordScreen();
+    case 'reset_password':
+      return renderResetPasswordScreen();
     case 'dashboard':
       return renderDashboard();
     default:

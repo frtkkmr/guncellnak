@@ -1270,4 +1270,59 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 12,
   },
+  forgotPasswordButton: {
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  forgotPasswordText: {
+    color: '#e67e22',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  recaptchaSection: {
+    marginBottom: 20,
+  },
+  recaptchaLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2c3e50',
+    marginBottom: 8,
+  },
+  recaptchaButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  recaptchaButtonVerified: {
+    backgroundColor: '#d4edda',
+    borderColor: '#27ae60',
+  },
+  recaptchaBox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: '#ddd',
+    marginRight: 12,
+  },
+  recaptchaText: {
+    fontSize: 14,
+    color: '#2c3e50',
+  },
+  recaptchaVerifiedText: {
+    fontSize: 14,
+    color: '#27ae60',
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  recaptchaHelper: {
+    fontSize: 12,
+    color: '#7f8c8d',
+    marginTop: 6,
+    fontStyle: 'italic',
+  },
 });

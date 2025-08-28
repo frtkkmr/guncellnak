@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { adminStyles } from './AdminStyles.js';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 

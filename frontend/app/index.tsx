@@ -168,8 +168,15 @@ export default function Index() {
     const newImages = registerForm.company_images.filter((_, i) => i !== index);
     setRegisterForm({...registerForm, company_images: newImages});
   };
+
+  const handleRegister = async () => {
     if (!registerForm.name || !registerForm.email || !registerForm.phone || !registerForm.password) {
-      Alert.alert('Hata', 'Lütfen tüm alanları doldurun');
+      Alert.alert('Hata', 'Lütfen tüm zorunlu alanları doldurun');
+      return;
+    }
+
+    if (userType === 'mover' && (!registerForm.company_name || !registerForm.company_description)) {
+      Alert.alert('Hata', 'Nakliyeci kayıt için şirket adı ve açıklama zorunludur');
       return;
     }
 

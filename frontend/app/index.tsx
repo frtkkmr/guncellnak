@@ -70,6 +70,10 @@ export default function Index() {
   // Sample data for homepage
   const [sampleJobs, setSampleJobs] = useState<any[]>([]);
   const [sampleCompanies, setSampleCompanies] = useState<any[]>([]);
+  
+  // Selected user for actions
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [showUserActions, setShowUserActions] = useState(false);
 
   // Auto-fetch admin data when entering admin panel
   React.useEffect(() => {

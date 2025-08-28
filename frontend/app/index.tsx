@@ -335,7 +335,174 @@ export default function Index() {
     </SafeAreaView>
   );
 
-  const renderLoginScreen = () => (
+  const renderQuoteRequestScreen = () => (
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.formContainer}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => setCurrentScreen('welcome')}
+        >
+          <Ionicons name="arrow-back" size={24} color="#007AFF" />
+        </TouchableOpacity>
+        
+        <Text style={styles.formTitle}>Ücretsiz Teklif İste</Text>
+        <Text style={styles.formSubtitle}>
+          Taşınma detaylarınızı doldurun, nakliyecilerden teklif alın
+        </Text>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Adınız Soyadınız *</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Adınızı soyadınızı girin"
+            value={quoteForm.customer_name}
+            onChangeText={(text) => setQuoteForm({...quoteForm, customer_name: text})}
+          />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Telefon Numaranız *</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Telefon numaranızı girin"
+            keyboardType="phone-pad"
+            value={quoteForm.customer_phone}
+            onChangeText={(text) => setQuoteForm({...quoteForm, customer_phone: text})}
+          />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Nereden Taşınacak *</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Mevcut adresinizi girin"
+            value={quoteForm.from_location}
+            onChangeText={(text) => setQuoteForm({...quoteForm, from_location: text})}
+          />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Nereye Taşınacak *</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Yeni adresinizi girin"
+            value={quoteForm.to_location}
+            onChangeText={(text) => setQuoteForm({...quoteForm, to_location: text})}
+          />
+        </View>
+        
+        <View style={styles.row}>
+          <View style={styles.halfWidth}>
+            <Text style={styles.inputLabel}>Mevcut Kat</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Kat"
+              keyboardType="numeric"
+              value={quoteForm.from_floor.toString()}
+              onChangeText={(text) => setQuoteForm({...quoteForm, from_floor: parseInt(text) || 1})}
+            />
+          </View>
+          
+          <View style={styles.halfWidth}>
+            <Text style={styles.inputLabel}>Yeni Kat</Text>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Kat"
+              keyboardType="numeric"
+              value={quoteForm.to_floor.toString()}
+              onChangeText={(text) => setQuoteForm({...quoteForm, to_floor: parseInt(text) || 1})}
+            />
+          </View>
+        </View>
+        
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity
+            style={[styles.checkbox, quoteForm.has_elevator_from && styles.checkboxActive]}
+            onPress={() => setQuoteForm({...quoteForm, has_elevator_from: !quoteForm.has_elevator_from})}
+          >
+            {quoteForm.has_elevator_from && <Ionicons name="checkmark" size={16} color="#fff" />}
+          </TouchableOpacity>
+          <Text style={styles.checkboxLabel}>Mevcut adreste asansör var</Text>
+        </View>
+        
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity
+            style={[styles.checkbox, quoteForm.has_elevator_to && styles.checkboxActive]}
+            onPress={() => setQuoteForm({...quoteForm, has_elevator_to: !quoteForm.has_elevator_to})}
+          >
+            {quoteForm.has_elevator_to && <Ionicons name="checkmark" size={16} color="#fff" />}
+          </TouchableOpacity>
+          <Text style={styles.checkboxLabel}>Yeni adreste asansör var</Text>
+        </View>
+        
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity
+            style={[styles.checkbox, quoteForm.needs_mobile_elevator && styles.checkboxActive]}
+            onPress={() => setQuoteForm({...quoteForm, needs_mobile_elevator: !quoteForm.needs_mobile_elevator})}
+          >
+            {quoteForm.needs_mobile_elevator && <Ionicons name="checkmark" size={16} color="#fff" />}
+          </TouchableOpacity>
+          <Text style={styles.checkboxLabel}>Mobil asansör gerekli</Text>
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Kamyon Yanaşma Durumu</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="Kamyonun yanaşmasında mesafe var mı?"
+            value={quoteForm.truck_distance}
+            onChangeText={(text) => setQuoteForm({...quoteForm, truck_distance: text})}
+          />
+        </View>
+        
+        <View style={styles.checkboxContainer}>
+          <TouchableOpacity
+            style={[styles.checkbox, quoteForm.packing_service && styles.checkboxActive]}
+            onPress={() => setQuoteForm({...quoteForm, packing_service: !quoteForm.packing_service})}
+          >
+            {quoteForm.packing_service && <Ionicons name="checkmark" size={16} color="#fff" />}
+          </TouchableOpacity>
+          <Text style={styles.checkboxLabel}>Eşyalarımı kendim paketleyeceğim</Text>
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Taşınma Tarihi *</Text>
+          <TextInput
+            style={styles.textInput}
+            placeholder="GG/AA/YYYY"
+            value={quoteForm.moving_date}
+            onChangeText={(text) => setQuoteForm({...quoteForm, moving_date: text})}
+          />
+        </View>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.inputLabel}>Ek Açıklama</Text>
+          <TextInput
+            style={[styles.textInput, styles.textArea]}
+            placeholder="Eşyalar hakkında detay verebilirsiniz..."
+            multiline
+            numberOfLines={4}
+            value={quoteForm.description}
+            onChangeText={(text) => setQuoteForm({...quoteForm, description: text})}
+          />
+        </View>
+        
+        <TouchableOpacity
+          style={[styles.primaryButton, loading && styles.disabledButton]}
+          onPress={handleQuoteRequest}
+          disabled={loading}
+        >
+          <Text style={styles.primaryButtonText}>
+            {loading ? 'Gönderiliyor...' : 'Teklif İste'}
+          </Text>
+        </TouchableOpacity>
+        
+        <Text style={styles.noteText}>
+          * Teklif aldıktan sonra kayıt olmaya yönlendirileceksiniz
+        </Text>
+      </ScrollView>
+    </SafeAreaView>
+  );
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.formContainer}>
         <TouchableOpacity

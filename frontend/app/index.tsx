@@ -29,7 +29,7 @@ interface User {
 }
 
 export default function Index() {
-  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'quote_request' | 'login' | 'register' | 'dashboard'>('welcome');
+  const [currentScreen, setCurrentScreen] = useState<'welcome' | 'quote_request' | 'login' | 'register' | 'dashboard' | 'forgot_password' | 'reset_password'>('welcome');
   const [userType, setUserType] = useState<'customer' | 'mover'>('customer');
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -38,6 +38,14 @@ export default function Index() {
   // Error and success states
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [successMessage, setSuccessMessage] = useState<string>('');
+
+  // reCAPTCHA state
+  const [isRecaptchaVerified, setIsRecaptchaVerified] = useState(false);
+
+  // Password reset states
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetToken, setResetToken] = useState('');
+  const [newPassword, setNewPassword] = useState('');
 
   // Form states
   const [loginForm, setLoginForm] = useState({

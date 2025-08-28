@@ -167,6 +167,9 @@ backend:
         - working: true
           agent: "testing"
           comment: "✅ ADMIN FUNCTIONALITY RE-VERIFIED: Specific admin user kmrfrt@gmail.com login successful, /api/admin/users endpoint returning 12 users (6 customers, 4 movers, 2 admins), /api/moving-requests returning 11 requests for admin view, test data creation working, complete admin panel data flow verified. All admin endpoints working perfectly for admin panel integration."
+        - working: true
+          agent: "testing"
+          comment: "✅ NEW ADMIN ENDPOINTS TESTING COMPLETED: Fixed duplicate function definition issue that was preventing new admin endpoints from being registered. All 4 new admin endpoints now working perfectly: POST /api/admin/update-user-role/{user_email} (✅), POST /api/admin/ban-user/{user_email} (✅), POST /api/admin/unban-user/{user_email} (✅), DELETE /api/admin/delete-request/{request_id} (✅). Admin authentication with kmrfrt@gmail.com / Frt1907 working. Minor: OpenAPI docs return 404 but endpoints function correctly."
 
 frontend:
   - task: "Professional Login Page & Admin Panel"

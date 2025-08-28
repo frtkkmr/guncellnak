@@ -74,7 +74,25 @@ export default function Index() {
     phone_code: ''
   });
 
+  // Quote request form (for non-members)
+  const [quoteForm, setQuoteForm] = useState({
+    customer_name: '',
+    customer_phone: '',
+    from_location: '',
+    to_location: '',
+    from_floor: 1,
+    to_floor: 1,
+    has_elevator_from: false,
+    has_elevator_to: false,
+    needs_mobile_elevator: false,
+    truck_distance: '',
+    packing_service: true,
+    moving_date: '',
+    description: ''
+  });
+
   const [showVerification, setShowVerification] = useState(false);
+  const [quoteSubmitted, setQuoteSubmitted] = useState(false);
 
   const handleLogin = async () => {
     if (!loginForm.email || !loginForm.password) {

@@ -1139,17 +1139,27 @@ export default function Index() {
                     <Text style={styles.responsiveColumnTitle}>Sadece Nakliyat</Text>
                     <Text style={styles.responsiveText}>Türkiye'nin güvenilir nakliyat hizmeti.</Text>
                     
-                    <View style={styles.responsiveLinks}>
-                      <TouchableOpacity onPress={() => setCurrentScreen('quote_request')}>
-                        <Text style={styles.responsiveLinkText}>Teklif Al</Text>
+                    <View style={styles.footerActionsRow}>
+                      <TouchableOpacity
+                        style={styles.footerPrimaryButton}
+                        onPress={() => setCurrentScreen('quote_request')}
+                        activeOpacity={0.85}
+                      >
+                        <Text style={styles.footerButtonText}>Teklif Al</Text>
                       </TouchableOpacity>
-                      <Text style={styles.responsiveSeparator}>•</Text>
-                      <TouchableOpacity onPress={() => setCurrentScreen('register')}>
-                        <Text style={styles.responsiveLinkText}>Kayıt Ol</Text>
+                      <TouchableOpacity
+                        style={styles.footerOutlineButton}
+                        onPress={() => setCurrentScreen('register')}
+                        activeOpacity={0.85}
+                      >
+                        <Text style={styles.footerOutlineText}>Kayıt Ol</Text>
                       </TouchableOpacity>
-                      <Text style={styles.responsiveSeparator}>•</Text>
-                      <TouchableOpacity onPress={() => setCurrentScreen('login')}>
-                        <Text style={styles.responsiveLinkText}>Giriş</Text>
+                      <TouchableOpacity
+                        style={styles.footerOutlineButton}
+                        onPress={() => setCurrentScreen('login')}
+                        activeOpacity={0.85}
+                      >
+                        <Text style={styles.footerOutlineText}>Giriş</Text>
                       </TouchableOpacity>
                     </View>
                   </View>

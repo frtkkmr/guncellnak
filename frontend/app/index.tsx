@@ -1125,7 +1125,10 @@ export default function Index() {
                 </View>
 
                 {/* Responsive Footer Content */}
-                <View style={styles.responsiveFooterContent}>
+                <View style={[
+                  styles.responsiveFooterContent,
+                  isDesktop ? styles.responsiveFooterContentDesktop : styles.responsiveFooterContentMobile
+                ]}>
                   <View style={styles.responsiveFooterColumn}>
                     <Text style={styles.responsiveColumnTitle}>Sadece Nakliyat</Text>
                     <Text style={styles.responsiveText}>Türkiye'nin güvenilir nakliyat hizmeti.</Text>

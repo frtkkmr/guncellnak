@@ -34,6 +34,7 @@ interface User {
 }
 
 export default function Index() {
+  const router = useRouter();
   const [currentScreen, setCurrentScreen] = useState<
     'welcome' | 
     'quote_request' | 

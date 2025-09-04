@@ -1048,27 +1048,44 @@ export default function Index() {
             <View style={styles.footer}>
               {/* Distance Calculator */}
               <View style={styles.calculatorSection}>
-                <Text style={styles.sectionTitle}>🗺️ Şehirler Arası Mesafe Hesaplayıcı</Text>
+                <Text style={styles.sectionTitle}>🗺️ Türkiye Şehirler Arası Mesafe Hesaplayıcı</Text>
                 <View style={styles.calculatorRow}>
                   <TextInput
                     style={styles.cityInput}
-                    placeholder="Nereden?"
+                    placeholder="Nereden? (örn: İstanbul)"
                     placeholderTextColor="#95a5a6"
+                    value={fromCity}
+                    onChangeText={setFromCity}
                   />
-                  <Ionicons name="arrow-forward" size={20} color="#3498db" />
+                  <Ionicons name="arrow-forward" size={20} color="#3498db" style={styles.arrowIcon} />
                   <TextInput
                     style={styles.cityInput}
-                    placeholder="Nereye?"
+                    placeholder="Nereye? (örn: Ankara)"
                     placeholderTextColor="#95a5a6"
+                    value={toCity}
+                    onChangeText={setToCity}
                   />
                 </View>
                 
-                <TouchableOpacity style={styles.calculateButton}>
-                  <Text style={styles.calculateButtonText}>Mesafe Hesapla</Text>
+                <TouchableOpacity 
+                  style={[styles.calculateButton, calculating && styles.calculateButtonDisabled]} 
+                  onPress={calculateDistance}
+                  disabled={calculating}
+                >
+                  <Text style={styles.calculateButtonText}>
+                    {calculating ? 'Hesaplanıyor...' : '📍 Mesafe Hesapla'}
+                  </Text>
                 </TouchableOpacity>
                 
+                {distance ? (
+                  <View style={styles.distanceResult}>
+                    <Ionicons name="location" size={16} color="#27ae60" />
+                    <Text style={styles.distanceText}>Mesafe: {distance}</Text>
+                  </View>
+                ) : null}
+                
                 <Text style={styles.cityList}>
-                  📍 Desteklenen şehirler: İstanbul, Ankara, İzmir, Bursa, Antalya, Adana, Konya...
+                  📍 Türkiye'nin 81 ili desteklenmektedir: İstanbul, Ankara, İzmir, Bursa, Antalya, Adana, Konya...
                 </Text>
               </View>
 
@@ -1081,13 +1098,22 @@ export default function Index() {
                   </Text>
                   
                   <View style={styles.socialLinks}>
-                    <TouchableOpacity style={styles.socialButton}>
+                    <TouchableOpacity 
+                      style={styles.socialButton}
+                      onPress={() => console.log('Telefon arama')}
+                    >
                       <Ionicons name="call" size={20} color="#3498db" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.socialButton}>
+                    <TouchableOpacity 
+                      style={styles.socialButton}
+                      onPress={() => console.log('Email gönder')}
+                    >
                       <Ionicons name="mail" size={20} color="#3498db" />
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.socialButton}>
+                    <TouchableOpacity 
+                      style={styles.socialButton}
+                      onPress={() => console.log('WhatsApp aç')}
+                    >
                       <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
                     </TouchableOpacity>
                   </View>
@@ -1095,13 +1121,22 @@ export default function Index() {
 
                 <View style={styles.footerColumn}>
                   <Text style={styles.columnTitle}>⚡ Hızlı Linkler</Text>
-                  <TouchableOpacity style={styles.footerLink} onPress={() => setCurrentScreen('quote_request')}>
+                  <TouchableOpacity 
+                    style={styles.footerLink} 
+                    onPress={() => setCurrentScreen('quote_request')}
+                  >
                     <Text style={styles.footerLinkText}>🎯 Teklif Al</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.footerLink} onPress={() => setCurrentScreen('register')}>
+                  <TouchableOpacity 
+                    style={styles.footerLink} 
+                    onPress={() => setCurrentScreen('register')}
+                  >
                     <Text style={styles.footerLinkText}>📝 Kayıt Ol</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={styles.footerLink} onPress={() => setCurrentScreen('login')}>
+                  <TouchableOpacity 
+                    style={styles.footerLink} 
+                    onPress={() => setCurrentScreen('login')}
+                  >
                     <Text style={styles.footerLinkText}>🔐 Giriş Yap</Text>
                   </TouchableOpacity>
                 </View>
@@ -1110,27 +1145,34 @@ export default function Index() {
                   <Text style={styles.columnTitle}>🎯 Hizmetlerimiz</Text>
                   <Text style={styles.serviceItem}>🏠 Ev Taşımacılığı</Text>
                   <Text style={styles.serviceItem}>🏢 Ofis Taşımacılığı</Text>
-                  <Text style={styles.serviceItem}>📦 Ambalajlama</Text>
+                  <Text style={styles.serviceItem}>📦 Ambalajlama Hizmeti</Text>
                   <Text style={styles.serviceItem}>🚛 Şehirler Arası</Text>
+                  <Text style={styles.serviceItem}>🏗️ Araç Kiralama</Text>
                 </View>
 
                 <View style={styles.footerColumn}>
                   <Text style={styles.columnTitle}>📞 İletişim</Text>
-                  <View style={styles.contactItem}>
+                  <TouchableOpacity 
+                    style={styles.contactItem}
+                    onPress={() => console.log('Telefon arama')}
+                  >
                     <Ionicons name="call" size={16} color="#3498db" />
                     <Text style={styles.contactText}>0850 555 12 34</Text>
-                  </View>
-                  <View style={styles.contactItem}>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    style={styles.contactItem}
+                    onPress={() => console.log('Email gönder')}
+                  >
                     <Ionicons name="mail" size={16} color="#3498db" />
                     <Text style={styles.contactText}>info@nakliyat.com</Text>
-                  </View>
+                  </TouchableOpacity>
                   <View style={styles.contactItem}>
                     <Ionicons name="location" size={16} color="#3498db" />
                     <Text style={styles.contactText}>İstanbul, Türkiye</Text>
                   </View>
                   <View style={styles.contactItem}>
                     <Ionicons name="time" size={16} color="#3498db" />
-                    <Text style={styles.contactText}>7/24 Destek</Text>
+                    <Text style={styles.contactText}>7/24 Müşteri Desteği</Text>
                   </View>
                 </View>
               </View>
@@ -1141,16 +1183,16 @@ export default function Index() {
                   © 2024 Nakliyat Platformu. Tüm hakları saklıdır.
                 </Text>
                 <View style={styles.bottomLinks}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => console.log('Gizlilik politikası')}>
                     <Text style={styles.bottomLinkText}>Gizlilik</Text>
                   </TouchableOpacity>
                   <Text style={styles.separator}>•</Text>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => console.log('Şartlar ve koşullar')}>
                     <Text style={styles.bottomLinkText}>Şartlar</Text>
                   </TouchableOpacity>
                   <Text style={styles.separator}>•</Text>
-                  <TouchableOpacity>
-                    <Text style={styles.bottomLinkText}>KVKK</Text>
+                  <TouchableOpacity onPress={() => console.log('KVKK')}>
+                    <Text style={styles.bottomLinkText}>KVKV</Text>
                   </TouchableOpacity>
                 </View>
               </View>

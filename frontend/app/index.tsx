@@ -2989,6 +2989,41 @@ const styles = StyleSheet.create({
     marginTop: 6,
     fontStyle: 'italic',
   },
+  // Footer action buttons
+  footerActionsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 10,
+  },
+  footerPrimaryButton: {
+    backgroundColor: '#2F80ED',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    minHeight: 44,
+  },
+  footerOutlineButton: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.8)',
+    paddingVertical: 11,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    marginLeft: 8,
+    minHeight: 44,
+  },
+  footerButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  footerOutlineText: {
+    color: 'rgba(255,255,255,0.95)',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+
 
     alignItems: 'center',
   },

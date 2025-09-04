@@ -960,6 +960,20 @@ export default function Index() {
               </View>
 
               <TouchableOpacity
+                style={[styles.primaryCTA, { marginBottom: 10 }]}
+                onPress={() => router.push('/live-feed')}
+                activeOpacity={0.9}
+              >
+                <LinearGradient
+                  colors={['#6A11CB', '#2575FC']}
+                  style={styles.primaryCTAGradient}
+                >
+                  <Ionicons name="chatbubbles" size={22} color="#fff" style={{ marginRight: 8 }} />
+                  <Text style={styles.primaryCTAText}>Canlı Akış</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 style={styles.primaryCTA}
                 onPress={() => setCurrentScreen('quote_request')}
                 activeOpacity={0.8}

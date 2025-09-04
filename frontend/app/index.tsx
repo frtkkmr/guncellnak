@@ -2850,6 +2850,7 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
     paddingVertical: 10,
     paddingHorizontal: 16,
+  },
   // Responsive footer desktop/mobile
   responsiveFooterContent: {
     flexDirection: 'column',

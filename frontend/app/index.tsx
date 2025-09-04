@@ -2679,9 +2679,10 @@ const styles = StyleSheet.create({
   },
   liveCTA: {
     borderRadius: 14,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
     overflow: 'hidden',
+    backgroundColor: 'transparent',
   },
 
   contactButtonText: {

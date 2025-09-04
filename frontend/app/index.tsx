@@ -912,6 +912,9 @@ export default function Index() {
                 </View>
               </View>
             </ScrollView>
+            
+            {/* Footer */}
+            <Footer onNavigate={(screen) => setCurrentScreen(screen)} />
           </SafeAreaView>
         </LinearGradient>
       </View>

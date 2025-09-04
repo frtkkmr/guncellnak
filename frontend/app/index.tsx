@@ -995,6 +995,30 @@ export default function Index() {
 
               <View style={styles.authButtons}>
                 <TouchableOpacity
+
+              {/* Canlı Akıştan Son Paylaşımlar - Örnek 5 Nakliyeci */}
+              <View style={{ marginTop: 16 }}>
+                <Text style={styles.liveFeedTitle}>Canlı Akıştan Son Paylaşımlar</Text>
+                <View style={styles.liveFeedList}>
+                  {[ 
+                    { id: 'l1', title: '2+1 Ev Taşıma', from: 'Beşiktaş', to: 'Kadıköy', when: 'Yarın sabah', vehicle: '3.5 Ton Kamyonet', note: 'Asansör gerekebilir' },
+                    { id: 'l2', title: 'Parça Eşya (Buzdolabı + Çamaşır)', from: 'Şişli', to: 'Ataşehir', when: 'Bugün 17:00', vehicle: 'Panelvan', note: 'Tek kat, kolay erişim' },
+                    { id: 'l3', title: 'Ofis Taşıma (4 oda)', from: 'Maslak', to: 'Kozyatağı', when: 'Cuma', vehicle: '7.5 Ton Kamyon', note: 'Ambalaj dahil' },
+                    { id: 'l4', title: 'Piyano Taşıma', from: 'Üsküdar', to: 'Beylikdüzü', when: 'Hafta sonu', vehicle: 'Özel ekip', note: 'Sigortalı taşıma' },
+                    { id: 'l5', title: 'Stüdyo Daire', from: 'Bakırköy', to: 'Pendik', when: 'Bugün', vehicle: 'Kamyonet', note: 'Hızlı teslim' },
+                  ].map((p) => (
+                    <View key={p.id} style={styles.livePostCardMini}>
+                      <View style={styles.livePostHeaderMini}>
+                        <Text style={styles.livePostTitleMini}>{p.title}</Text>
+                        <Text style={styles.livePostWhenMini}>{p.when}</Text>
+                      </View>
+                      <Text style={styles.livePostRouteMini}>{p.from} → {p.to}</Text>
+                      <Text style={styles.livePostMetaMini}>Araç: {p.vehicle} • {p.note}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
                   style={styles.authButton}
                   onPress={() => setCurrentScreen('login')}
                 >

@@ -2659,6 +2659,13 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignSelf: 'flex-start',
   },
+  liveCTA: {
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    overflow: 'hidden',
+  },
+
   contactButtonText: {
     color: '#fff',
     fontSize: 14,

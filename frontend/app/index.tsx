@@ -2686,32 +2686,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  
   // Compact Footer Content
   footerContent: {
     flexDirection: 'row',
-    paddingHorizontal: 12,
-    paddingVertical: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
   },
   footerColumnLeft: {
     flex: 1,
-    paddingRight: 8,
+    paddingRight: 12,
   },
   footerColumnRight: {
     flex: 1,
-    paddingLeft: 8,
+    paddingLeft: 12,
   },
   compactColumnTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   compactText: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 11,
+    fontSize: 12,
     lineHeight: 16,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   
   // Compact Links
@@ -2721,40 +2720,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   compactLinkText: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 11,
-    paddingVertical: 2,
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 2,
+    fontWeight: '500',
   },
   linkSeparator: {
-    color: 'rgba(255, 255, 255, 0.4)',
-    marginHorizontal: 6,
-    fontSize: 11,
+    color: 'rgba(255, 255, 255, 0.5)',
+    marginHorizontal: 4,
+    fontSize: 12,
   },
   
   // Compact Contact
   compactContactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 6,
+    paddingVertical: 2,
   },
   compactContactText: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 11,
-    marginLeft: 6,
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 12,
+    marginLeft: 8,
+    fontWeight: '500',
   },
   
   // Minimal Bottom
   compactBottomBar: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
     alignItems: 'center',
   },
   compactCopyright: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 10,
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 11,
     textAlign: 'center',
+    fontWeight: '400',
   },
   // Modal styles
   modalOverlay: {

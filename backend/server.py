@@ -580,6 +580,52 @@ async def public_reset_password(
         "new_password": new_password
     }
 
+# Utility: seed live feed with 5 sample posts if empty
+async def seed_live_feed_if_empty():
+    try:
+        count = await db.live_feed.count_documents({})
+        if count > 0:
+            return
+    except Exception:
+        return
+    samples = [
+        {
+            'title': '2+1 Ev Taşıma', 'from_location': 'Beşiktaş', 'to_location': 'Kadıköy',
+            'when': 'Yarın sabah', 'vehicle': '3.5 Ton Kamyonet', 'price_note': 'Asansör gerekebilir', 'extra': 'Paketleme kısmen hazır'
+        },
+        {
+            'title': 'Parça Eşya (Beyaz Eşya)', 'from_location': 'Şişli', 'to_location': 'Ataşehir',
+            'when': 'Bugün 17:00', 'vehicle': 'Panelvan', 'price_note': 'Tek kat, kolay erişim', 'extra': ''
+        },
+        {
+            'title': 'Ofis Taşıma (4 oda)', 'from_location': 'Maslak', 'to_location': 'Kozyatağı',
+            'when': 'Cuma', 'vehicle': '7.5 Ton Kamyon', 'price_note': 'Ambalaj dahil', 'extra': 'Kablolama hassas'
+        },
+        {
+            'title': 'Piyano Taşıma', 'from_location': 'Üsküdar', 'to_location': 'Beylikdüzü',
+            'when': 'Hafta sonu', 'vehicle': 'Özel ekip', 'price_note': 'Sigortalı taşıma', 'extra': ''
+        },
+        {
+            'title': 'Stüdyo Daire', 'from_location': 'Bakırköy', 'to_location': 'Pendik',
+            'when': 'Bugün', 'vehicle': 'Kamyonet', 'price_note': 'Hızlı teslim', 'extra': ''
+        },
+    ]
+    docs = []
+    for s in samples:
+        docs.append({
+            'id': str(uuid.uuid4()),
+            'mover_id': str(uuid.uuid4()),
+            'mover_name': 'Demo Nakliyeci',
+            'company_name': 'Demo Lojistik',
+            'phone': '+90 532 000 00 00',
+            **s,
+            'created_at': datetime.utcnow(),
+        })
+    try:
+        await db.live_feed.insert_many(docs)
+    except Exception:
+        pass
+
 # NEW: Live Feed endpoints
 @api_router.post("/live-feed", response_model=LivePost)
 async def create_live_post(post: LivePostCreate, current_user: User = Depends(get_current_user)):

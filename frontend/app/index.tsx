@@ -995,6 +995,7 @@ export default function Index() {
                 <View style={styles.dividerLine} />
               </View>
 
+              {/* Auth Buttons moved below Live Feed preview for better layout */}
               <View style={styles.authButtons}>
 
 

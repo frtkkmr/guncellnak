@@ -911,7 +911,10 @@ export default function Index() {
           style={styles.gradientBackground}
         >
           <SafeAreaView style={styles.safeArea}>
-            <ScrollView contentContainerStyle={styles.welcomeContainer}>
+            <ScrollView 
+              contentContainerStyle={styles.welcomeContainer}
+              showsVerticalScrollIndicator={false}
+            >
               <View style={styles.heroSection}>
                 <View style={styles.logoContainer}>
                   <View style={styles.logoIcon}>

@@ -2597,172 +2597,139 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
-  // Footer styles - Mobile First Design
+  // Compact Footer Styles - Mobile Optimized
   footer: {
     backgroundColor: '#2c3e50',
-    marginTop: 20, // Normal akış içinde
+    marginTop: 16,
   },
+  // Compact Calculator
   calculatorSection: {
     backgroundColor: '#34495e',
-    padding: 16,
-    marginBottom: 0,
+    padding: 12,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 16,
-    lineHeight: 22,
-  },
-  calculatorRow: {
-    flexDirection: 'column', // Mobile için dikey düzen
-    alignItems: 'stretch',
-    marginBottom: 16,
-  },
-  arrowIcon: {
-    alignSelf: 'center',
-    marginVertical: 8,
-  },
-  cityInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
     fontSize: 14,
-    color: '#2c3e50',
-    marginVertical: 4,
-  },
-  calculateButton: {
-    backgroundColor: '#3498db',
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  calculateButtonDisabled: {
-    backgroundColor: '#bdc3c7',
-  },
-  calculateButtonText: {
-    color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
-  },
-  distanceResult: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(39, 174, 96, 0.2)',
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  distanceText: {
-    color: '#27ae60',
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginLeft: 8,
-  },
-  cityList: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 11,
-    textAlign: 'center',
-    lineHeight: 16,
-    paddingHorizontal: 8,
-  },
-  footerContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 24,
-  },
-  footerColumn: {
-    width: '100%', // Mobile için full width
-    marginBottom: 24,
-    paddingHorizontal: 8,
-  },
-  columnTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
     color: '#fff',
-    marginBottom: 12,
+    textAlign: 'center',
+    marginBottom: 10,
   },
-  footerText: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
-    lineHeight: 20,
-    marginBottom: 16,
-  },
-  socialLinks: {
-    flexDirection: 'row',
-    justifyContent: 'center', // Mobilde ortala
-    marginBottom: 16,
-  },
-  socialButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    width: 44, // Mobil touch target
-    height: 44,
-    borderRadius: 22,
+  calculatorCompact: {
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  inputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 8,
+  },
+  compactInput: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    fontSize: 13,
+    color: '#2c3e50',
+  },
+  arrowCompact: {
     marginHorizontal: 8,
   },
-  footerLink: {
-    marginBottom: 10,
-    paddingVertical: 4,
+  compactButton: {
+    backgroundColor: '#3498db',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignSelf: 'stretch',
   },
-  footerLinkText: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
-    lineHeight: 20,
+  compactButtonText: {
+    color: '#fff',
+    fontSize: 13,
+    fontWeight: '600',
+    textAlign: 'center',
   },
-  serviceItem: {
+  compactResult: {
+    backgroundColor: 'rgba(39, 174, 96, 0.2)',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    marginTop: 8,
+  },
+  compactResultText: {
+    color: '#27ae60',
+    fontSize: 13,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  
+  // Compact Footer Content
+  footerContent: {
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+  },
+  footerColumnLeft: {
+    flex: 1,
+    paddingRight: 8,
+  },
+  footerColumnRight: {
+    flex: 1,
+    paddingLeft: 8,
+  },
+  compactColumnTitle: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 6,
+  },
+  compactText: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
+    fontSize: 11,
+    lineHeight: 16,
     marginBottom: 8,
-    lineHeight: 20,
+  },
+  
+  // Compact Links
+  compactLinks: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+  },
+  compactLinkText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 11,
     paddingVertical: 2,
   },
-  contactItem: {
+  linkSeparator: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    marginHorizontal: 6,
+    fontSize: 11,
+  },
+  
+  // Compact Contact
+  compactContactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
-    paddingVertical: 4,
+    marginBottom: 4,
   },
-  contactText: {
+  compactContactText: {
     color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
-    marginLeft: 8,
-    lineHeight: 20,
+    fontSize: 11,
+    marginLeft: 6,
   },
-  bottomBar: {
+  
+  // Minimal Bottom
+  compactBottomBar: {
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.1)',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     alignItems: 'center',
   },
-  copyrightText: {
+  compactCopyright: {
     color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 12,
+    fontSize: 10,
     textAlign: 'center',
-    marginBottom: 8,
-  },
-  bottomLinks: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-  },
-  bottomLinkText: {
-    color: 'rgba(255, 255, 255, 0.6)',
-    fontSize: 12,
-    paddingVertical: 4,
-  },
-  separator: {
-    color: 'rgba(255, 255, 255, 0.4)',
-    marginHorizontal: 8,
-    fontSize: 12,
   },
   // Modal styles
   modalOverlay: {

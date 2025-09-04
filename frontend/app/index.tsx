@@ -996,7 +996,7 @@ export default function Index() {
               </View>
 
               <View style={styles.authButtons}>
-                <TouchableOpacity
+
 
               {/* Canlı Akıştan Son Paylaşımlar - Canlı 5 adet */}
               <View style={{ marginTop: 16 }}>

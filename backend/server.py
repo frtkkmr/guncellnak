@@ -156,6 +156,31 @@ class VerificationRequest(BaseModel):
     verification_code: str
     verification_type: str  # email or phone
 
+# NEW: Live Feed models
+class LivePost(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    mover_id: str
+    mover_name: str
+    company_name: Optional[str] = None
+    phone: Optional[str] = None
+    title: str
+    from_location: Optional[str] = None
+    to_location: Optional[str] = None
+    when: Optional[str] = None  # text-based time info
+    vehicle: Optional[str] = None
+    price_note: Optional[str] = None
+    extra: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class LivePostCreate(BaseModel):
+    title: str
+    from_location: Optional[str] = None
+    to_location: Optional[str] = None
+    when: Optional[str] = None
+    vehicle: Optional[str] = None
+    price_note: Optional[str] = None
+    extra: Optional[str] = None
+
 # Helper functions
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     try:
@@ -484,11 +509,11 @@ async def reset_password_with_token(request: ResetPasswordRequest):
     
     # Check token and expiration
     if (user.get("password_reset_token") != request.token or 
-        user.get("password_reset_expires", datetime.min) < datetime.utcnow()):
+        user.get("password_reset_expires", datetime.min) &lt; datetime.utcnow()):
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
     
     # Validate new password
-    if len(request.new_password) < 6:
+    if len(request.new_password) &lt; 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
     
     # Update password and clear reset token
@@ -555,368 +580,48 @@ async def public_reset_password(
         "new_password": new_password
     }
 
-@api_router.post("/admin/create-test-data")
-async def create_test_data():
-    """Create test data for demonstration"""
-    
-    # Create 3 test mover companies
-    test_movers = [
-        {
-            "name": "Ahmet Taşımacılık",
-            "email": "ahmet@tasima.com", 
-            "phone": "05321234567",
-            "password": "123456",
-            "user_type": "mover",
-            "company_name": "Ahmet Taşımacılık Ltd.",
-            "company_description": "İstanbul genelinde 15 yıllık deneyimle güvenilir nakliyat hizmeti. Sigortalı taşımacılık, ambalajlama ve kurulum dahil."
-        },
-        {
-            "name": "Mehmet Nakliyat", 
-            "email": "mehmet@nakliyat.com",
-            "phone": "05339876543", 
-            "password": "123456",
-            "user_type": "mover",
-            "company_name": "Mehmet Express Nakliyat",
-            "company_description": "Avrupa yakası uzmanı nakliyat firması. Hızlı, güvenli ve uygun fiyatlı ev taşıma hizmetleri. 7/24 destek."
-        },
-        {
-            "name": "Özkan Lojistik",
-            "email": "ozkan@lojistik.com", 
-            "phone": "05367891234",
-            "password": "123456", 
-            "user_type": "mover",
-            "company_name": "Özkan Premium Lojistik",
-            "company_description": "Lüks ev eşyalarında uzman nakliyeci. Antika, piano, tablo taşımacılığında özel ekipman kullanırız."
-        }
-    ]
-    
-    # Create movers
-    created_movers = []
-    for mover_data in test_movers:
-        # Check if already exists
-        existing = await db.users.find_one({"email": mover_data["email"]})
-        if not existing:
-            user_dict = mover_data.copy()
-            password = user_dict.pop('password')
-            user_dict['hashed_password'] = get_password_hash(password)
-            user_dict['id'] = str(uuid.uuid4())
-            user_dict['is_active'] = True
-            user_dict['is_email_verified'] = True
-            user_dict['is_phone_verified'] = True
-            user_dict['is_approved'] = True
-            user_dict['created_at'] = datetime.utcnow()
-            user_dict['updated_at'] = datetime.utcnow()
-            
-            await db.users.insert_one(user_dict)
-            created_movers.append(user_dict)
-    
-    # Create 5 test moving requests
-    test_customers = [
-        {
-            "name": "Ayşe Yılmaz",
-            "email": "ayse@gmail.com",
-            "phone": "05301111111"
-        },
-        {
-            "name": "Can Demir", 
-            "email": "can@hotmail.com",
-            "phone": "05302222222"
-        },
-        {
-            "name": "Elif Kaya",
-            "email": "elif@yahoo.com", 
-            "phone": "05303333333"
-        },
-        {
-            "name": "Murat Şahin",
-            "email": "murat@gmail.com",
-            "phone": "05304444444"
-        },
-        {
-            "name": "Zehra Öz",
-            "email": "zehra@outlook.com",
-            "phone": "05305555555"
-        }
-    ]
-    
-    test_requests = [
-        {
-            "customer": test_customers[0],
-            "from_location": "Beşiktaş, İstanbul",
-            "to_location": "Kadıköy, İstanbul", 
-            "from_floor": 3,
-            "to_floor": 2,
-            "has_elevator_from": True,
-            "has_elevator_to": False,
-            "needs_mobile_elevator": True,
-            "truck_distance": "Kapıya kadar çıkabilir",
-            "packing_service": False,
-            "moving_date": datetime(2024, 7, 15, 9, 0),
-            "description": "2+1 daire, beyaz eşyalar dahil. Hassas eşyalar var (cam masalar)."
-        },
-        {
-            "customer": test_customers[1],
-            "from_location": "Şişli, İstanbul",
-            "to_location": "Ataşehir, İstanbul",
-            "from_floor": 1,
-            "to_floor": 5,
-            "has_elevator_from": False,
-            "has_elevator_to": True,
-            "needs_mobile_elevator": False,
-            "truck_distance": "50 metre mesafe var",
-            "packing_service": True,
-            "moving_date": datetime(2024, 7, 20, 14, 0),
-            "description": "3+1 büyük daire. Piyanom var, özel dikkat gerekiyor."
-        },
-        {
-            "customer": test_customers[2],
-            "from_location": "Bakırköy, İstanbul", 
-            "to_location": "Pendik, İstanbul",
-            "from_floor": 2,
-            "to_floor": 1,
-            "has_elevator_from": True,
-            "has_elevator_to": False,
-            "needs_mobile_elevator": False,
-            "truck_distance": "Sokak dar, 100m taşıma",
-            "packing_service": False,
-            "moving_date": datetime(2024, 7, 25, 10, 0),
-            "description": "Stüdyo daire, az eşya. Hızlı taşınma istiyorum."
-        },
-        {
-            "customer": test_customers[3],
-            "from_location": "Üsküdar, İstanbul",
-            "to_location": "Beylikdüzü, İstanbul", 
-            "from_floor": 4,
-            "to_floor": 3,
-            "has_elevator_from": False,
-            "has_elevator_to": True,
-            "needs_mobile_elevator": True,
-            "truck_distance": "Kapının önüne park edilebilir",
-            "packing_service": True,
-            "moving_date": datetime(2024, 8, 1, 8, 0),
-            "description": "4+1 dubleks ev. Çok eşya var, dikkatli ambalaj istiyorum."
-        },
-        {
-            "customer": test_customers[4],
-            "from_location": "Maltepe, İstanbul",
-            "to_location": "Tuzla, İstanbul",
-            "from_floor": 0,
-            "to_floor": 2,  
-            "has_elevator_from": False,
-            "has_elevator_to": False,
-            "needs_mobile_elevator": False,
-            "truck_distance": "Bahçeli ev, kolay erişim",
-            "packing_service": False,
-            "moving_date": datetime(2024, 8, 5, 11, 0),
-            "description": "Müstakil evden apartmana taşınma. Bahçe mobilyaları da var."
-        }
-    ]
-    
-    # Create customers and requests
-    created_requests = []
-    for i, req_data in enumerate(test_requests):
-        customer_data = req_data["customer"]
-        
-        # Create customer if not exists
-        customer = await db.users.find_one({"email": customer_data["email"]})
-        if not customer:
-            customer_dict = {
-                "id": str(uuid.uuid4()),
-                "name": customer_data["name"],
-                "email": customer_data["email"], 
-                "phone": customer_data["phone"],
-                "user_type": "customer",
-                "hashed_password": get_password_hash("123456"),
-                "is_active": True,
-                "is_email_verified": True,
-                "is_phone_verified": True,
-                "is_approved": True,
-                "created_at": datetime.utcnow(),
-                "updated_at": datetime.utcnow()
-            }
-            await db.users.insert_one(customer_dict)
-            customer = customer_dict
-        
-        # Create moving request
-        request_dict = {
-            "id": str(uuid.uuid4()),
-            "customer_id": customer["id"],
-            "customer_name": customer["name"],
-            "from_location": req_data["from_location"],
-            "to_location": req_data["to_location"],
-            "from_floor": req_data["from_floor"],
-            "to_floor": req_data["to_floor"],
-            "has_elevator_from": req_data["has_elevator_from"],
-            "has_elevator_to": req_data["has_elevator_to"],
-            "needs_mobile_elevator": req_data["needs_mobile_elevator"],
-            "truck_distance": req_data["truck_distance"],
-            "packing_service": req_data["packing_service"],
-            "moving_date": req_data["moving_date"],
-            "description": req_data["description"],
-            "status": "pending",
-            "created_at": datetime.utcnow()
-        }
-        
-        await db.moving_requests.insert_one(request_dict)
-        created_requests.append(request_dict)
-        
-        # Create some bids for the first 3 requests
-        if i < 3 and created_movers:
-            for j, mover in enumerate(created_movers):
-                if j <= i:  # Create varying numbers of bids
-                    bid_dict = {
-                        "id": str(uuid.uuid4()),
-                        "request_id": request_dict["id"],
-                        "mover_id": mover["id"],
-                        "mover_name": mover["name"],
-                        "company_name": mover["company_name"],
-                        "price": 2000 + (j * 500) + (i * 200),
-                        "message": f"Deneyimli ekibimizle güvenli taşıma garantisi. {mover['company_name']}",
-                        "status": "pending",
-                        "created_at": datetime.utcnow()
-                    }
-                    await db.bids.insert_one(bid_dict)
-    
-    return {
-        "message": "Test verileri başarıyla oluşturuldu!",
-        "created": {
-            "movers": len(created_movers),
-            "customers": len(test_customers), 
-            "requests": len(created_requests),
-            "bids": "Çeşitli teklifler oluşturuldu"
-        }
-    }
+# NEW: Live Feed endpoints
+@api_router.post("/live-feed", response_model=LivePost)
+async def create_live_post(post: LivePostCreate, current_user: User = Depends(get_current_user)):
+    if current_user.user_type != 'mover':
+        raise HTTPException(status_code=403, detail="Only movers can create live posts")
+    post_dict = post.dict()
+    post_dict.update({
+        'mover_id': current_user.id,
+        'mover_name': current_user.name,
+        'company_name': getattr(current_user, 'company_name', None),
+        'phone': current_user.phone,
+        'created_at': datetime.utcnow(),
+    })
+    live_post = LivePost(**post_dict)
+    await db.live_feed.insert_one(live_post.dict())
+    return live_post
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+@api_router.get("/live-feed", response_model=List[LivePost])
+async def get_live_feed_public():
+    # Return latest 100 posts without phone numbers
+    posts = await db.live_feed.find().sort("created_at", -1).limit(100).to_list(100)
+    sanitized = []
+    for p in posts:
+        p.pop('phone', None)
+        sanitized.append(LivePost(**p))
+    return sanitized
 
-@api_router.post("/admin/update-user-role/{user_email}")
-async def update_user_role(user_email: str, request_data: dict, current_user: User = Depends(get_current_user)):
-    """Update user role (admin only)"""
-    
-    # Check if current user is admin
-    if current_user.user_type != 'admin':
-        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
-    
-    # Find user
-    user = await db.users.find_one({"email": user_email})
-    if not user:
-        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
-    
-    # Update user role
-    role = request_data.get('role')
-    valid_roles = ['customer', 'mover', 'moderator', 'admin']
-    if role not in valid_roles:
-        raise HTTPException(status_code=400, detail="Geçersiz rol")
-    
-    await db.users.update_one(
-        {"email": user_email},
-        {"$set": {"user_type": role, "updated_at": datetime.utcnow()}}
-    )
-    
-    return {
-        "message": f"Kullanıcı {user_email} rolü '{role}' olarak güncellendi",
-        "user": user['name'],
-        "new_role": role
-    }
+@api_router.get("/live-feed/full", response_model=List[LivePost])
+async def get_live_feed_full(current_user: User = Depends(get_current_user)):
+    # Movers/Admins can see phone numbers
+    if current_user.user_type not in ['mover', 'admin']:
+        # Fallback to public variant
+        return await get_live_feed_public()
+    posts = await db.live_feed.find().sort("created_at", -1).limit(100).to_list(100)
+    return [LivePost(**p) for p in posts]
 
-@api_router.post("/admin/ban-user/{user_email}")
-async def ban_user(user_email: str, request_data: dict, current_user: User = Depends(get_current_user)):
-    """Ban user for specified days (admin only)"""
-    
-    # Check if current user is admin
-    if current_user.user_type != 'admin':
-        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
-    
-    # Find user
-    user = await db.users.find_one({"email": user_email})
-    if not user:
-        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
-    
-    # Calculate ban expiry date
-    ban_days = request_data.get('ban_days', 3)
-    reason = request_data.get('reason', 'Kullanıcı davranış kurallarını ihlal etti')
-    ban_until = datetime.utcnow() + timedelta(days=ban_days)
-    
-    # Update user with ban info
-    await db.users.update_one(
-        {"email": user_email},
-        {"$set": {
-            "is_active": False,
-            "ban_until": ban_until,
-            "ban_reason": reason,
-            "banned_by": current_user.email,
-            "updated_at": datetime.utcnow()
-        }}
-    )
-    
-    return {
-        "message": f"Kullanıcı {user_email} {ban_days} gün boyunca yasaklandı",
-        "user": user['name'],
-        "ban_until": ban_until.isoformat(),
-        "reason": reason
-    }
-
-@api_router.post("/admin/unban-user/{user_email}")
-async def unban_user(user_email: str, current_user: User = Depends(get_current_user)):
-    """Unban user (admin only)"""
-    
-    # Check if current user is admin
-    if current_user.user_type != 'admin':
-        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
-    
-    # Find user
-    user = await db.users.find_one({"email": user_email})
-    if not user:
-        raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı")
-    
-    # Remove ban
-    await db.users.update_one(
-        {"email": user_email},
-        {"$set": {
-            "is_active": True,
-            "updated_at": datetime.utcnow()
-        },
-        "$unset": {
-            "ban_until": "",
-            "ban_reason": "",
-            "banned_by": ""
-        }}
-    )
-    
-    return {
-        "message": f"Kullanıcı {user_email} yasağı kaldırıldı",
-        "user": user['name']
-    }
-
-@api_router.delete("/admin/delete-request/{request_id}")
-async def delete_request(request_id: str, current_user: User = Depends(get_current_user)):
-    """Delete moving request (admin only)"""
-    
-    # Check if current user is admin
-    if current_user.user_type != 'admin':
-        raise HTTPException(status_code=403, detail="Admin yetkisi gerekiyor")
-    
-    # Find and delete request
-    request = await db.moving_requests.find_one({"id": request_id})
-    if not request:
-        raise HTTPException(status_code=404, detail="Talep bulunamadı")
-    
-    # Delete related bids first
-    await db.bids.delete_many({"request_id": request_id})
-    
-    # Delete the request
-    await db.moving_requests.delete_one({"id": request_id})
-    
-    return {
-        "message": f"Talep başarıyla silindi",
-        "request_id": request_id,
-        "customer": request.get('customer_name')
-    }
+@api_router.delete("/admin/live-feed/{post_id}")
+async def delete_live_post(post_id: str, current_user: User = Depends(get_admin_user)):
+    result = await db.live_feed.delete_one({"id": post_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Post not found")
+    return {"message": "Post deleted"}
 
 # Include the router in the main app
 app.include_router(api_router)

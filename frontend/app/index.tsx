@@ -1044,8 +1044,7 @@ export default function Index() {
                       <TouchableOpacity
                         style={styles.contactButton}
                         onPress={() => {
-                          showSuccess('Firmalarla iletişim için kayıt olun!');
-                          setCurrentScreen('register');
+                          router.push('/live-feed');
                         }}
                       >
                         <Text style={styles.contactButtonText}>İletişime Geç</Text>

@@ -15,7 +15,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { adminStyles } from '../components/AdminStyles';
-import { Footer } from '../components/Footer';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 

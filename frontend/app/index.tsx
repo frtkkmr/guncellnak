@@ -82,6 +82,11 @@ export default function Index() {
   const [toCity, setToCity] = useState('');
   const [distance, setDistance] = useState('');
   const [calculating, setCalculating] = useState(false);
+  // Responsive breakpoints
+  const { width } = useWindowDimensions();
+  const isDesktop = width >= 1024;
+  const isTablet = width >= 768;
+
 
   // Türkiye'nin 81 ili ve koordinatları
   const turkeyProvinces = {

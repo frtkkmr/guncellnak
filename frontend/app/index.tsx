@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import {
   View,
   Text,

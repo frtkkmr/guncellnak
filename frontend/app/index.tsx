@@ -183,17 +183,22 @@ export default function Index() {
       return;
     }
     
-    const from = turkeyProvinces[fromCity.trim()];
-    const to = turkeyProvinces[toCity.trim()];
+    // Büyük/küçük harf duyarsız karşılaştırma için normalize et
+    const normalizedFromCity = fromCity.trim().charAt(0).toUpperCase() + fromCity.trim().slice(1).toLowerCase();
+    const normalizedToCity = toCity.trim().charAt(0).toUpperCase() + toCity.trim().slice(1).toLowerCase();
     
+    const from = turkeyProvinces[normalizedFromCity];
+    const to = turkeyProvinces[normalizedToCity];
+    
+    console.log('Normalize edilmiş şehirler:', normalizedFromCity, normalizedToCity);
     console.log('Şehir koordinatları:', from, to);
     
     if (!from || !to) {
-      setDistance('Şehir bulunamadı! Lütfen doğru il adını yazın.');
+      setDistance('Şehir bulunamadı! Türkçe karakterler ile yazın (ör: İstanbul, Ankara)');
       return;
     }
 
-    if (fromCity.trim() === toCity.trim()) {
+    if (normalizedFromCity === normalizedToCity) {
       setDistance('0 km - Aynı şehir');
       return;
     }

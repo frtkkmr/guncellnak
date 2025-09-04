@@ -1062,6 +1062,103 @@ export default function Index() {
                   </View>
                 </View>
               </View>
+
+              {/* Mobile-First Compact Footer */}
+              <View style={styles.footer}>
+                {/* Distance Calculator - Mobile Optimized */}
+                <View style={styles.calculatorSection}>
+                  <Text style={styles.sectionTitle}>🗺️ Mesafe Hesaplayıcı</Text>
+                  <View style={styles.calculatorCompact}>
+                    <View style={styles.inputContainer}>
+                      <TextInput
+                        style={styles.mobileInput}
+                        placeholder="Nereden? (ör: istanbul)"
+                        placeholderTextColor="#7f8c8d"
+                        value={fromCity}
+                        onChangeText={setFromCity}
+                        autoCapitalize="words"
+                      />
+                      <View style={styles.arrowContainer}>
+                        <Ionicons name="arrow-down" size={18} color="#3498db" />
+                      </View>
+                      <TextInput
+                        style={styles.mobileInput}
+                        placeholder="Nereye? (ör: ankara)"
+                        placeholderTextColor="#7f8c8d"
+                        value={toCity}
+                        onChangeText={setToCity}
+                        autoCapitalize="words"
+                      />
+                    </View>
+                    
+                    <TouchableOpacity 
+                      style={[styles.mobileButton, calculating && styles.calculateButtonDisabled]} 
+                      onPress={calculateDistance}
+                      disabled={calculating}
+                    >
+                      <Text style={styles.mobileButtonText}>
+                        {calculating ? 'Hesaplanıyor...' : '📍 Mesafe Hesapla'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  
+                  {distance ? (
+                    <View style={styles.mobileResult}>
+                      <Text style={styles.mobileResultText}>{distance}</Text>
+                    </View>
+                  ) : null}
+                  
+                  <Text style={styles.mobileHint}>
+                    Türkiye'nin 81 ili desteklenmektedir
+                  </Text>
+                </View>
+
+                {/* Compact Footer Content */}
+                <View style={styles.footerContent}>
+                  <View style={styles.footerColumnLeft}>
+                    <Text style={styles.compactColumnTitle}>Nakliyat Platformu</Text>
+                    <Text style={styles.compactText}>Türkiye'nin güvenilir nakliyat hizmeti.</Text>
+                    
+                    <View style={styles.compactLinks}>
+                      <TouchableOpacity onPress={() => setCurrentScreen('quote_request')}>
+                        <Text style={styles.compactLinkText}>Teklif Al</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.linkSeparator}>•</Text>
+                      <TouchableOpacity onPress={() => setCurrentScreen('register')}>
+                        <Text style={styles.compactLinkText}>Kayıt Ol</Text>
+                      </TouchableOpacity>
+                      <Text style={styles.linkSeparator}>•</Text>
+                      <TouchableOpacity onPress={() => setCurrentScreen('login')}>
+                        <Text style={styles.compactLinkText}>Giriş</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+                  <View style={styles.footerColumnRight}>
+                    <Text style={styles.compactColumnTitle}>İletişim</Text>
+                    
+                    <TouchableOpacity style={styles.compactContactItem}>
+                      <Ionicons name="call" size={14} color="#3498db" />
+                      <Text style={styles.compactContactText}>0850 555 12 34</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity style={styles.compactContactItem}>
+                      <Ionicons name="mail" size={14} color="#3498db" />
+                      <Text style={styles.compactContactText}>info@nakliyat.com</Text>
+                    </TouchableOpacity>
+                    
+                    <View style={styles.compactContactItem}>
+                      <Ionicons name="time" size={14} color="#3498db" />
+                      <Text style={styles.compactContactText}>7/24 Destek</Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Minimal Bottom */}
+                <View style={styles.compactBottomBar}>
+                  <Text style={styles.compactCopyright}>© 2024 Nakliyat Platformu</Text>
+                </View>
+              </View>
             </ScrollView>
             
             {/* Compact Footer */}

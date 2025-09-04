@@ -1044,157 +1044,92 @@ export default function Index() {
               </View>
             </ScrollView>
             
-            {/* Footer */}
+            {/* Compact Footer */}
             <View style={styles.footer}>
-              {/* Distance Calculator */}
+              {/* Distance Calculator - Compact */}
               <View style={styles.calculatorSection}>
-                <Text style={styles.sectionTitle}>🗺️ Türkiye Şehirler Arası Mesafe Hesaplayıcı</Text>
-                <View style={styles.calculatorRow}>
-                  <TextInput
-                    style={styles.cityInput}
-                    placeholder="Nereden? (örn: İstanbul)"
-                    placeholderTextColor="#95a5a6"
-                    value={fromCity}
-                    onChangeText={setFromCity}
-                  />
-                  <Ionicons name="arrow-forward" size={20} color="#3498db" style={styles.arrowIcon} />
-                  <TextInput
-                    style={styles.cityInput}
-                    placeholder="Nereye? (örn: Ankara)"
-                    placeholderTextColor="#95a5a6"
-                    value={toCity}
-                    onChangeText={setToCity}
-                  />
+                <Text style={styles.sectionTitle}>🗺️ Mesafe Hesaplayıcı</Text>
+                <View style={styles.calculatorCompact}>
+                  <View style={styles.inputRow}>
+                    <TextInput
+                      style={styles.compactInput}
+                      placeholder="Nereden?"
+                      placeholderTextColor="#95a5a6"
+                      value={fromCity}
+                      onChangeText={setFromCity}
+                    />
+                    <Ionicons name="arrow-forward" size={16} color="#3498db" style={styles.arrowCompact} />
+                    <TextInput
+                      style={styles.compactInput}
+                      placeholder="Nereye?"
+                      placeholderTextColor="#95a5a6"
+                      value={toCity}
+                      onChangeText={setToCity}
+                    />
+                  </View>
+                  
+                  <TouchableOpacity 
+                    style={[styles.compactButton, calculating && styles.calculateButtonDisabled]} 
+                    onPress={calculateDistance}
+                    disabled={calculating}
+                  >
+                    <Text style={styles.compactButtonText}>
+                      {calculating ? 'Hesaplanıyor...' : 'Hesapla'}
+                    </Text>
+                  </TouchableOpacity>
                 </View>
-                
-                <TouchableOpacity 
-                  style={[styles.calculateButton, calculating && styles.calculateButtonDisabled]} 
-                  onPress={calculateDistance}
-                  disabled={calculating}
-                >
-                  <Text style={styles.calculateButtonText}>
-                    {calculating ? 'Hesaplanıyor...' : '📍 Mesafe Hesapla'}
-                  </Text>
-                </TouchableOpacity>
                 
                 {distance ? (
-                  <View style={styles.distanceResult}>
-                    <Ionicons name="location" size={16} color="#27ae60" />
-                    <Text style={styles.distanceText}>Mesafe: {distance}</Text>
+                  <View style={styles.compactResult}>
+                    <Text style={styles.compactResultText}>{distance}</Text>
                   </View>
                 ) : null}
-                
-                <Text style={styles.cityList}>
-                  📍 Türkiye'nin 81 ili desteklenmektedir: İstanbul, Ankara, İzmir, Bursa, Antalya, Adana, Konya...
-                </Text>
               </View>
 
-              {/* Footer Content */}
+              {/* Footer Content - 2 Columns Only */}
               <View style={styles.footerContent}>
-                <View style={styles.footerColumn}>
-                  <Text style={styles.columnTitle}>🚛 Nakliyat Platformu</Text>
-                  <Text style={styles.footerText}>
-                    Türkiye'nin en güvenilir nakliyat hizmeti. Uzman ekibimizle güvenli taşımacılık.
-                  </Text>
+                <View style={styles.footerColumnLeft}>
+                  <Text style={styles.compactColumnTitle}>Nakliyat Platformu</Text>
+                  <Text style={styles.compactText}>Türkiye'nin güvenilir nakliyat hizmeti.</Text>
                   
-                  <View style={styles.socialLinks}>
-                    <TouchableOpacity 
-                      style={styles.socialButton}
-                      onPress={() => console.log('Telefon arama')}
-                    >
-                      <Ionicons name="call" size={20} color="#3498db" />
+                  <View style={styles.compactLinks}>
+                    <TouchableOpacity onPress={() => setCurrentScreen('quote_request')}>
+                      <Text style={styles.compactLinkText}>Teklif Al</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                      style={styles.socialButton}
-                      onPress={() => console.log('Email gönder')}
-                    >
-                      <Ionicons name="mail" size={20} color="#3498db" />
+                    <Text style={styles.linkSeparator}>•</Text>
+                    <TouchableOpacity onPress={() => setCurrentScreen('register')}>
+                      <Text style={styles.compactLinkText}>Kayıt Ol</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                      style={styles.socialButton}
-                      onPress={() => console.log('WhatsApp aç')}
-                    >
-                      <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
+                    <Text style={styles.linkSeparator}>•</Text>
+                    <TouchableOpacity onPress={() => setCurrentScreen('login')}>
+                      <Text style={styles.compactLinkText}>Giriş</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
 
-                <View style={styles.footerColumn}>
-                  <Text style={styles.columnTitle}>⚡ Hızlı Linkler</Text>
-                  <TouchableOpacity 
-                    style={styles.footerLink} 
-                    onPress={() => setCurrentScreen('quote_request')}
-                  >
-                    <Text style={styles.footerLinkText}>🎯 Teklif Al</Text>
+                <View style={styles.footerColumnRight}>
+                  <Text style={styles.compactColumnTitle}>İletişim</Text>
+                  
+                  <TouchableOpacity style={styles.compactContactItem}>
+                    <Ionicons name="call" size={14} color="#3498db" />
+                    <Text style={styles.compactContactText}>0850 555 12 34</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={styles.footerLink} 
-                    onPress={() => setCurrentScreen('register')}
-                  >
-                    <Text style={styles.footerLinkText}>📝 Kayıt Ol</Text>
+                  
+                  <TouchableOpacity style={styles.compactContactItem}>
+                    <Ionicons name="mail" size={14} color="#3498db" />
+                    <Text style={styles.compactContactText}>info@nakliyat.com</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={styles.footerLink} 
-                    onPress={() => setCurrentScreen('login')}
-                  >
-                    <Text style={styles.footerLinkText}>🔐 Giriş Yap</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View style={styles.footerColumn}>
-                  <Text style={styles.columnTitle}>🎯 Hizmetlerimiz</Text>
-                  <Text style={styles.serviceItem}>🏠 Ev Taşımacılığı</Text>
-                  <Text style={styles.serviceItem}>🏢 Ofis Taşımacılığı</Text>
-                  <Text style={styles.serviceItem}>📦 Ambalajlama Hizmeti</Text>
-                  <Text style={styles.serviceItem}>🚛 Şehirler Arası</Text>
-                  <Text style={styles.serviceItem}>🏗️ Araç Kiralama</Text>
-                </View>
-
-                <View style={styles.footerColumn}>
-                  <Text style={styles.columnTitle}>📞 İletişim</Text>
-                  <TouchableOpacity 
-                    style={styles.contactItem}
-                    onPress={() => console.log('Telefon arama')}
-                  >
-                    <Ionicons name="call" size={16} color="#3498db" />
-                    <Text style={styles.contactText}>0850 555 12 34</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    style={styles.contactItem}
-                    onPress={() => console.log('Email gönder')}
-                  >
-                    <Ionicons name="mail" size={16} color="#3498db" />
-                    <Text style={styles.contactText}>info@nakliyat.com</Text>
-                  </TouchableOpacity>
-                  <View style={styles.contactItem}>
-                    <Ionicons name="location" size={16} color="#3498db" />
-                    <Text style={styles.contactText}>İstanbul, Türkiye</Text>
-                  </View>
-                  <View style={styles.contactItem}>
-                    <Ionicons name="time" size={16} color="#3498db" />
-                    <Text style={styles.contactText}>7/24 Müşteri Desteği</Text>
+                  
+                  <View style={styles.compactContactItem}>
+                    <Ionicons name="time" size={14} color="#3498db" />
+                    <Text style={styles.compactContactText}>7/24 Destek</Text>
                   </View>
                 </View>
               </View>
 
-              {/* Bottom Bar */}
-              <View style={styles.bottomBar}>
-                <Text style={styles.copyrightText}>
-                  © 2024 Nakliyat Platformu. Tüm hakları saklıdır.
-                </Text>
-                <View style={styles.bottomLinks}>
-                  <TouchableOpacity onPress={() => console.log('Gizlilik politikası')}>
-                    <Text style={styles.bottomLinkText}>Gizlilik</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.separator}>•</Text>
-                  <TouchableOpacity onPress={() => console.log('Şartlar ve koşullar')}>
-                    <Text style={styles.bottomLinkText}>Şartlar</Text>
-                  </TouchableOpacity>
-                  <Text style={styles.separator}>•</Text>
-                  <TouchableOpacity onPress={() => console.log('KVKK')}>
-                    <Text style={styles.bottomLinkText}>KVKV</Text>
-                  </TouchableOpacity>
-                </View>
+              {/* Minimal Bottom Bar */}
+              <View style={styles.compactBottomBar}>
+                <Text style={styles.compactCopyright}>© 2024 Nakliyat Platformu</Text>
               </View>
             </View>
           </SafeAreaView>

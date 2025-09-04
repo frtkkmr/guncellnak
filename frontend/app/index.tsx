@@ -1064,26 +1064,30 @@ export default function Index() {
                 </View>
               </View>
 
-              {/* Mobile-First Compact Footer */}
+              {/* Responsive Footer */}
               <View style={styles.footer}>
-                {/* Distance Calculator - Mobile Optimized */}
+                {/* Distance Calculator - Responsive */}
                 <View style={styles.calculatorSection}>
                   <Text style={styles.sectionTitle}>🗺️ Mesafe Hesaplayıcı</Text>
                   <View style={styles.calculatorCompact}>
-                    <View style={styles.inputContainer}>
+                    <View style={styles.responsiveInputContainer}>
                       <TextInput
-                        style={styles.mobileInput}
+                        style={styles.responsiveInput}
                         placeholder="Nereden? (ör: istanbul)"
                         placeholderTextColor="#7f8c8d"
                         value={fromCity}
                         onChangeText={setFromCity}
                         autoCapitalize="words"
                       />
-                      <View style={styles.arrowContainer}>
-                        <Ionicons name="arrow-down" size={18} color="#3498db" />
+                      <View style={styles.responsiveArrowContainer}>
+                        <Ionicons 
+                          name={Platform.select({ web: "arrow-forward", default: "arrow-down" })} 
+                          size={18} 
+                          color="#3498db" 
+                        />
                       </View>
                       <TextInput
-                        style={styles.mobileInput}
+                        style={styles.responsiveInput}
                         placeholder="Nereye? (ör: ankara)"
                         placeholderTextColor="#7f8c8d"
                         value={toCity}
@@ -1093,71 +1097,78 @@ export default function Index() {
                     </View>
                     
                     <TouchableOpacity 
-                      style={[styles.mobileButton, calculating && styles.calculateButtonDisabled]} 
+                      style={[styles.responsiveButton, calculating && styles.calculateButtonDisabled]} 
                       onPress={calculateDistance}
                       disabled={calculating}
                     >
-                      <Text style={styles.mobileButtonText}>
+                      <Text style={styles.responsiveButtonText}>
                         {calculating ? 'Hesaplanıyor...' : '📍 Mesafe Hesapla'}
                       </Text>
                     </TouchableOpacity>
                   </View>
                   
                   {distance ? (
-                    <View style={styles.mobileResult}>
-                      <Text style={styles.mobileResultText}>{distance}</Text>
+                    <View style={styles.responsiveResult}>
+                      <Text style={styles.responsiveResultText}>{distance}</Text>
                     </View>
                   ) : null}
                   
-                  <Text style={styles.mobileHint}>
+                  <Text style={styles.responsiveHint}>
                     Türkiye'nin 81 ili desteklenmektedir
                   </Text>
                 </View>
 
-                {/* Compact Footer Content */}
-                <View style={styles.footerContent}>
-                  <View style={styles.footerColumnLeft}>
-                    <Text style={styles.compactColumnTitle}>Nakliyat Platformu</Text>
-                    <Text style={styles.compactText}>Türkiye'nin güvenilir nakliyat hizmeti.</Text>
+                {/* Responsive Footer Content */}
+                <View style={styles.responsiveFooterContent}>
+                  <View style={styles.responsiveFooterColumn}>
+                    <Text style={styles.responsiveColumnTitle}>Sadece Nakliyat</Text>
+                    <Text style={styles.responsiveText}>Türkiye'nin güvenilir nakliyat hizmeti.</Text>
                     
-                    <View style={styles.compactLinks}>
+                    <View style={styles.responsiveLinks}>
                       <TouchableOpacity onPress={() => setCurrentScreen('quote_request')}>
-                        <Text style={styles.compactLinkText}>Teklif Al</Text>
+                        <Text style={styles.responsiveLinkText}>Teklif Al</Text>
                       </TouchableOpacity>
-                      <Text style={styles.linkSeparator}>•</Text>
+                      <Text style={styles.responsiveSeparator}>•</Text>
                       <TouchableOpacity onPress={() => setCurrentScreen('register')}>
-                        <Text style={styles.compactLinkText}>Kayıt Ol</Text>
+                        <Text style={styles.responsiveLinkText}>Kayıt Ol</Text>
                       </TouchableOpacity>
-                      <Text style={styles.linkSeparator}>•</Text>
+                      <Text style={styles.responsiveSeparator}>•</Text>
                       <TouchableOpacity onPress={() => setCurrentScreen('login')}>
-                        <Text style={styles.compactLinkText}>Giriş</Text>
+                        <Text style={styles.responsiveLinkText}>Giriş</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
 
-                  <View style={styles.footerColumnRight}>
-                    <Text style={styles.compactColumnTitle}>İletişim</Text>
+                  <View style={styles.responsiveFooterColumn}>
+                    <Text style={styles.responsiveColumnTitle}>Hizmetlerimiz</Text>
+                    <Text style={styles.responsiveServiceItem}>🏠 Ev Taşımacılığı</Text>
+                    <Text style={styles.responsiveServiceItem}>🏢 Ofis Taşımacılığı</Text>
+                    <Text style={styles.responsiveServiceItem}>📦 Ambalajlama</Text>
+                  </View>
+
+                  <View style={styles.responsiveFooterColumn}>
+                    <Text style={styles.responsiveColumnTitle}>İletişim</Text>
                     
-                    <TouchableOpacity style={styles.compactContactItem}>
-                      <Ionicons name="call" size={14} color="#3498db" />
-                      <Text style={styles.compactContactText}>0850 555 12 34</Text>
+                    <TouchableOpacity style={styles.responsiveContactItem}>
+                      <Ionicons name="call" size={16} color="#3498db" />
+                      <Text style={styles.responsiveContactText}>0850 555 12 34</Text>
                     </TouchableOpacity>
                     
-                    <TouchableOpacity style={styles.compactContactItem}>
-                      <Ionicons name="mail" size={14} color="#3498db" />
-                      <Text style={styles.compactContactText}>info@nakliyat.com</Text>
+                    <TouchableOpacity style={styles.responsiveContactItem}>
+                      <Ionicons name="mail" size={16} color="#3498db" />
+                      <Text style={styles.responsiveContactText}>info@sadecenakliyat.com</Text>
                     </TouchableOpacity>
                     
-                    <View style={styles.compactContactItem}>
-                      <Ionicons name="time" size={14} color="#3498db" />
-                      <Text style={styles.compactContactText}>7/24 Destek</Text>
+                    <View style={styles.responsiveContactItem}>
+                      <Ionicons name="time" size={16} color="#3498db" />
+                      <Text style={styles.responsiveContactText}>7/24 Destek</Text>
                     </View>
                   </View>
                 </View>
 
-                {/* Minimal Bottom */}
-                <View style={styles.compactBottomBar}>
-                  <Text style={styles.compactCopyright}>© 2024 Nakliyat Platformu</Text>
+                {/* Bottom Bar */}
+                <View style={styles.responsiveBottomBar}>
+                  <Text style={styles.responsiveCopyright}>© 2024 Sadece Nakliyat - Tüm hakları saklıdır.</Text>
                 </View>
               </View>
             </ScrollView>

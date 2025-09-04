@@ -509,7 +509,7 @@ async def reset_password_with_token(request: ResetPasswordRequest):
     
     # Check token and expiration
     if (user.get("password_reset_token") != request.token or 
-        user.get("password_reset_expires", datetime.min) &lt; datetime.utcnow()):
+        user.get("password_reset_expires", datetime.min) < datetime.utcnow()):
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
     
     # Validate new password

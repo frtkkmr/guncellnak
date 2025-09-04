@@ -1047,8 +1047,17 @@ export default function Index() {
                         onPress={() => {
                           router.push('/live-feed');
                         }}
+                        activeOpacity={0.9}
                       >
-                        <Text style={styles.contactButtonText}>İletişime Geç</Text>
+                        <LinearGradient
+                          colors={['#6A11CB', '#2575FC']}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={styles.liveCTAInner}
+                        >
+                          <Ionicons name="chatbubbles" size={18} color="#fff" style={{ marginRight: 8 }} />
+                          <Text style={styles.contactButtonText}>Canlı Akış</Text>
+                        </LinearGradient>
                       </TouchableOpacity>
                     </View>
                   ))}

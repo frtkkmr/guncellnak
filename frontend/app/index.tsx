@@ -995,10 +995,6 @@ export default function Index() {
                 <View style={styles.dividerLine} />
               </View>
 
-              {/* Auth Buttons moved below Live Feed preview for better layout */}
-              <View style={styles.authButtons}>
-
-
               {/* Canlı Akıştan Son Paylaşımlar - Canlı 5 adet */}
               <View style={{ marginTop: 16 }}>
                 <Text style={styles.liveFeedTitle}>Canlı Akıştan Son Paylaşımlar</Text>
@@ -1016,6 +1012,9 @@ export default function Index() {
                 </View>
               </View>
 
+              {/* Auth Buttons */}
+              <View style={styles.authButtons}>
+                <TouchableOpacity
                   style={styles.authButton}
                   onPress={() => setCurrentScreen('login')}
                 >

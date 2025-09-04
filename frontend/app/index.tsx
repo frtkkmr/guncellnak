@@ -2655,6 +2655,11 @@ const styles = StyleSheet.create({
   calculatorSection: {
     backgroundColor: '#34495e',
     padding: 16,
+    alignSelf: 'center',
+    width: '100%',
+    maxWidth: 1200,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
   },
   sectionTitle: {
     fontSize: 15,

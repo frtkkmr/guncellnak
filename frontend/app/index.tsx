@@ -75,6 +75,12 @@ export default function Index() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showUserActions, setShowUserActions] = useState(false);
 
+  // Distance calculator states
+  const [fromCity, setFromCity] = useState('');
+  const [toCity, setToCity] = useState('');
+  const [distance, setDistance] = useState('');
+  const [calculating, setCalculating] = useState(false);
+
   // Auto-fetch admin data when entering admin panel
   React.useEffect(() => {
     if (currentScreen === 'admin_panel') {

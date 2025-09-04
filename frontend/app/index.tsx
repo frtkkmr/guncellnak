@@ -1042,7 +1042,7 @@ export default function Index() {
                         </View>
                       </View>
                       <TouchableOpacity
-                        style={styles.contactButton}
+                        style={[styles.contactButton, styles.liveCTA]}
                         onPress={() => {
                           router.push('/live-feed');
                         }}

@@ -513,7 +513,7 @@ async def reset_password_with_token(request: ResetPasswordRequest):
         raise HTTPException(status_code=400, detail="Invalid or expired reset token")
     
     # Validate new password
-    if len(request.new_password) &lt; 6:
+    if len(request.new_password) < 6:
         raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
     
     # Update password and clear reset token

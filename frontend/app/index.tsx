@@ -88,6 +88,8 @@ export default function Index() {
   const { width } = useWindowDimensions();
   const isDesktop = width >= 1024;
   const isTablet = width >= 768;
+  const [livePreview, setLivePreview] = useState<any[]>([]);
+
 
 
   // Türkiye'nin 81 ili ve koordinatları

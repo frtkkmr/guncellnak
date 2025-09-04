@@ -2665,6 +2665,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#3498db',
     paddingVertical: 8,
     paddingHorizontal: 16,
+  liveCTAInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 18,
+    borderRadius: 14,
+  },
+
     borderRadius: 6,
     alignSelf: 'flex-start',
   },

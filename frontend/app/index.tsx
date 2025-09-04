@@ -3024,9 +3024,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 
-
-    alignItems: 'center',
-  },
   compactCopyright: {
     color: 'rgba(255, 255, 255, 0.7)',
     fontSize: 11,

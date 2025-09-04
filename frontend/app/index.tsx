@@ -2488,6 +2488,143 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  // Footer styles
+  footer: {
+    backgroundColor: '#2c3e50',
+    paddingTop: 32,
+  },
+  calculatorSection: {
+    backgroundColor: '#34495e',
+    padding: 20,
+    marginBottom: 0,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  calculatorRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  cityInput: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    fontSize: 14,
+    marginHorizontal: 4,
+    color: '#2c3e50',
+  },
+  calculateButton: {
+    backgroundColor: '#3498db',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  calculateButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  cityList: {
+    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  footerContent: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+  },
+  footerColumn: {
+    width: '50%',
+    paddingRight: 16,
+    marginBottom: 24,
+  },
+  columnTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#fff',
+    marginBottom: 12,
+  },
+  footerText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 16,
+  },
+  socialLinks: {
+    flexDirection: 'row',
+  },
+  socialButton: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  footerLink: {
+    marginBottom: 8,
+  },
+  footerLinkText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+  },
+  serviceItem: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    marginBottom: 6,
+    lineHeight: 20,
+  },
+  contactItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  contactText: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  bottomBar: {
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255, 255, 255, 0.1)',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+  },
+  copyrightText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 12,
+  },
+  bottomLinks: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bottomLinkText: {
+    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 12,
+  },
+  separator: {
+    color: 'rgba(255, 255, 255, 0.4)',
+    marginHorizontal: 8,
+    fontSize: 12,
+  },
   // Modal styles
   modalOverlay: {
     position: 'absolute',

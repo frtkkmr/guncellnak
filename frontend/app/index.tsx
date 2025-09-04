@@ -913,7 +913,116 @@ export default function Index() {
             </ScrollView>
             
             {/* Footer */}
-            <Footer onNavigate={(screen) => setCurrentScreen(screen)} />
+            <View style={styles.footer}>
+              {/* Distance Calculator */}
+              <View style={styles.calculatorSection}>
+                <Text style={styles.sectionTitle}>🗺️ Şehirler Arası Mesafe Hesaplayıcı</Text>
+                <View style={styles.calculatorRow}>
+                  <TextInput
+                    style={styles.cityInput}
+                    placeholder="Nereden?"
+                    placeholderTextColor="#95a5a6"
+                  />
+                  <Ionicons name="arrow-forward" size={20} color="#3498db" />
+                  <TextInput
+                    style={styles.cityInput}
+                    placeholder="Nereye?"
+                    placeholderTextColor="#95a5a6"
+                  />
+                </View>
+                
+                <TouchableOpacity style={styles.calculateButton}>
+                  <Text style={styles.calculateButtonText}>Mesafe Hesapla</Text>
+                </TouchableOpacity>
+                
+                <Text style={styles.cityList}>
+                  📍 Desteklenen şehirler: İstanbul, Ankara, İzmir, Bursa, Antalya, Adana, Konya...
+                </Text>
+              </View>
+
+              {/* Footer Content */}
+              <View style={styles.footerContent}>
+                <View style={styles.footerColumn}>
+                  <Text style={styles.columnTitle}>🚛 Nakliyat Platformu</Text>
+                  <Text style={styles.footerText}>
+                    Türkiye'nin en güvenilir nakliyat hizmeti. Uzman ekibimizle güvenli taşımacılık.
+                  </Text>
+                  
+                  <View style={styles.socialLinks}>
+                    <TouchableOpacity style={styles.socialButton}>
+                      <Ionicons name="call" size={20} color="#3498db" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.socialButton}>
+                      <Ionicons name="mail" size={20} color="#3498db" />
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.socialButton}>
+                      <Ionicons name="logo-whatsapp" size={20} color="#25D366" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                <View style={styles.footerColumn}>
+                  <Text style={styles.columnTitle}>⚡ Hızlı Linkler</Text>
+                  <TouchableOpacity style={styles.footerLink} onPress={() => setCurrentScreen('quote_request')}>
+                    <Text style={styles.footerLinkText}>🎯 Teklif Al</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.footerLink} onPress={() => setCurrentScreen('register')}>
+                    <Text style={styles.footerLinkText}>📝 Kayıt Ol</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.footerLink} onPress={() => setCurrentScreen('login')}>
+                    <Text style={styles.footerLinkText}>🔐 Giriş Yap</Text>
+                  </TouchableOpacity>
+                </View>
+
+                <View style={styles.footerColumn}>
+                  <Text style={styles.columnTitle}>🎯 Hizmetlerimiz</Text>
+                  <Text style={styles.serviceItem}>🏠 Ev Taşımacılığı</Text>
+                  <Text style={styles.serviceItem}>🏢 Ofis Taşımacılığı</Text>
+                  <Text style={styles.serviceItem}>📦 Ambalajlama</Text>
+                  <Text style={styles.serviceItem}>🚛 Şehirler Arası</Text>
+                </View>
+
+                <View style={styles.footerColumn}>
+                  <Text style={styles.columnTitle}>📞 İletişim</Text>
+                  <View style={styles.contactItem}>
+                    <Ionicons name="call" size={16} color="#3498db" />
+                    <Text style={styles.contactText}>0850 555 12 34</Text>
+                  </View>
+                  <View style={styles.contactItem}>
+                    <Ionicons name="mail" size={16} color="#3498db" />
+                    <Text style={styles.contactText}>info@nakliyat.com</Text>
+                  </View>
+                  <View style={styles.contactItem}>
+                    <Ionicons name="location" size={16} color="#3498db" />
+                    <Text style={styles.contactText}>İstanbul, Türkiye</Text>
+                  </View>
+                  <View style={styles.contactItem}>
+                    <Ionicons name="time" size={16} color="#3498db" />
+                    <Text style={styles.contactText}>7/24 Destek</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* Bottom Bar */}
+              <View style={styles.bottomBar}>
+                <Text style={styles.copyrightText}>
+                  © 2024 Nakliyat Platformu. Tüm hakları saklıdır.
+                </Text>
+                <View style={styles.bottomLinks}>
+                  <TouchableOpacity>
+                    <Text style={styles.bottomLinkText}>Gizlilik</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.separator}>•</Text>
+                  <TouchableOpacity>
+                    <Text style={styles.bottomLinkText}>Şartlar</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.separator}>•</Text>
+                  <TouchableOpacity>
+                    <Text style={styles.bottomLinkText}>KVKK</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </SafeAreaView>
         </LinearGradient>
       </View>

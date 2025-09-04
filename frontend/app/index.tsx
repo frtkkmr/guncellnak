@@ -176,20 +176,30 @@ export default function Index() {
 
   // Haversine formülü ile mesafe hesaplama
   const calculateDistance = () => {
-    const from = turkeyProvinces[fromCity];
-    const to = turkeyProvinces[toCity];
+    console.log('Hesaplama başlatıldı:', fromCity, 'dan', toCity, 'ya');
+    
+    if (!fromCity.trim() || !toCity.trim()) {
+      setDistance('Lütfen her iki şehri de girin');
+      return;
+    }
+    
+    const from = turkeyProvinces[fromCity.trim()];
+    const to = turkeyProvinces[toCity.trim()];
+    
+    console.log('Şehir koordinatları:', from, to);
     
     if (!from || !to) {
       setDistance('Şehir bulunamadı! Lütfen doğru il adını yazın.');
       return;
     }
 
-    if (fromCity === toCity) {
-      setDistance('0 km - Aynı şehir seçildi');
+    if (fromCity.trim() === toCity.trim()) {
+      setDistance('0 km - Aynı şehir');
       return;
     }
 
     setCalculating(true);
+    console.log('Hesaplama başlıyor...');
     
     setTimeout(() => {
       // Haversine formula
@@ -202,9 +212,11 @@ export default function Index() {
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
       const calculatedDistance = R * c;
       
-      setDistance(`${Math.round(calculatedDistance)} km`);
+      const result = `${Math.round(calculatedDistance)} km`;
+      console.log('Hesaplanan mesafe:', result);
+      setDistance(result);
       setCalculating(false);
-    }, 800);
+    }, 1000);
   };
 
   // Auto-fetch admin data when entering admin panel

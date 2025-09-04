@@ -912,6 +912,10 @@ export default function Index() {
   const renderWelcomeScreen = () => {
     return (
       <View style={styles.container}>
+        <Head>
+          <title>Sadece Hosting</title>
+          <meta name="description" content="Türkiye'nin En Pratik Nakliye Portalı" />
+        </Head>
         <StatusBar barStyle="light-content" />
         <LinearGradient
           colors={['#667eea', '#764ba2', '#f093fb']}

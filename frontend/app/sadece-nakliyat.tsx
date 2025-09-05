@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
+import { AppState } from 'react-native';
 import AppHeader from '../components/AppHeader';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;

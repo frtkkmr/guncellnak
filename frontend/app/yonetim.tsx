@@ -55,10 +55,12 @@ export default function YonetimLogin() {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <SafeAreaView style={styles.safe}>
-        <Head>
-          <title>Yönetim | Sadece Nakliyat</title>
-          <meta name="description" content="Yönetim paneli girişi" />
-        </Head>
+        {Platform.OS === 'web' && (
+          <Head>
+            <title>Yönetim | Sadece Nakliyat</title>
+            <meta name="description" content="Yönetim paneli girişi" />
+          </Head>
+        )}
         <AppHeader active="yonetim" />
         <View style={styles.container}>
           <View style={styles.card}>

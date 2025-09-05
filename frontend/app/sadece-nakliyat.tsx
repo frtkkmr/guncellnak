@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 20, fontWeight: '800', color: '#2c3e50' },
   headerSub: { fontSize: 13, color: '#7f8c8d', marginTop: 4 },
 
-  formCard: { backgroundColor: '#fff', margin: 16, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#eee' },
+  formCard: { backgroundColor: '#fff', margin: 16, padding: 16, borderRadius: 12, borderWidth: 1, borderColor: '#eee', pointerEvents: 'auto' },
   formTitle: { fontSize: 16, fontWeight: '700', color: '#2c3e50', marginBottom: 12 },
   row: { marginBottom: 10 },
   rowSplit: { flexDirection: 'row', marginBottom: 10 },

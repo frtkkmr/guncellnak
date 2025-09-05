@@ -252,13 +252,17 @@ export default function SadeceNakliyatScreen() {
               data={posts.slice(0, visibleCount)}
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => renderPost(item)}
-              keyboardShouldPersistTaps="handled"
+              keyboardShouldPersistTaps="always"
+              keyboardDismissMode={Platform.select({ ios: 'on-drag', default: 'on-drag' })}
+              scrollEnabled
+              removeClippedSubviews={false}
+              style={{ flex: 1 }}
               contentContainerStyle={[styles.feed, { paddingBottom: 24 }]}
               refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
               ListHeaderComponent={(
                 <View>
                   {user?.user_type === 'mover' && (
-                    <View style={styles.formCard} pointerEvents="auto">
+                    <View style={styles.formCard}>
                       <Text style={styles.formTitle}>Yeni İlan Paylaş</Text>
                       <View style={styles.row}>
                         <TextInput style={styles.input} placeholder="Başlık" value={form.title} onChangeText={(v) => setForm({ ...form, title: v })} />

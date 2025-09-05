@@ -448,6 +448,8 @@ export default function Index() {
           router.push('/musteri-paneli');
           showSuccess('Başarıyla giriş yapıldı!');
         }
+      }
+
     } catch (error) {
       showError('general', 'Sunucu bağlantı hatası. Lütfen tekrar deneyin.');
     } finally {

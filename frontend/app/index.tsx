@@ -1061,7 +1061,7 @@ export default function Index() {
                       <TouchableOpacity
                         style={[styles.contactButton, styles.liveCTA]}
                         onPress={() => {
-                          router.push('/live-feed');
+                          router.push('/sadece-nakliyat');
                         }}
                         activeOpacity={0.9}
                       >

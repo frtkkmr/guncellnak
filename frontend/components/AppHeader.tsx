@@ -73,6 +73,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     letterSpacing: 0.5,
   },
+  logoImage: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    marginRight: 10,
+  },
   brandText: {
     color: '#2c3e50',
     fontSize: 16,

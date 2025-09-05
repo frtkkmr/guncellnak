@@ -448,13 +448,6 @@ export default function Index() {
           router.push('/musteri-paneli');
           showSuccess('Başarıyla giriş yapıldı!');
         }
-      } else {
-        if (response.status === 401) {
-          showError('general', 'Email veya şifre hatalı');
-        } else {
-          showError('general', data.detail || 'Giriş yapılamadı');
-        }
-      }
     } catch (error) {
       showError('general', 'Sunucu bağlantı hatası. Lütfen tekrar deneyin.');
     } finally {

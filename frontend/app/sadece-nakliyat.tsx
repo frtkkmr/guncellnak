@@ -255,7 +255,7 @@ export default function SadeceNakliyatScreen() {
                     <View style={styles.formCard}>
                       <Text style={styles.formTitle}>Yeni İlan Paylaş</Text>
                       <View style={styles.row}>
-                        <TextInput editable style={styles.input} placeholder="Başlık" value={form.title} onChangeText={(v) => setForm({ ...form, title: v })} />
+                        <TextInput editable={true} style={styles.input} placeholder="Başlık" value={form.title} onChangeText={(v) => setForm({ ...form, title: v })} />
                       </View>
                       <View style={styles.rowSplit}>
                         <View style={[styles.split, { marginRight: 8 }]}>

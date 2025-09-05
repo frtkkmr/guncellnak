@@ -392,42 +392,34 @@ export default function Index() {
       if (response.ok) {
         setToken(data.access_token);
         
-        // Get user info from backend
-        const userResponse = await fetch(`${BACKEND_URL}/api/admin/users`, {
+        // Get current user securely
+        const meRes = await fetch(`${BACKEND_URL}/api/me`, {
           headers: {
             'Authorization': `Bearer ${data.access_token}`,
             'Content-Type': 'application/json',
           },
         });
-        
-        if (userResponse.ok) {
-          const users = await userResponse.json();
-          const currentUser = users.find((u: User) => u.email === loginForm.email);
-          
-          if (currentUser) {
-            setUser(currentUser);
-            
-            // Save session to storage
-            await saveSession(data.access_token, currentUser);
-            
-            // If admin, go to admin panel
+
+        if (meRes.ok) {
+          const currentUser = await meRes.json();
+          setUser(currentUser);
+          await saveSession(data.access_token, currentUser);
+
+          // Role-based redirect to router pages
+          try {
             if (currentUser.user_type === 'admin') {
-              setCurrentScreen('admin_panel');
+              router.push('/yonetim/panel');
+            } else if (currentUser.user_type === 'mover') {
+              router.push('/sadece-nakliyat');
             } else {
-              setCurrentScreen('dashboard');
+              router.push('/musteri-paneli');
             }
-            
-            showSuccess('Başarıyla giriş yapıldı!');
-          } else {
-            // Fallback for non-admin users
-            const fallbackUser = {
-              id: '1',
-              name: 'User',
-              email: loginForm.email,
-              phone: '555-0123',
-              user_type: 'customer' as const,
-              is_active: true,
-              is_email_verified: true,
+          } catch (e) {}
+
+          showSuccess('Başarıyla giriş yapıldı!');
+        } else {
+          showError('general', 'Kullanıcı bilgisi alınamadı');
+        }
               is_phone_verified: true,
               is_approved: true
             };

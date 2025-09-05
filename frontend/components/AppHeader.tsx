@@ -26,9 +26,7 @@ export default function AppHeader({ active = 'home' }: Props) {
     <View style={styles.wrapper}>
       <View style={[styles.inner, { maxWidth }]}> 
         <TouchableOpacity style={styles.brandWrap} onPress={() => router.push('/')} activeOpacity={0.85}>
-          <LinearGradient colors={['#6A11CB', '#2575FC']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.logoCircle}>
-            <Text style={styles.logoText}>SN</Text>
-          </LinearGradient>
+          <Image source={{ uri: LOGO_URI }} style={styles.logoImage} contentFit="cover" />
           <Text style={styles.brandText}>Sadece Nakliyat</Text>
         </TouchableOpacity>
         <View style={styles.actions}>

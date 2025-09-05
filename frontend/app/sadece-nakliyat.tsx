@@ -63,6 +63,13 @@ export default function SadeceNakliyatScreen() {
   const [posts, setPosts] = React.useState<LivePost[]>([]);
   const [error, setError] = React.useState('');
 
+  // polling/backoff state
+  const pollTimer = React.useRef<NodeJS.Timeout | null>(null);
+  const backoffRef = React.useRef<number>(10000);
+  const isActiveRef = React.useRef<boolean>(true);
+  const clearPoll = () => { if (pollTimer.current) { clearTimeout(pollTimer.current as any); pollTimer.current = null; } };
+  const schedule = (ms?: number) => { clearPoll(); const delay = ms ?? backoffRef.current; pollTimer.current = setTimeout(() => { fetchFeed(); }, delay as any); };
+
   const [form, setForm] = React.useState({
     title: '',
     from_location: '',

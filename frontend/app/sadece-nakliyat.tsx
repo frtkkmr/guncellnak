@@ -241,8 +241,8 @@ export default function SadeceNakliyatScreen() {
           <meta name="description" content="Türkiye'nin En Pratik Nakliye Portalı" />
         </Head>
         <AppHeader active="sadece-nakliyat" />
-        <View style={styles.page} pointerEvents="box-none">
-          <View style={[styles.maxWidth, { maxWidth }]} pointerEvents="box-none"> 
+        <View style={styles.page}>
+          <View style={[styles.maxWidth, { maxWidth }]}> 
             <View style={styles.header}>
               <Text style={[styles.headerTitle, isDesktop && { fontSize: 22 }]}>Canlı Akış</Text>
               <Text style={styles.headerSub}>Nakliyecilerin anlık paylaşımları</Text>

@@ -994,22 +994,6 @@ export default function Index() {
                 <View style={styles.dividerLine} />
               </View>
 
-              {/* Canlı Akıştan Son Paylaşımlar - Canlı 5 adet */}
-              <View style={{ marginTop: 16 }}>
-                <Text style={styles.liveFeedTitle}>Canlı Akıştan Son Paylaşımlar</Text>
-                <View style={styles.liveFeedList}>
-                  {livePreview.slice(0,5).map((p) => (
-                    <View key={p.id} style={styles.livePostCardMini}>
-                      <View style={styles.livePostHeaderMini}>
-                        <Text style={styles.livePostTitleMini}>{p.title}</Text>
-                        <Text style={styles.livePostWhenMini}>{p.when || ''}</Text>
-                      </View>
-                      <Text style={styles.livePostRouteMini}>{(p.from_location || '-') + ' → ' + (p.to_location || '-')}</Text>
-                      <Text style={styles.livePostMetaMini}>Araç: {p.vehicle || '-'}{p.price_note ? (' • ' + p.price_note) : ''}</Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
 
               {/* Auth Buttons */}
               <View style={styles.authButtons}>

@@ -12,14 +12,13 @@ import {
   ActivityIndicator,
   RefreshControl,
   useWindowDimensions,
-  Linking,
+  AppState,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
-import { AppState } from 'react-native';
 import AppHeader from '../components/AppHeader';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -63,12 +62,24 @@ export default function SadeceNakliyatScreen() {
   const [posts, setPosts] = React.useState<LivePost[]>([]);
   const [error, setError] = React.useState('');
 
-  // polling/backoff state
   const pollTimer = React.useRef<NodeJS.Timeout | null>(null);
-  const backoffRef = React.useRef<number>(10000);
+  const backoffRef = React.useRef<number>(10000); // start 10s
   const isActiveRef = React.useRef<boolean>(true);
-  const clearPoll = () => { if (pollTimer.current) { clearTimeout(pollTimer.current as any); pollTimer.current = null; } };
-  const schedule = (ms?: number) => { clearPoll(); const delay = ms ?? backoffRef.current; pollTimer.current = setTimeout(() => { fetchFeed(); }, delay as any); };
+
+  const clearPoll = () => {
+    if (pollTimer.current) {
+      clearTimeout(pollTimer.current as any);
+      pollTimer.current = null;
+    }
+  };
+
+  const schedule = (ms?: number) => {
+    clearPoll();
+    const delay = ms ?? backoffRef.current;
+    pollTimer.current = setTimeout(() => {
+      fetchFeed();
+    }, delay as any);
+  };
 
   const [form, setForm] = React.useState({
     title: '',
@@ -92,6 +103,7 @@ export default function SadeceNakliyatScreen() {
   };
 
   const fetchFeed = async () => {
+    if (!isActiveRef.current) return;
     try {
       const endpoint = user && (user.user_type === 'mover' || user.user_type === 'admin') ? '/api/live-feed/full' : '/api/live-feed';
       const res = await fetch(`${BACKEND_URL}${endpoint}`, {
@@ -100,17 +112,37 @@ export default function SadeceNakliyatScreen() {
       if (!res.ok) throw new Error('Feed yüklenemedi');
       const data = await res.json();
       setPosts(data);
+      setError('');
+      backoffRef.current = 10000; // reset on success
+      schedule();
     } catch (e: any) {
       setError(e.message || 'Bir hata oluştu');
+      // backoff increase up to 60s
+      backoffRef.current = Math.min(backoffRef.current * 2, 60000);
+      schedule();
     } finally {
       setLoading(false);
     }
   };
 
   React.useEffect(() => {
-    loadSession().then(fetchFeed);
-    const interval = setInterval(fetchFeed, 5000);
-    return () => clearInterval(interval);
+    loadSession().then(() => {
+      setLoading(true);
+      fetchFeed();
+    });
+    const sub = AppState.addEventListener('change', (s) => {
+      const active = s === 'active';
+      isActiveRef.current = active;
+      if (active) {
+        fetchFeed();
+      } else {
+        clearPoll();
+      }
+    });
+    return () => {
+      sub.remove();
+      clearPoll();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, user]);
 

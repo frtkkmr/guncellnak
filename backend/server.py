@@ -24,7 +24,8 @@ client = AsyncIOMotorClient(MONGO_URL)
 db = client['moving_platform']
 
 # Auth/JWT
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# IMPORTANT: use pbkdf2_sha256 to avoid bcrypt runtime issues in this environment
+pwd_context = CryptContext(schemes=["pbkdf2_sha256"], deprecated="auto")
 security = HTTPBearer()
 SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret')
 ALGORITHM = 'HS256'
@@ -198,38 +199,53 @@ async def get_admin_user(current_user: User = Depends(get_current_user)) -> User
 # Seed helpers
 DEFAULT_SAMPLE_MOVER_EMAIL = 'demo@demo.com'
 DEFAULT_SAMPLE_MOVER_PASSWORD = '123456**'
+DEFAULT_SAMPLE_CUSTOMER_EMAIL = 'demo.musteri@demo.com'
+DEFAULT_SAMPLE_CUSTOMER_PASSWORD = '123456**'
 
-def _build_mover_doc(name='Demo Nakliyeci', email=DEFAULT_SAMPLE_MOVER_EMAIL, phone='+90 555 000 00 00', company='Demo Lojistik', password=DEFAULT_SAMPLE_MOVER_PASSWORD):
+def _build_user_doc(name: str, email: str, phone: str, role: str, password: str, company: Optional[str] = None):
     now = datetime.utcnow()
-    return {
+    doc = {
         'id': str(uuid.uuid4()),
         'name': name,
         'email': email,
         'phone': phone,
-        'user_type': 'mover',
+        'user_type': role,
         'is_active': True,
         'is_email_verified': True,
         'is_phone_verified': True,
-        'is_approved': True,
+        'is_approved': True if role != 'mover' else True,
         'email_verification_code': None,
         'phone_verification_code': None,
         'created_at': now,
         'updated_at': now,
         'hashed_password': get_password_hash(password),
-        'company_description': 'Demo nakliyeci firması',
+        'company_description': 'Demo nakliyeci firması' if role == 'mover' else None,
         'company_images': [],
-        'company_name': company,
+        'company_name': company if role == 'mover' else None,
     }
+    return doc
 
 async def seed_sample_mover_if_missing():
     existing = await db.users.find_one({'email': DEFAULT_SAMPLE_MOVER_EMAIL})
     if existing:
         await db.users.update_one({'email': DEFAULT_SAMPLE_MOVER_EMAIL}, {'$set': {
             'user_type': 'mover', 'is_active': True, 'is_email_verified': True, 'is_phone_verified': True,
-            'is_approved': True, 'hashed_password': get_password_hash(DEFAULT_SAMPLE_MOVER_PASSWORD), 'updated_at': datetime.utcnow()
+            'is_approved': True, 'hashed_password': get_password_hash(DEFAULT_SAMPLE_MOVER_PASSWORD), 'updated_at': datetime.utcnow(),
+            'name': 'Demo Nakliyeci', 'phone': '+90 555 000 00 00', 'company_name': 'Demo Lojistik'
         }})
         return
-    await db.users.insert_one(_build_mover_doc())
+    await db.users.insert_one(_build_user_doc('Demo Nakliyeci', DEFAULT_SAMPLE_MOVER_EMAIL, '+90 555 000 00 00', 'mover', DEFAULT_SAMPLE_MOVER_PASSWORD, 'Demo Lojistik'))
+
+async def seed_sample_customer_if_missing():
+    existing = await db.users.find_one({'email': DEFAULT_SAMPLE_CUSTOMER_EMAIL})
+    if existing:
+        await db.users.update_one({'email': DEFAULT_SAMPLE_CUSTOMER_EMAIL}, {'$set': {
+            'user_type': 'customer', 'is_active': True, 'is_email_verified': True, 'is_phone_verified': True,
+            'hashed_password': get_password_hash(DEFAULT_SAMPLE_CUSTOMER_PASSWORD), 'updated_at': datetime.utcnow(),
+            'name': 'Demo Müşteri', 'phone': '+90 531 000 00 00'
+        }})
+        return
+    await db.users.insert_one(_build_user_doc('Demo Müşteri', DEFAULT_SAMPLE_CUSTOMER_EMAIL, '+90 531 000 00 00', 'customer', DEFAULT_SAMPLE_CUSTOMER_PASSWORD))
 
 async def seed_live_feed_if_empty():
     try:
@@ -261,7 +277,7 @@ async def seed_live_feed_if_empty():
     except Exception:
         pass
 
-# Dependencies and endpoints
+# Endpoints
 @api.post('/register', response_model=dict)
 async def register(user: UserRegister):
     if await db.users.find_one({'email': user.email}):
@@ -270,19 +286,26 @@ async def register(user: UserRegister):
     doc['hashed_password'] = get_password_hash(pw)
     doc['email_verification_code'] = code6()
     doc['phone_verification_code'] = code6()
-    # Auto-approve non-movers
     doc['is_approved'] = user.user_type != 'mover'
     await db.users.insert_one(User(**doc).dict())
     return {'message': 'User registered successfully'}
 
 @api.post('/login', response_model=Token)
 async def login(body: LoginRequest):
-    # Fast path for demo user to bypass bcrypt issues in this environment
+    # Fast path for demo mover
     if body.email.lower() == DEFAULT_SAMPLE_MOVER_EMAIL and body.password == DEFAULT_SAMPLE_MOVER_PASSWORD:
         existing = await db.users.find_one({'email': DEFAULT_SAMPLE_MOVER_EMAIL})
         if not existing:
             await seed_sample_mover_if_missing()
             existing = await db.users.find_one({'email': DEFAULT_SAMPLE_MOVER_EMAIL})
+        token = jwt_create({'sub': existing['id']})
+        return {'access_token': token, 'token_type': 'bearer'}
+    # Fast path for demo customer
+    if body.email.lower() == DEFAULT_SAMPLE_CUSTOMER_EMAIL and body.password == DEFAULT_SAMPLE_CUSTOMER_PASSWORD:
+        existing = await db.users.find_one({'email': DEFAULT_SAMPLE_CUSTOMER_EMAIL})
+        if not existing:
+            await seed_sample_customer_if_missing()
+            existing = await db.users.find_one({'email': DEFAULT_SAMPLE_CUSTOMER_EMAIL})
         token = jwt_create({'sub': existing['id']})
         return {'access_token': token, 'token_type': 'bearer'}
 
@@ -302,44 +325,41 @@ async def login(body: LoginRequest):
 async def me(current_user: User = Depends(get_current_user)):
     return current_user
 
-# Moving requests
-@api.post('/moving-requests', response_model=MovingRequest)
-async def create_request(req: MovingRequestCreate, current_user: User = Depends(get_current_user)):
-    if current_user.user_type != 'customer':
-        raise HTTPException(status_code=403, detail='Only customers can create requests')
-    doc = req.dict(); doc.update({'customer_id': current_user.id, 'customer_name': current_user.name})
-    mr = MovingRequest(**doc)
-    await db.moving_requests.insert_one(mr.dict())
-    return mr
-
-@api.get('/moving-requests', response_model=List[MovingRequest])
-async def list_requests(current_user: User = Depends(get_current_user)):
-    if current_user.user_type == 'customer':
-        q = {'customer_id': current_user.id}
-    elif current_user.user_type == 'mover':
-        q = {'status': 'pending'}
-    else:
-        q = {}
-    items = await db.moving_requests.find(q).to_list(1000)
-    return [MovingRequest(**i) for i in items]
-
-# Bids
-@api.post('/moving-requests/{request_id}/bids', response_model=Bid)
-async def create_bid(request_id: str, bid: BidCreate, current_user: User = Depends(get_current_user)):
+# Live feed endpoints
+@api.post('/live-feed', response_model=LivePost)
+async def create_live_post(post: LivePostCreate, current_user: User = Depends(get_current_user)):
     if current_user.user_type != 'mover':
-        raise HTTPException(status_code=403, detail='Only movers can create bids')
-    req = await db.moving_requests.find_one({'id': request_id})
-    if not req:
-        raise HTTPException(status_code=404, detail='Moving request not found')
-    existing = await db.bids.find_one({'request_id': request_id, 'mover_id': current_user.id})
-    if existing:
-        raise HTTPException(status_code=400, detail='You have already bid on this request')
-    bd = bid.dict(); bd.update({'request_id': request_id, 'mover_id': current_user.id, 'mover_name': current_user.name, 'company_name': getattr(current_user, 'company_name', current_user.name)})
-    b = Bid(**bd)
-    await db.bids.insert_one(b.dict())
-    return b
+        raise HTTPException(status_code=403, detail='Only movers can create live posts')
+    d = post.dict(); d.update({'mover_id': current_user.id, 'mover_name': current_user.name, 'company_name': getattr(current_user, 'company_name', None), 'phone': current_user.phone, 'created_at': datetime.utcnow()})
+    lp = LivePost(**d)
+    await db.live_feed.insert_one(lp.dict())
+    return lp
 
-# Admin utilities
+@api.get('/live-feed', response_model=List[LivePost])
+async def get_live_feed_public():
+    await seed_live_feed_if_empty()
+    posts = await db.live_feed.find().sort('created_at', -1).limit(100).to_list(100)
+    sanitized = []
+    for p in posts:
+        p.pop('phone', None)
+        sanitized.append(LivePost(**p))
+    return sanitized
+
+@api.get('/live-feed/full', response_model=List[LivePost])
+async def get_live_feed_full(current_user: User = Depends(get_current_user)):
+    if current_user.user_type not in ['mover', 'admin']:
+        return await get_live_feed_public()
+    posts = await db.live_feed.find().sort('created_at', -1).limit(100).to_list(100)
+    return [LivePost(**p) for p in posts]
+
+@api.delete('/admin/live-feed/{post_id}')
+async def delete_live_post(post_id: str, current_user: User = Depends(get_admin_user)):
+    res = await db.live_feed.delete_one({'id': post_id})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail='Post not found')
+    return {'message': 'Post deleted'}
+
+# Admin endpoints
 class UpdateRoleBody(BaseModel):
     role: str
 
@@ -382,62 +402,6 @@ async def approve_mover(mover_id: str, current_user: User = Depends(get_admin_us
         raise HTTPException(status_code=404, detail='Mover not found')
     return {'message': 'Mover approved'}
 
-class SeedMoverRequest(BaseModel):
-    email: Optional[EmailStr] = DEFAULT_SAMPLE_MOVER_EMAIL
-    password: Optional[str] = DEFAULT_SAMPLE_MOVER_PASSWORD
-    name: Optional[str] = 'Demo Nakliyeci'
-    phone: Optional[str] = '+90 555 000 00 00'
-    company_name: Optional[str] = 'Demo Lojistik'
-
-@api.post('/admin/seed-sample-mover')
-async def seed_sample_mover(req: SeedMoverRequest, current_user: User = Depends(get_admin_user)):
-    email = str(req.email)
-    existing = await db.users.find_one({'email': email})
-    if existing:
-        await db.users.update_one({'email': email}, {'$set': {
-            'user_type': 'mover', 'is_active': True, 'is_email_verified': True, 'is_phone_verified': True,
-            'is_approved': True, 'hashed_password': get_password_hash(req.password or DEFAULT_SAMPLE_MOVER_PASSWORD), 'updated_at': datetime.utcnow(),
-            'name': req.name or 'Demo Nakliyeci', 'phone': req.phone or '+90 555 000 00 00', 'company_name': req.company_name or 'Demo Lojistik'
-        }})
-        return {'message': 'Existing user updated as mover', 'email': email, 'password': req.password or DEFAULT_SAMPLE_MOVER_PASSWORD}
-    doc = _build_mover_doc(req.name or 'Demo Nakliyeci', email, req.phone or '+90 555 000 00 00', req.company_name or 'Demo Lojistik', req.password or DEFAULT_SAMPLE_MOVER_PASSWORD)
-    await db.users.insert_one(doc)
-    return {'message': 'Sample mover created', 'email': email, 'password': req.password or DEFAULT_SAMPLE_MOVER_PASSWORD}
-
-# Live feed endpoints
-@api.post('/live-feed', response_model=LivePost)
-async def create_live_post(post: LivePostCreate, current_user: User = Depends(get_current_user)):
-    if current_user.user_type != 'mover':
-        raise HTTPException(status_code=403, detail='Only movers can create live posts')
-    d = post.dict(); d.update({'mover_id': current_user.id, 'mover_name': current_user.name, 'company_name': getattr(current_user, 'company_name', None), 'phone': current_user.phone, 'created_at': datetime.utcnow()})
-    lp = LivePost(**d)
-    await db.live_feed.insert_one(lp.dict())
-    return lp
-
-@api.get('/live-feed', response_model=List[LivePost])
-async def get_live_feed_public():
-    await seed_live_feed_if_empty()
-    posts = await db.live_feed.find().sort('created_at', -1).limit(100).to_list(100)
-    sanitized = []
-    for p in posts:
-        p.pop('phone', None)
-        sanitized.append(LivePost(**p))
-    return sanitized
-
-@api.get('/live-feed/full', response_model=List[LivePost])
-async def get_live_feed_full(current_user: User = Depends(get_current_user)):
-    if current_user.user_type not in ['mover', 'admin']:
-        return await get_live_feed_public()
-    posts = await db.live_feed.find().sort('created_at', -1).limit(100).to_list(100)
-    return [LivePost(**p) for p in posts]
-
-@api.delete('/admin/live-feed/{post_id}')
-async def delete_live_post(post_id: str, current_user: User = Depends(get_admin_user)):
-    res = await db.live_feed.delete_one({'id': post_id})
-    if res.deleted_count == 0:
-        raise HTTPException(status_code=404, detail='Post not found')
-    return {'message': 'Post deleted'}
-
 # Mount router
 app.include_router(api)
 
@@ -453,6 +417,7 @@ app.add_middleware(
 @app.on_event('startup')
 async def startup_seed():
     await seed_sample_mover_if_missing()
+    await seed_sample_customer_if_missing()
     await seed_live_feed_if_empty()
 
 @app.on_event('shutdown')

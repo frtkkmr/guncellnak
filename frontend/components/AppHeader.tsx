@@ -1,11 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
 interface Props {
-  active?: 'home' | 'sadece-nakliyat' | 'quote';
+  active?: 'home' | 'sadece-nakliyat' | 'quote' | 'yonetim';
 }
 
 export default function AppHeader({ active = 'home' }: Props) {
@@ -34,6 +33,7 @@ export default function AppHeader({ active = 'home' }: Props) {
           <NavBtn label="Anasayfa" route="/" isActive={active === 'home'} />
           <NavBtn label="Sadece Nakliyat" route="/sadece-nakliyat" isActive={active === 'sadece-nakliyat'} />
           <NavBtn label="Ücretsiz Teklif Al" route="/" isActive={active === 'quote'} />
+          <NavBtn label="Yönetim" route="/yonetim" isActive={active === 'yonetim'} />
         </View>
       </View>
     </View>

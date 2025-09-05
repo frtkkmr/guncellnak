@@ -34,11 +34,17 @@ export default function YonetimLogin() {
         throw new Error(j.detail || 'Giriş başarısız');
       }
       const tokenData = await res.json();
-      // Basit profil fetch: admin doğrulaması için admin users çağrısı deneyebiliriz.
       await AsyncStorage.setItem('userToken', tokenData.access_token);
-      // Not: Kullanıcı verisini index.tsx zaten oturum açarken saklıyordu. Burada minimal ilerliyoruz.
-      setSuccess('Giriş başarılı. Yönlendiriliyor...');
-      setTimeout(() => router.push('/'), 600);
+      // Admin doğrulaması: admin kullanıcı listesi çekmeyi dene
+      const adminRes = await fetch(`${BACKEND_URL}/api/admin/users`, {
+        headers: { Authorization: `Bearer ${tokenData.access_token}` },
+      });
+      if (adminRes.ok) {
+        setSuccess('Giriş başarılı. Panel açılıyor...');
+        setTimeout(() => router.push('/yonetim/panel'), 500);
+      } else {
+        setError('Bu hesap yönetici değil. Yetkili bir hesapla deneyin.');
+      }
     } catch (e: any) {
       setError(e.message || 'Bir hata oluştu');
     } finally {

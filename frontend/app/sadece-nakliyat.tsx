@@ -108,12 +108,8 @@ export default function SadeceNakliyatScreen() {
       const data = await res.json();
       setPosts(data);
       setError('');
-      backoffRef.current = 10000; // reset on success
-      schedule();
     } catch (e: any) {
       setError(e.message || 'Bir hata oluştu');
-      backoffRef.current = Math.min(backoffRef.current * 2, 60000);
-      schedule();
     } finally {
       setLoading(false);
     }

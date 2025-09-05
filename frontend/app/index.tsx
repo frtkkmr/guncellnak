@@ -962,7 +962,7 @@ export default function Index() {
 
               <TouchableOpacity
                 style={[styles.primaryCTA, { marginBottom: 10 }]}
-                onPress={() => router.push('/live-feed')}
+                onPress={() => router.push('/sadece-nakliyat')}
                 activeOpacity={0.9}
               >
                 <LinearGradient

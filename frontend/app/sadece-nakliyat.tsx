@@ -66,6 +66,8 @@ export default function SadeceNakliyatScreen() {
   const pollTimer = React.useRef<NodeJS.Timeout | null>(null);
   const backoffRef = React.useRef<number>(10000); // start 10s
   const isActiveRef = React.useRef<boolean>(true);
+  const isTypingRef = React.useRef<boolean>(false);
+  const abortRef = React.useRef<AbortController | null>(null);
 
   const clearPoll = () => {
     if (pollTimer.current) {

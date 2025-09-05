@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Head from 'expo-router/head';
-import { useRouter } from 'expo-router';
 import AppHeader from '../../components/AppHeader';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
@@ -16,40 +15,90 @@ interface UserItem {
   is_active: boolean;
 }
 
+interface LivePost {
+  id: string;
+  mover_id: string;
+  mover_name: string;
+  company_name?: string;
+  phone?: string;
+  title: string;
+  from_location?: string;
+  to_location?: string;
+  when?: string;
+  vehicle?: string;
+  price_note?: string;
+  extra?: string;
+  created_at: string;
+}
+
 export default function AdminPanel() {
-  const router = useRouter();
   const [token, setToken] = React.useState<string | null>(null);
+  const [tab, setTab] = React.useState<'users' | 'live'>('users');
+
+  // Users state
   const [users, setUsers] = React.useState<UserItem[]>([]);
-  const [loading, setLoading] = React.useState(true);
+  const [loadingUsers, setLoadingUsers] = React.useState(true);
+
+  // Live posts state
+  const [posts, setPosts] = React.useState<LivePost[]>([]);
+  const [loadingLive, setLoadingLive] = React.useState(true);
+
   const [working, setWorking] = React.useState('');
   const [error, setError] = React.useState('');
   const [success, setSuccess] = React.useState('');
 
-  const load = async () => {
-    setLoading(true);
+  const loadToken = async () => {
+    const t = await AsyncStorage.getItem('userToken');
+    if (t) setToken(t);
+    return t;
+  };
+
+  const loadUsers = async (t?: string) => {
+    const tok = t || token;
+    if (!tok) return;
+    setLoadingUsers(true);
     setError('');
     try {
-      const t = await AsyncStorage.getItem('userToken');
-      if (!t) {
-        setError('Oturum bulunamadı. Yönetim girişi yapın.');
-        return;
-      }
-      setToken(t);
       const res = await fetch(`${BACKEND_URL}/api/admin/users`, {
-        headers: { Authorization: `Bearer ${t}` },
+        headers: { Authorization: `Bearer ${tok}` },
       });
-      if (!res.ok) throw new Error('Yetki veya bağlantı hatası');
+      if (!res.ok) throw new Error('Kullanıcılar yüklenemedi');
       const data = await res.json();
       setUsers(data);
     } catch (e: any) {
       setError(e.message || 'Bir hata oluştu');
     } finally {
-      setLoading(false);
+      setLoadingUsers(false);
+    }
+  };
+
+  const loadLive = async (t?: string) => {
+    const tok = t || token;
+    if (!tok) return;
+    setLoadingLive(true);
+    setError('');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/live-feed/full`, {
+        headers: { Authorization: `Bearer ${tok}` },
+      });
+      if (!res.ok) throw new Error('Canlı akış yüklenemedi');
+      const data = await res.json();
+      setPosts(data);
+    } catch (e: any) {
+      setError(e.message || 'Bir hata oluştu');
+    } finally {
+      setLoadingLive(false);
     }
   };
 
   React.useEffect(() => {
-    load();
+    (async () => {
+      const t = await loadToken();
+      if (t) {
+        await loadUsers(t);
+        await loadLive(t);
+      }
+    })();
   }, []);
 
   const act = async (label: string, url: string, body?: any) => {
@@ -59,7 +108,7 @@ export default function AdminPanel() {
     setSuccess('');
     try {
       const res = await fetch(url, {
-        method: 'POST',
+        method: body ? 'POST' : 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: body ? JSON.stringify(body) : undefined,
       });
@@ -69,7 +118,7 @@ export default function AdminPanel() {
       }
       const j = await res.json().catch(() => ({}));
       setSuccess(j.message || 'İşlem başarılı');
-      await load();
+      await loadUsers();
     } catch (e: any) {
       setError(e.message || 'Bir hata oluştu');
     } finally {
@@ -77,7 +126,7 @@ export default function AdminPanel() {
     }
   };
 
-  const Row = ({ u }: { u: UserItem }) => (
+  const RowUser = ({ u }: { u: UserItem }) => (
     <View style={styles.row}>
       <View style={{ flex: 1 }}>
         <Text style={styles.name}>{u.name}</Text>
@@ -115,27 +164,91 @@ export default function AdminPanel() {
     </View>
   );
 
+  const delPost = async (postId: string) => {
+    if (!token) return;
+    setWorking(`del-${postId}`);
+    setError('');
+    setSuccess('');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/live-feed/${postId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.detail || 'Silinemedi');
+      }
+      setSuccess('Gönderi silindi');
+      await loadLive();
+    } catch (e: any) {
+      setError(e.message || 'Bir hata oluştu');
+    } finally {
+      setWorking('');
+    }
+  };
+
+  const RowLive = ({ p }: { p: LivePost }) => (
+    <View style={styles.row}>
+      <View style={{ flex: 1 }}>
+        <Text style={styles.name}>{p.title}</Text>
+        <Text style={styles.meta}>{(p.from_location || '-') + ' → ' + (p.to_location || '-')}</Text>
+        <Text style={styles.meta}>{p.when || ''} • {p.vehicle || ''}</Text>
+        <Text style={styles.meta}>Firma: {p.company_name || p.mover_name} {p.phone ? '• ' + p.phone : ''}</Text>
+      </View>
+      <View style={styles.actions}>
+        <TouchableOpacity style={styles.btnDanger} onPress={() => delPost(p.id)}>
+          <Text style={styles.btnDangerText}>Sil</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const Tabs = () => (
+    <View style={styles.tabs}>
+      <TouchableOpacity style={[styles.tabBtn, tab === 'users' && styles.tabBtnActive]} onPress={() => setTab('users')}>
+        <Text style={[styles.tabBtnText, tab === 'users' && styles.tabBtnTextActive]}>Kullanıcılar</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={[styles.tabBtn, tab === 'live' && styles.tabBtnActive]} onPress={() => setTab('live')}>
+        <Text style={[styles.tabBtnText, tab === 'live' && styles.tabBtnTextActive]}>Canlı Akış Moderasyonu</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <SafeAreaView style={styles.safe}>
         <Head>
           <title>Yönetim Paneli | Sadece Nakliyat</title>
-          <meta name="description" content="Kullanıcı yönetimi" />
+          <meta name="description" content="Kullanıcı ve canlı akış yönetimi" />
         </Head>
         <AppHeader active="yonetim" />
         <View style={styles.page}>
           <View style={[styles.maxWidth, { maxWidth: 1000 }]}> 
-            <Text style={styles.title}>Kullanıcı Yönetimi</Text>
+            <Text style={styles.title}>Yönetim Paneli</Text>
+            <Tabs />
             {error ? <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View> : null}
             {success ? <View style={styles.successBox}><Text style={styles.successText}>{success}</Text></View> : null}
-            {loading ? (
-              <ActivityIndicator style={{ marginTop: 24 }} />
+
+            {tab === 'users' ? (
+              loadingUsers ? (
+                <ActivityIndicator style={{ marginTop: 24 }} />
+              ) : (
+                <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
+                  {users.map((u) => (
+                    <RowUser key={u.id} u={u} />
+                  ))}
+                </ScrollView>
+              )
             ) : (
-              <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
-                {users.map((u) => (
-                  <Row key={u.id} u={u} />
-                ))}
-              </ScrollView>
+              loadingLive ? (
+                <ActivityIndicator style={{ marginTop: 24 }} />
+              ) : (
+                <ScrollView contentContainerStyle={{ paddingBottom: 24 }}>
+                  {posts.map((p) => (
+                    <RowLive key={p.id} p={p} />
+                  ))}
+                </ScrollView>
+              )
             )}
           </View>
         </View>
@@ -148,7 +261,13 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#f6f7fb' },
   page: { flex: 1, alignItems: 'center' },
   maxWidth: { width: '100%', alignSelf: 'center', paddingHorizontal: 16, paddingTop: 16 },
-  title: { fontSize: 18, fontWeight: '800', color: '#2c3e50', marginBottom: 12 },
+  title: { fontSize: 18, fontWeight: '800', color: '#2c3e50', marginBottom: 8 },
+  tabs: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#eef0f3', marginBottom: 12, overflow: 'hidden' },
+  tabBtn: { flex: 1, paddingVertical: 10, alignItems: 'center' },
+  tabBtnActive: { backgroundColor: 'rgba(47,128,237,0.08)' },
+  tabBtnText: { fontSize: 13, fontWeight: '700', color: '#2c3e50' },
+  tabBtnTextActive: { color: '#2F80ED' },
+
   row: { backgroundColor: '#fff', borderRadius: 12, padding: 14, borderWidth: 1, borderColor: '#eef0f3', marginBottom: 10, flexDirection: 'row' },
   name: { fontSize: 15, fontWeight: '800', color: '#2c3e50' },
   meta: { fontSize: 12, color: '#7f8c8d', marginTop: 2 },

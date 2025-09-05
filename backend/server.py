@@ -645,6 +645,7 @@ async def create_live_post(post: LivePostCreate, current_user: User = Depends(ge
 
 @api_router.get("/live-feed", response_model=List[LivePost])
 async def get_live_feed_public():
+    await seed_live_feed_if_empty()
     # Return latest 100 posts without phone numbers
     posts = await db.live_feed.find().sort("created_at", -1).limit(100).to_list(100)
     sanitized = []

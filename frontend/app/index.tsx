@@ -420,15 +420,7 @@ export default function Index() {
         } else {
           showError('general', 'Kullanıcı bilgisi alınamadı');
         }
-              is_phone_verified: true,
-              is_approved: true
-            };
-            setUser(fallbackUser);
-            await saveSession(data.access_token, fallbackUser);
-            setCurrentScreen('dashboard');
-            showSuccess('Başarıyla giriş yapıldı!');
-          }
-        } else {
+      } else {
           // Fallback if can't get user info
           const fallbackUser = {
             id: '1',

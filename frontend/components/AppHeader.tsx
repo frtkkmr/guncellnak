@@ -15,11 +15,9 @@ export default function AppHeader({ active = 'home' }: Props) {
   const maxWidth = isDesktop ? 1000 : isTablet ? 720 : '100%';
 
   const NavBtn = ({ label, route, isActive }: { label: string; route: string; isActive?: boolean }) => (
-    <Link href={route} asChild>
-      <TouchableOpacity style={[styles.navBtn, isActive && styles.navBtnActive]} activeOpacity={0.85}>
-        <Text style={[styles.navBtnText, isActive && styles.navBtnTextActive]}>{label}</Text>
-      </TouchableOpacity>
-    </Link>
+    <TouchableOpacity onPress={() => router.push(route)} style={[styles.navBtn, isActive && styles.navBtnActive]} activeOpacity={0.85}>
+      <Text style={[styles.navBtnText, isActive && styles.navBtnTextActive]}>{label}</Text>
+    </TouchableOpacity>
   );
 
   return (

@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 
+const LOGO_URI = 'https://customer-assets.emergentagent.com/job_easymove/artifacts/xwprnnjo_Ads%C4%B1z%20tasar%C4%B1m.png';
+
 interface Props {
   active?: 'home' | 'sadece-nakliyat' | 'quote' | 'yonetim';
 }

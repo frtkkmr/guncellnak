@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
+import AppHeader from '../components/AppHeader';
 
 const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
 
@@ -189,29 +190,6 @@ export default function SadeceNakliyatScreen() {
     </View>
   );
 
-  const NavBar = () => (
-    <View style={styles.navbar}>
-      <View style={styles.maxWidth}>
-        <View style={styles.navbarRow}>
-          <TouchableOpacity onPress={() => router.push('/')} activeOpacity={0.8}>
-            <Text style={styles.brand}>Sadece Nakliyat</Text>
-          </TouchableOpacity>
-          <View style={styles.navActions}>
-            <TouchableOpacity onPress={() => router.push('/')} style={styles.navBtn}>
-              <Text style={styles.navBtnText}>Anasayfa</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/sadece-nakliyat')} style={[styles.navBtn, styles.navBtnActive]}>
-              <Text style={[styles.navBtnText, styles.navBtnTextActive]}>Sadece Nakliyat</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/')} style={styles.navBtn}>
-              <Text style={styles.navBtnText}>Ücretsiz Teklif Al</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    </View>
-  );
-
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
       <SafeAreaView style={styles.safe}>
@@ -219,10 +197,10 @@ export default function SadeceNakliyatScreen() {
           <title>Sadece Nakliyat | Canlı Akış</title>
           <meta name="description" content="Türkiye'nin En Pratik Nakliye Portalı" />
         </Head>
-        <NavBar />
+        <AppHeader active="sadece-nakliyat" />
         <View style={styles.page}>
           <View style={[styles.maxWidth, { maxWidth }]}> 
-            <View style={styles.header}>
+            <View style={styles.header}> 
               <Text style={[styles.headerTitle, isDesktop && { fontSize: 22 }]}>Canlı Akış</Text>
               <Text style={styles.headerSub}>Nakliyecilerin anlık paylaşımları</Text>
             </View>
@@ -292,15 +270,6 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#f6f7fb' },
   page: { flex: 1, alignItems: 'center' },
   maxWidth: { width: '100%', alignSelf: 'center' },
-
-  navbar: { backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e9ecef' },
-  navbarRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12 },
-  brand: { fontSize: 16, fontWeight: '800', color: '#2c3e50' },
-  navActions: { flexDirection: 'row', alignItems: 'center' },
-  navBtn: { paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8 },
-  navBtnActive: { backgroundColor: 'rgba(47, 128, 237, 0.1)' },
-  navBtnText: { color: '#2c3e50', fontSize: 13, fontWeight: '600' },
-  navBtnTextActive: { color: '#2F80ED' },
 
   header: { paddingHorizontal: 16, paddingTop: 16, paddingBottom: 12, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: '#e9ecef' },
   headerTitle: { fontSize: 20, fontWeight: '800', color: '#2c3e50' },

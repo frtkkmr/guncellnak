@@ -32,7 +32,7 @@ export default function AppHeader({ active = 'home' }: Props) {
         <View style={styles.actions}>
           <NavBtn label="Anasayfa" route="/" isActive={active === 'home'} />
           <NavBtn label="Sadece Nakliyat" route="/sadece-nakliyat" isActive={active === 'sadece-nakliyat'} />
-          <NavBtn label="Ücretsiz Teklif Al" route="/" isActive={active === 'quote'} />
+          <NavBtn label="Ücretsiz Teklif Al" route="/teklif-olustur" isActive={active === 'quote'} />
           <NavBtn label="Yönetim" route="/yonetim" isActive={active === 'yonetim'} />
         </View>
       </View>
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e9ecef',
+    zIndex: 5,
   },
   inner: {
     width: '100%',
@@ -58,20 +59,6 @@ const styles = StyleSheet.create({
   brandWrap: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  logoCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-  },
-  logoText: {
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: 14,
-    letterSpacing: 0.5,
   },
   logoImage: {
     width: 34,

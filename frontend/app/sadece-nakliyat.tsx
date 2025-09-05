@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  RefreshControl,
   useWindowDimensions,
   AppState,
 } from 'react-native';
@@ -60,6 +61,7 @@ export default function SadeceNakliyatScreen() {
   const [submitting, setSubmitting] = React.useState(false);
   const [posts, setPosts] = React.useState<LivePost[]>([]);
   const [error, setError] = React.useState('');
+  const [visibleCount, setVisibleCount] = React.useState(8);
 
   const pollTimer = React.useRef<NodeJS.Timeout | null>(null);
   const backoffRef = React.useRef<number>(10000); // start 10s
@@ -116,7 +118,6 @@ export default function SadeceNakliyatScreen() {
       schedule();
     } catch (e: any) {
       setError(e.message || 'Bir hata oluştu');
-      // backoff increase up to 60s
       backoffRef.current = Math.min(backoffRef.current * 2, 60000);
       schedule();
     } finally {
@@ -153,6 +154,8 @@ export default function SadeceNakliyatScreen() {
       setRefreshing(false);
     }
   };
+
+  const showMore = () => setVisibleCount((c) => c + 8);
 
   const submitPost = async () => {
     if (!token || !user || user.user_type !== 'mover') return;
@@ -238,9 +241,9 @@ export default function SadeceNakliyatScreen() {
           <meta name="description" content="Türkiye'nin En Pratik Nakliye Portalı" />
         </Head>
         <AppHeader active="sadece-nakliyat" />
-        <View style={styles.page}>
-          <View style={[styles.maxWidth, { maxWidth }]}> 
-            <View style={styles.header}> 
+        <View style={styles.page} pointerEvents="box-none">
+          <View style={[styles.maxWidth, { maxWidth }]} pointerEvents="box-none"> 
+            <View style={styles.header}>
               <Text style={[styles.headerTitle, isDesktop && { fontSize: 22 }]}>Canlı Akış</Text>
               <Text style={styles.headerSub}>Nakliyecilerin anlık paylaşımları</Text>
             </View>
@@ -255,7 +258,7 @@ export default function SadeceNakliyatScreen() {
               ListHeaderComponent={(
                 <View>
                   {user?.user_type === 'mover' && (
-                    <View style={styles.formCard}>
+                    <View style={styles.formCard} pointerEvents="auto">
                       <Text style={styles.formTitle}>Yeni İlan Paylaş</Text>
                       <View style={styles.row}>
                         <TextInput style={styles.input} placeholder="Başlık" value={form.title} onChangeText={(v) => setForm({ ...form, title: v })} />
@@ -286,7 +289,7 @@ export default function SadeceNakliyatScreen() {
                         <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>
                       ) : null}
                       <TouchableOpacity onPress={submitPost} activeOpacity={0.9} disabled={submitting}>
-                        <LinearGradient colors={['#6A11CB', '#2575FC']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.submitBtn, submitting && { opacity: 0.6 }]}> 
+                        <LinearGradient colors={['#6A11CB', '#2575FC']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.submitBtn, submitting && { opacity: 0.6 }]}>
                           <Ionicons name="send" size={16} color="#fff" style={{ marginRight: 8 }} />
                           <Text style={styles.submitText}>{submitting ? 'Gönderiliyor...' : 'Paylaş'}</Text>
                         </LinearGradient>
@@ -352,4 +355,7 @@ const styles = StyleSheet.create({
   emptyBox: { alignItems: 'center', justifyContent: 'center', padding: 24, backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#eef0f3' },
   emptyTitle: { marginTop: 8, fontSize: 15, fontWeight: '700', color: '#2c3e50' },
   emptySub: { marginTop: 2, fontSize: 12, color: '#7f8c8d' },
+
+  loadMoreBtn: { marginTop: 8, marginBottom: 12, backgroundColor: '#2F80ED', paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
+  loadMoreText: { color: '#fff', fontSize: 14, fontWeight: '700' },
 });

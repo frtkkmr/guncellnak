@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform, useWindowDimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRouter } from 'expo-router';
+import { useRouter, Link } from 'expo-router';
 
 interface Props {
   active?: 'home' | 'sadece-nakliyat' | 'quote' | 'yonetim';

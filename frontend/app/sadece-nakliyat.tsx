@@ -234,7 +234,7 @@ export default function SadeceNakliyatScreen() {
   );
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+    <KeyboardAvoidingView behavior={Platform.select({ ios: 'padding', android: 'height', default: undefined })} style={{ flex: 1 }}>
       <SafeAreaView style={styles.safe}>
         <Head>
           <title>Sadece Nakliyat | Canlı Akış</title>

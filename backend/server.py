@@ -597,7 +597,7 @@ async def seed_live_feed_if_empty():
       pass
 
 # NEW: Seed sample mover utilities and endpoints
-DEFAULT_SAMPLE_MOVER_EMAIL = "demo.mover@sadece-nakliyat.local"
+DEFAULT_SAMPLE_MOVER_EMAIL = "demo@demo.com"
 DEFAULT_SAMPLE_MOVER_PASSWORD = "123456**"
 
 class SeedMoverRequest(BaseModel):

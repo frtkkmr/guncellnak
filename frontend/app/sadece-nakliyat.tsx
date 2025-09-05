@@ -21,7 +21,7 @@ import { useRouter } from 'expo-router';
 import Head from 'expo-router/head';
 import AppHeader from '../components/AppHeader';
 
-const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL;
+const BACKEND_URL = (process.env.EXPO_BACKEND_URL as string) || '';
 
 interface User {
   id: string;

@@ -455,220 +455,221 @@ async def make_user_admin(user_email: str):
     return {"message": f"User {user_email} is now admin"}
 
 class ForgotPasswordRequest(BaseModel):
-    email: EmailStr
-    method: str = "email"  # "email" or "sms"
+  email: EmailStr
+  method: str = "email"  # "email" or "sms"
 
 class ResetPasswordRequest(BaseModel):
-    email: EmailStr
-    token: str
-    new_password: str
+  email: EmailStr
+  token: str
+  new_password: str
 
 @api_router.post("/forgot-password")
 async def forgot_password(request: ForgotPasswordRequest):
-    """Send password reset code via email or SMS"""
-    user = await db.users.find_one({"email": request.email})
-    if not user:
-        # Don't reveal if email exists for security
-        return {"message": "If this email/phone is registered, you will receive a password reset code."}
-    
-    # Generate reset token
-    reset_token = generate_verification_code()
-    
-    # Store reset token with expiration (1 hour)
-    await db.users.update_one(
-        {"email": request.email},
-        {"$set": {
-            "password_reset_token": reset_token,
-            "password_reset_expires": datetime.utcnow() + timedelta(hours=1),
-            "password_reset_method": request.method
-        }}
-    )
-    
-    # Simulate sending code
-    if request.method == "sms":
-        # SMS simulation
-        message = f"Password reset code sent to phone: {user.get('phone', 'N/A')}"
-    else:
-        # Email simulation  
-        message = f"Password reset code sent to: {request.email}"
-    
-    return {
-        "message": message,
-        "reset_token": reset_token,  # For demo - remove in production
-        "method_used": request.method,
-        "contact": user.get('phone') if request.method == "sms" else request.email
-    }
+  """Send password reset code via email or SMS"""
+  user = await db.users.find_one({"email": request.email})
+  if not user:
+      return {"message": "If this email/phone is registered, you will receive a password reset code."}
+  reset_token = generate_verification_code()
+  await db.users.update_one(
+      {"email": request.email},
+      {"$set": {
+          "password_reset_token": reset_token,
+          "password_reset_expires": datetime.utcnow() + timedelta(hours=1),
+          "password_reset_method": request.method
+      }}
+  )
+  if request.method == "sms":
+      message = f"Password reset code sent to phone: {user.get('phone', 'N/A')}"
+  else:
+      message = f"Password reset code sent to: {request.email}"
+  return {
+      "message": message,
+      "reset_token": reset_token,
+      "method_used": request.method,
+      "contact": user.get('phone') if request.method == "sms" else request.email
+  }
 
 @api_router.post("/reset-password")
 async def reset_password_with_token(request: ResetPasswordRequest):
-    """Reset password with token"""
-    user = await db.users.find_one({"email": request.email})
-    
-    if not user:
-        raise HTTPException(status_code=404, detail="Invalid reset request")
-    
-    # Check token and expiration
-    if (user.get("password_reset_token") != request.token or 
-        user.get("password_reset_expires", datetime.min) < datetime.utcnow()):
-        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
-    
-    # Validate new password
-    if len(request.new_password) < 6:
-        raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
-    
-    # Update password and clear reset token
-    hashed_password = get_password_hash(request.new_password)
-    await db.users.update_one(
-        {"email": request.email},
-        {
-            "$set": {"hashed_password": hashed_password},
-            "$unset": {
-                "password_reset_token": "", 
-                "password_reset_expires": "",
-                "password_reset_method": ""
-            }
-        }
-    )
-    
-    return {"message": "Password reset successful. You can now login with your new password."}
+  """Reset password with token"""
+  user = await db.users.find_one({"email": request.email})
+  if not user:
+      raise HTTPException(status_code=404, detail="Invalid reset request")
+  if (user.get("password_reset_token") != request.token or 
+      user.get("password_reset_expires", datetime.min) < datetime.utcnow()):
+      raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+  if len(request.new_password) < 6:
+      raise HTTPException(status_code=400, detail="Password must be at least 6 characters")
+  hashed_password = get_password_hash(request.new_password)
+  await db.users.update_one(
+      {"email": request.email},
+      {
+          "$set": {"hashed_password": hashed_password},
+          "$unset": {
+              "password_reset_token": "", 
+              "password_reset_expires": "",
+              "password_reset_method": ""
+          }
+      }
+  )
+  return {"message": "Password reset successful. You can now login with your new password."}
 
 @api_router.post("/admin/verify-user/{user_email}")
 async def verify_user_public(user_email: str):
-    """Temporary public endpoint to verify user"""
-    # Update user to be verified
-    result = await db.users.update_one(
-        {"email": user_email}, 
-        {"$set": {
-            "is_email_verified": True, 
-            "is_phone_verified": True,
-            "is_approved": True
-        }}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    return {"message": f"User {user_email} verified and approved"}
+  result = await db.users.update_one(
+      {"email": user_email}, 
+      {"$set": {
+          "is_email_verified": True, 
+          "is_phone_verified": True,
+          "is_approved": True
+      }}
+  )
+  if result.matched_count == 0:
+      raise HTTPException(status_code=404, detail="User not found")
+  return {"message": f"User {user_email} verified and approved"}
 
 @api_router.post("/admin/reset-password-public/{user_email}")
 async def public_reset_password(
-    user_email: str,
-    new_password: str
+  user_email: str,
+  new_password: str
 ):
-    """Temporary public endpoint for password reset"""
-    # Find user by email
-    user = await db.users.find_one({"email": user_email})
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    
-    # Hash new password
-    hashed_password = get_password_hash(new_password)
-    
-    # Update password
-    result = await db.users.update_one(
-        {"email": user_email}, 
-        {"$set": {"hashed_password": hashed_password}}
-    )
-    
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail="Failed to update password")
-    
-    return {
-        "message": "Password updated successfully",
-        "user": user['name'],
-        "email": user_email,
-        "new_password": new_password
-    }
+  user = await db.users.find_one({"email": user_email})
+  if not user:
+      raise HTTPException(status_code=404, detail="User not found")
+  hashed_password = get_password_hash(new_password)
+  result = await db.users.update_one(
+      {"email": user_email}, 
+      {"$set": {"hashed_password": hashed_password}}
+  )
+  if result.matched_count == 0:
+      raise HTTPException(status_code=404, detail="Failed to update password")
+  return {
+      "message": "Password updated successfully",
+      "user": user['name'],
+      "email": user_email,
+      "new_password": new_password
+  }
 
 # Utility: seed live feed with 5 sample posts if empty
 async def seed_live_feed_if_empty():
-    try:
-        count = await db.live_feed.count_documents({})
-        if count > 0:
-            return
-    except Exception:
-        return
-    samples = [
-        {
-            'title': '2+1 Ev Taşıma', 'from_location': 'Beşiktaş', 'to_location': 'Kadıköy',
-            'when': 'Yarın sabah', 'vehicle': '3.5 Ton Kamyonet', 'price_note': 'Asansör gerekebilir', 'extra': 'Paketleme kısmen hazır'
-        },
-        {
-            'title': 'Parça Eşya (Beyaz Eşya)', 'from_location': 'Şişli', 'to_location': 'Ataşehir',
-            'when': 'Bugün 17:00', 'vehicle': 'Panelvan', 'price_note': 'Tek kat, kolay erişim', 'extra': ''
-        },
-        {
-            'title': 'Ofis Taşıma (4 oda)', 'from_location': 'Maslak', 'to_location': 'Kozyatağı',
-            'when': 'Cuma', 'vehicle': '7.5 Ton Kamyon', 'price_note': 'Ambalaj dahil', 'extra': 'Kablolama hassas'
-        },
-        {
-            'title': 'Piyano Taşıma', 'from_location': 'Üsküdar', 'to_location': 'Beylikdüzü',
-            'when': 'Hafta sonu', 'vehicle': 'Özel ekip', 'price_note': 'Sigortalı taşıma', 'extra': ''
-        },
-        {
-            'title': 'Stüdyo Daire', 'from_location': 'Bakırköy', 'to_location': 'Pendik',
-            'when': 'Bugün', 'vehicle': 'Kamyonet', 'price_note': 'Hızlı teslim', 'extra': ''
-        },
-    ]
-    docs = []
-    for s in samples:
-        docs.append({
-            'id': str(uuid.uuid4()),
-            'mover_id': str(uuid.uuid4()),
-            'mover_name': 'Demo Nakliyeci',
-            'company_name': 'Demo Lojistik',
-            'phone': '+90 532 000 00 00',
-            **s,
-            'created_at': datetime.utcnow(),
-        })
-    try:
-        await db.live_feed.insert_many(docs)
-    except Exception:
-        pass
+  try:
+      count = await db.live_feed.count_documents({})
+      if count > 0:
+          return
+  except Exception:
+      return
+  samples = [
+      {
+          'title': '2+1 Ev Taşıma', 'from_location': 'Beşiktaş', 'to_location': 'Kadıköy',
+          'when': 'Yarın sabah', 'vehicle': '3.5 Ton Kamyonet', 'price_note': 'Asansör gerekebilir', 'extra': 'Paketleme kısmen hazır'
+      },
+      {
+          'title': 'Parça Eşya (Beyaz Eşya)', 'from_location': 'Şişli', 'to_location': 'Ataşehir',
+          'when': 'Bugün 17:00', 'vehicle': 'Panelvan', 'price_note': 'Tek kat, kolay erişim', 'extra': ''
+      },
+      {
+          'title': 'Ofis Taşıma (4 oda)', 'from_location': 'Maslak', 'to_location': 'Kozyatağı',
+          'when': 'Cuma', 'vehicle': '7.5 Ton Kamyon', 'price_note': 'Ambalaj dahil', 'extra': 'Kablolama hassas'
+      },
+      {
+          'title': 'Piyano Taşıma', 'from_location': 'Üsküdar', 'to_location': 'Beylikdüzü',
+          'when': 'Hafta sonu', 'vehicle': 'Özel ekip', 'price_note': 'Sigortalı taşıma', 'extra': ''
+      },
+      {
+          'title': 'Stüdyo Daire', 'from_location': 'Bakırköy', 'to_location': 'Pendik',
+          'when': 'Bugün', 'vehicle': 'Kamyonet', 'price_note': 'Hızlı teslim', 'extra': ''
+      },
+  ]
+  docs = []
+  for s in samples:
+      docs.append({
+          'id': str(uuid.uuid4()),
+          'mover_id': str(uuid.uuid4()),
+          'mover_name': 'Demo Nakliyeci',
+          'company_name': 'Demo Lojistik',
+          'phone': '+90 532 000 00 00',
+          **s,
+          'created_at': datetime.utcnow(),
+      })
+  try:
+      await db.live_feed.insert_many(docs)
+  except Exception:
+      pass
 
-# NEW: Live Feed endpoints
-@api_router.post("/live-feed", response_model=LivePost)
-async def create_live_post(post: LivePostCreate, current_user: User = Depends(get_current_user)):
-    if current_user.user_type != 'mover':
-        raise HTTPException(status_code=403, detail="Only movers can create live posts")
-    post_dict = post.dict()
-    post_dict.update({
-        'mover_id': current_user.id,
-        'mover_name': current_user.name,
-        'company_name': getattr(current_user, 'company_name', None),
-        'phone': current_user.phone,
-        'created_at': datetime.utcnow(),
-    })
-    live_post = LivePost(**post_dict)
-    await db.live_feed.insert_one(live_post.dict())
-    return live_post
+# NEW: Seed sample mover utilities and endpoints
+DEFAULT_SAMPLE_MOVER_EMAIL = "demo.mover@sadece-nakliyat.local"
+DEFAULT_SAMPLE_MOVER_PASSWORD = "123456**"
 
-@api_router.get("/live-feed", response_model=List[LivePost])
-async def get_live_feed_public():
-    await seed_live_feed_if_empty()
-    # Return latest 100 posts without phone numbers
-    posts = await db.live_feed.find().sort("created_at", -1).limit(100).to_list(100)
-    sanitized = []
-    for p in posts:
-        p.pop('phone', None)
-        sanitized.append(LivePost(**p))
-    return sanitized
+class SeedMoverRequest(BaseModel):
+  email: Optional[EmailStr] = DEFAULT_SAMPLE_MOVER_EMAIL
+  password: Optional[str] = DEFAULT_SAMPLE_MOVER_PASSWORD
+  name: Optional[str] = "Demo Nakliyeci"
+  phone: Optional[str] = "+90 555 000 00 00"
+  company_name: Optional[str] = "Demo Lojistik"
 
-@api_router.get("/live-feed/full", response_model=List[LivePost])
-async def get_live_feed_full(current_user: User = Depends(get_current_user)):
-    # Movers/Admins can see phone numbers
-    if current_user.user_type not in ['mover', 'admin']:
-        # Fallback to public variant
-        return await get_live_feed_public()
-    posts = await db.live_feed.find().sort("created_at", -1).limit(100).to_list(100)
-    return [LivePost(**p) for p in posts]
+def _build_mover_doc(req: SeedMoverRequest) -> dict:
+  now = datetime.utcnow()
+  return {
+      'id': str(uuid.uuid4()),
+      'name': req.name or 'Demo Nakliyeci',
+      'email': str(req.email),
+      'phone': req.phone or '+90 555 000 00 00',
+      'user_type': 'mover',
+      'is_active': True,
+      'is_email_verified': True,
+      'is_phone_verified': True,
+      'is_approved': True,
+      'email_verification_code': None,
+      'phone_verification_code': None,
+      'created_at': now,
+      'updated_at': now,
+      'hashed_password': get_password_hash(req.password or DEFAULT_SAMPLE_MOVER_PASSWORD),
+      'company_description': 'Demo nakliyeci firması',
+      'company_images': [],
+      'company_name': req.company_name or 'Demo Lojistik',
+  }
 
-@api_router.delete("/admin/live-feed/{post_id}")
-async def delete_live_post(post_id: str, current_user: User = Depends(get_admin_user)):
-    result = await db.live_feed.delete_one({"id": post_id})
-    if result.deleted_count == 0:
-        raise HTTPException(status_code=404, detail="Post not found")
-    return {"message": "Post deleted"}
+async def seed_sample_mover_if_missing():
+  existing = await db.users.find_one({"email": DEFAULT_SAMPLE_MOVER_EMAIL})
+  if existing:
+      # ensure mover is verified/approved and password set
+      await db.users.update_one(
+          {"email": DEFAULT_SAMPLE_MOVER_EMAIL},
+          {"$set": {
+              "user_type": "mover",
+              "is_active": True,
+              "is_email_verified": True,
+              "is_phone_verified": True,
+              "is_approved": True,
+              "hashed_password": get_password_hash(DEFAULT_SAMPLE_MOVER_PASSWORD),
+              "updated_at": datetime.utcnow(),
+          }}
+      )
+      return
+  # create new
+  doc = _build_mover_doc(SeedMoverRequest())
+  await db.users.insert_one(doc)
+
+@api_router.post("/admin/seed-sample-mover")
+async def admin_seed_sample_mover(req: SeedMoverRequest, current_user: User = Depends(get_admin_user)):
+  existing = await db.users.find_one({"email": str(req.email)})
+  if existing:
+      await db.users.update_one(
+          {"email": str(req.email)},
+          {"$set": {
+              "user_type": "mover",
+              "is_active": True,
+              "is_email_verified": True,
+              "is_phone_verified": True,
+              "is_approved": True,
+              "hashed_password": get_password_hash(req.password or DEFAULT_SAMPLE_MOVER_PASSWORD),
+              "updated_at": datetime.utcnow(),
+          }}
+      )
+      return {"message": "Existing user updated as mover", "email": str(req.email), "password": req.password or DEFAULT_SAMPLE_MOVER_PASSWORD}
+  doc = _build_mover_doc(req)
+  await db.users.insert_one(doc)
+  return {"message": "Sample mover created", "email": str(req.email), "password": req.password or DEFAULT_SAMPLE_MOVER_PASSWORD}
 
 # Include the router in the main app
 app.include_router(api_router)
@@ -680,6 +681,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.on_event("startup")
+async def startup_seed():
+  # Seed live posts and a sample mover for quick demo
+  await seed_live_feed_if_empty()
+  await seed_sample_mover_if_missing()
 
 @app.on_event("shutdown")
 async def shutdown_db_client():

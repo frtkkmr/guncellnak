@@ -187,6 +187,31 @@ export default function AdminPanel() {
     }
   };
 
+  const seedMover = async () => {
+    if (!token) return;
+    setWorking('seed');
+    setError('');
+    setSuccess('');
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/admin/seed-sample-mover`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ email: 'demo.mover@sadece-nakliyat.local', password: '123456**', name: 'Demo Nakliyeci', phone: '+90 555 000 00 00', company_name: 'Demo Lojistik' }),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        throw new Error(j.detail || 'Oluşturulamadı');
+      }
+      const j = await res.json().catch(() => ({}));
+      setSuccess(`Örnek nakliyeci hazır: ${j.email} / ${j.password}`);
+      await loadUsers();
+    } catch (e: any) {
+      setError(e.message || 'Bir hata oluştu');
+    } finally {
+      setWorking('');
+    }
+  };
+
   const RowLive = ({ p }: { p: LivePost }) => (
     <View style={styles.row}>
       <View style={{ flex: 1 }}>
@@ -225,6 +250,11 @@ export default function AdminPanel() {
         <View style={styles.page}>
           <View style={[styles.maxWidth, { maxWidth: 1000 }]}> 
             <Text style={styles.title}>Yönetim Paneli</Text>
+            <View style={styles.toolbar}>
+              <TouchableOpacity style={styles.btn} onPress={seedMover}>
+                <Text style={styles.btnText}>{working === 'seed' ? 'Oluşturuluyor...' : 'Örnek Nakliyeci Oluştur'}</Text>
+              </TouchableOpacity>
+            </View>
             <Tabs />
             {error ? <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View> : null}
             {success ? <View style={styles.successBox}><Text style={styles.successText}>{success}</Text></View> : null}
@@ -262,6 +292,7 @@ const styles = StyleSheet.create({
   page: { flex: 1, alignItems: 'center' },
   maxWidth: { width: '100%', alignSelf: 'center', paddingHorizontal: 16, paddingTop: 16 },
   title: { fontSize: 18, fontWeight: '800', color: '#2c3e50', marginBottom: 8 },
+  toolbar: { flexDirection: 'row', marginBottom: 10 },
   tabs: { flexDirection: 'row', backgroundColor: '#fff', borderRadius: 10, borderWidth: 1, borderColor: '#eef0f3', marginBottom: 12, overflow: 'hidden' },
   tabBtn: { flex: 1, paddingVertical: 10, alignItems: 'center' },
   tabBtnActive: { backgroundColor: 'rgba(47,128,237,0.08)' },
@@ -272,7 +303,7 @@ const styles = StyleSheet.create({
   name: { fontSize: 15, fontWeight: '800', color: '#2c3e50' },
   meta: { fontSize: 12, color: '#7f8c8d', marginTop: 2 },
   actions: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'flex-end', gap: 6 },
-  btn: { backgroundColor: '#2F80ED', paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, marginLeft: 6 },
+  btn: { backgroundColor: '#2F80ED', paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, marginRight: 6 },
   btnText: { color: '#fff', fontSize: 12, fontWeight: '700' },
   btnOutline: { borderWidth: 1, borderColor: '#cfd6de', paddingVertical: 8, paddingHorizontal: 10, borderRadius: 8, marginLeft: 6 },
   btnOutlineText: { color: '#2c3e50', fontSize: 12, fontWeight: '700' },

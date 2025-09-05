@@ -63,8 +63,8 @@ export default function SadeceNakliyatScreen() {
   const [error, setError] = React.useState('');
   const [visibleCount, setVisibleCount] = React.useState(8);
 
+  // Polling disabled for web stability. Manual refresh only.
   const pollTimer = React.useRef<NodeJS.Timeout | null>(null);
-  const backoffRef = React.useRef<number>(10000); // start 10s
   const isActiveRef = React.useRef<boolean>(true);
   const isTypingRef = React.useRef<boolean>(false);
   const abortRef = React.useRef<AbortController | null>(null);
@@ -74,14 +74,6 @@ export default function SadeceNakliyatScreen() {
       clearTimeout(pollTimer.current as any);
       pollTimer.current = null;
     }
-  };
-
-  const schedule = (ms?: number) => {
-    clearPoll();
-    const delay = ms ?? backoffRef.current;
-    pollTimer.current = setTimeout(() => {
-      fetchFeed();
-    }, delay as any);
   };
 
   const [form, setForm] = React.useState({

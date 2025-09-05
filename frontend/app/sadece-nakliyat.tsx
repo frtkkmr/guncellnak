@@ -206,60 +206,61 @@ export default function SadeceNakliyatScreen() {
               <Text style={styles.headerSub}>Nakliyecilerin anlık paylaşımları</Text>
             </View>
 
-            {user?.user_type === 'mover' && (
-              <View style={styles.formCard}>
-                <Text style={styles.formTitle}>Yeni İlan Paylaş</Text>
-                <View style={styles.row}>
-                  <TextInput style={styles.input} placeholder="Başlık" value={form.title} onChangeText={(v) => setForm({ ...form, title: v })} />
-                </View>
-                <View style={styles.rowSplit}> 
-                  <View style={[styles.split, { marginRight: 8 }]}>
-                    <TextInput style={styles.input} placeholder="Nereden" value={form.from_location} onChangeText={(v) => setForm({ ...form, from_location: v })} />
+            <ScrollView
+              keyboardShouldPersistTaps="handled"
+              contentContainerStyle={[styles.feed, { paddingBottom: 24 }]}
+              refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            >
+              {user?.user_type === 'mover' && (
+                <View style={styles.formCard}>
+                  <Text style={styles.formTitle}>Yeni İlan Paylaş</Text>
+                  <View style={styles.row}>
+                    <TextInput style={styles.input} placeholder="Başlık" value={form.title} onChangeText={(v) => setForm({ ...form, title: v })} />
                   </View>
-                  <View style={[styles.split, { marginLeft: 8 }]}>
-                    <TextInput style={styles.input} placeholder="Nereye" value={form.to_location} onChangeText={(v) => setForm({ ...form, to_location: v })} />
+                  <View style={styles.rowSplit}>
+                    <View style={[styles.split, { marginRight: 8 }]}>
+                      <TextInput style={styles.input} placeholder="Nereden" value={form.from_location} onChangeText={(v) => setForm({ ...form, from_location: v })} />
+                    </View>
+                    <View style={[styles.split, { marginLeft: 8 }]}>
+                      <TextInput style={styles.input} placeholder="Nereye" value={form.to_location} onChangeText={(v) => setForm({ ...form, to_location: v })} />
+                    </View>
                   </View>
-                </View>
-                <View style={styles.rowSplit}> 
-                  <View style={[styles.split, { marginRight: 8 }]}>
-                    <TextInput style={styles.input} placeholder="Ne zaman" value={form.when} onChangeText={(v) => setForm({ ...form, when: v })} />
+                  <View style={styles.rowSplit}>
+                    <View style={[styles.split, { marginRight: 8 }]}>
+                      <TextInput style={styles.input} placeholder="Ne zaman" value={form.when} onChangeText={(v) => setForm({ ...form, when: v })} />
+                    </View>
+                    <View style={[styles.split, { marginLeft: 8 }]}>
+                      <TextInput style={styles.input} placeholder="Araç" value={form.vehicle} onChangeText={(v) => setForm({ ...form, vehicle: v })} />
+                    </View>
                   </View>
-                  <View style={[styles.split, { marginLeft: 8 }]}>
-                    <TextInput style={styles.input} placeholder="Araç" value={form.vehicle} onChangeText={(v) => setForm({ ...form, vehicle: v })} />
+                  <View style={styles.row}>
+                    <TextInput style={styles.input} placeholder="Fiyat/Not" value={form.price_note} onChangeText={(v) => setForm({ ...form, price_note: v })} />
                   </View>
+                  <View style={styles.row}>
+                    <TextInput style={[styles.input, styles.textArea]} placeholder="Ek açıklama" multiline value={form.extra} onChangeText={(v) => setForm({ ...form, extra: v })} />
+                  </View>
+                  {error ? (
+                    <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>
+                  ) : null}
+                  <TouchableOpacity onPress={submitPost} activeOpacity={0.9} disabled={submitting}>
+                    <LinearGradient colors={['#6A11CB', '#2575FC']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.submitBtn, submitting && { opacity: 0.6 }]}> 
+                      <Ionicons name="send" size={16} color="#fff" style={{ marginRight: 8 }} />
+                      <Text style={styles.submitText}>{submitting ? 'Gönderiliyor...' : 'Paylaş'}</Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
                 </View>
-                <View style={styles.row}>
-                  <TextInput style={styles.input} placeholder="Fiyat/Not" value={form.price_note} onChangeText={(v) => setForm({ ...form, price_note: v })} />
-                </View>
-                <View style={styles.row}>
-                  <TextInput style={[styles.input, styles.textArea]} placeholder="Ek açıklama" multiline value={form.extra} onChangeText={(v) => setForm({ ...form, extra: v })} />
-                </View>
-                {error ? (
-                  <View style={styles.errorBox}><Text style={styles.errorText}>{error}</Text></View>
-                ) : null}
-                <TouchableOpacity onPress={submitPost} activeOpacity={0.9} disabled={submitting}>
-                  <LinearGradient colors={['#6A11CB', '#2575FC']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={[styles.submitBtn, submitting && { opacity: 0.6 }]}> 
-                    <Ionicons name="send" size={16} color="#fff" style={{ marginRight: 8 }} />
-                    <Text style={styles.submitText}>{submitting ? 'Gönderiliyor...' : 'Paylaş'}</Text>
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-            )}
+              )}
 
-            {loading ? (
-              <ActivityIndicator style={{ marginTop: 24 }} />
-            ) : (
-              <ScrollView
-                contentContainerStyle={[styles.feed, { paddingBottom: 24 }]}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-              >
-                {posts.length === 0 ? (
+              {loading ? (
+                <ActivityIndicator style={{ marginTop: 24 }} />
+              ) : (
+                posts.length === 0 ? (
                   <EmptyState />
                 ) : (
                   posts.map(renderPost)
-                )}
-              </ScrollView>
-            )}
+                )
+              )}
+            </ScrollView>
           </View>
         </View>
       </SafeAreaView>
